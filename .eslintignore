@@ -1,0 +1,2 @@
+# PM2 process file – leave as CommonJS
+ecosystem.config.mjs
