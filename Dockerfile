@@ -1,33 +1,49 @@
-FROM node:24-alpine
+
+# Stage 1: Build the application
+FROM node:24-alpine AS builder
+
+WORKDIR /app
 
 # Install pnpm globally
 RUN npm install -g pnpm
 
-# Set working directory
-WORKDIR /usr/src/app
-
-
-# Copy only manifest, lockfile, and prisma schema for better caching
+# Copy package manifests and lockfile
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
-
-# Install all dependencies (including devDependencies for build)
+# Install dependencies
 RUN pnpm install --unsafe-perm
 
-# Generate Prisma Client
-RUN npx prisma generate
-
-# Copy the rest of the source code
+# Copy the rest of your application code
 COPY . .
 
-# Build the app (requires @nestjs/cli as devDependency)
+# Run Prisma Generate
+RUN npx prisma generate
+
+# Build the application
 RUN pnpm build
 
-# Prune devDependencies for smaller final image
-RUN pnpm prune --prod
+# Stage 2: Production Image
+FROM node:24-alpine
 
-# Ensure entrypoint is executable
+WORKDIR /app
+
+# Install pnpm in the final production image as well
+RUN npm install -g pnpm
+
+# Set environment variables for better console output
+ENV FORCE_COLOR=1
+ENV NODE_ENV=production
+
+# Copy only the necessary production artifacts from the 'builder' stage
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY docker-entrypoint.sh .
+
+# Ensure the entrypoint is executable
 RUN chmod +x docker-entrypoint.sh
 
 # Expose the NestJS port
