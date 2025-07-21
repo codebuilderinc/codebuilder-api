@@ -16,7 +16,7 @@ COPY prisma ./prisma
 RUN pnpm install --unsafe-perm
 
 # Generate Prisma Client
-RUN pnpm prisma generate
+RUN npx prisma generate
 
 # Copy the rest of the source code
 COPY . .
