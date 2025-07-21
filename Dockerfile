@@ -11,8 +11,9 @@ WORKDIR /usr/src/app
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
+
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install
+RUN pnpm install --unsafe-perm
 
 # Generate Prisma Client
 RUN pnpm prisma generate
