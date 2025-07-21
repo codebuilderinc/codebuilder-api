@@ -1,23 +1,24 @@
 version: '3.8'
 
 services:
+
   db:
     image: postgres:13-alpine
-    container_name: nest-db
+    container_name: codebuilder-db
     environment:
       POSTGRES_USER: ${DB_USER:-nestjs}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-nestpass}
       POSTGRES_DB: ${DB_NAME:-nestdb}
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - codebuilder-db-data:/var/lib/postgresql/data
     networks:
       - codebuilder-net
 
-  nest-api:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nest-api
+    container_name: codebuilder-api
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -33,8 +34,9 @@ services:
     networks:
       - codebuilder-net
 
+
 volumes:
-  db-data:
+  codebuilder-db-data:
 
 networks:
   codebuilder-net:

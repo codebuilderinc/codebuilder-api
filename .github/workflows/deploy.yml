@@ -60,8 +60,8 @@ jobs:
             fi
           else
             echo "Database container not found. Creating it..."
-            # Added -p flag to associate with the correct stack
-            docker compose -p codebuilder-frontend up -d db
+            # Use 'codebuilder' as the stack prefix
+            docker compose -p codebuilder up -d db
           fi
 
           # Step 3: Wait for the database to be healthy.
@@ -78,8 +78,8 @@ jobs:
 
           # Step 4: Build the new webapp image.
           echo "Building the latest webapp image..."
-          # Added -p flag to ensure build context is correct
-          docker compose -p codebuilder-frontend build webapp
+          # Use 'codebuilder' as the stack prefix
+          docker compose -p codebuilder build webapp
 
           # Step 5: Forcefully remove the old webapp container to prevent conflicts.
           echo "Forcefully removing old webapp container if it exists..."
@@ -87,8 +87,8 @@ jobs:
 
           # Step 6: Deploy the new webapp container.
           echo "Deploying the new webapp container..."
-          # Added -p flag to associate with the correct stack
-          docker compose -p codebuilder-frontend up -d --no-deps webapp
+          # Use 'codebuilder' as the stack prefix
+          docker compose -p codebuilder up -d --no-deps webapp
 
       - name: '🗑 Prune Old Docker Images'
         if: always()
