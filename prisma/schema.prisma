@@ -8,10 +8,31 @@ datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  //schemas           = ["bsc", "public"]
 }
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["multiSchema"]
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "./dbml/schema.dbml"
+}
+
+generator nestjsDto {
+  provider                        = "prisma-generator-nestjs-dto"
+  output                          = "../src/generated/nestjs-dto"
+  outputToNestJsResourceStructure = "false"
+  exportRelationModifierClasses   = "true"
+  reExport                        = "false"
+  createDtoPrefix                 = "Create"
+  updateDtoPrefix                 = "Update"
+  dtoSuffix                       = "Dto"
+  entityPrefix                    = ""
+  entitySuffix                    = ""
+  fileNamingStyle                 = "camel"
 }
 
 // =============================================================================
@@ -172,6 +193,39 @@ model Subscription {
   @@unique([endpoint, type, keys], name: "endpoint_type_keys") // Prevents duplicate subscriptions.
   // Indexes & Mapping
   @@map("subscriptions")
+}
+
+enum Role {
+  ADMIN
+  USER
+
+  //@@schema("bsc")
+}
+
+// [ USERS ]
+// Users are individual Web3 wallets that have logged in by signing a Message in order to get a valid nonce authenticated login session. 
+// Note: We may want to have a seperate users table later & allow users to sign in with or without a wallet, and also allow them to have multiple Web3 wallets associated to them.
+// Relationships:
+//   - One-to-Many: User->hasMany(Positions):  - A User may have zero or more Positions that belong to it . [Optional]
+//   - One-to-Many: User->hasMany(Swaps):  - A User may have zero or more Swaps that belong to it . [Optional]
+//   - One-to-Many: User->hasMany(Trades):  - A User may have zero or more Trades that belong to it . [Optional]
+//   - One-to-Many: User->hasMany(CopyWallet): - A User may have zero or more CopyWallets that belong to it . [Optional]
+model User {
+  id        Int      @id @default(autoincrement()) @map("id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique //depracated
+  password  String //depracated
+  firstname String? //depracated
+  lastname  String? //depracated
+
+  role      Role     @default(USER) @map("role")
+  wallet    String?  @unique @db.VarChar(42)
+  is_active Boolean? @default(true)
+  // @@schema("public")
+
+  @@index([wallet, is_active], map: "active_user")
+  @@map("users")
 }
 
 /// Stores location data points for subscriptions.

@@ -1,0 +1,240 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table jobs {
+  id Int [pk, increment]
+  title String [not null]
+  companyId Int
+  company companies
+  author String
+  location String
+  url String [unique, not null]
+  postedAt DateTime
+  description String
+  isRemote Boolean
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  tags job_tags [not null]
+  metadata job_metadata [not null]
+  sources job_sources [not null]
+
+  Note: 'Stores job listings from all sources (Reddit, Web3Career, etc).
+Contains only the main, normalized/shared job fields.'
+}
+
+Table companies {
+  id Int [pk, increment]
+  name String [unique, not null]
+  jobs jobs [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  Note: 'Stores company information, normalized so jobs with the same company point here.'
+}
+
+Table tags {
+  id Int [pk, increment]
+  name String [unique, not null]
+  jobTags job_tags [not null]
+  taggables taggables [not null]
+
+  Note: 'Stores unique tags (skills, role types, etc).
+Used for jobs and supports future polymorphic tagging.'
+}
+
+Table job_tags {
+  id Int [pk, increment]
+  jobId Int [not null]
+  tagId Int [not null]
+  job jobs [not null]
+  tag tags [not null]
+
+  indexes {
+    (jobId, tagId) [unique]
+  }
+
+  Note: 'Join table for many-to-many Job <-> Tag relationships.
+Each row links a job to a tag.'
+}
+
+Table job_metadata {
+  id Int [pk, increment]
+  jobId Int [not null]
+  name String [not null]
+  value String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  job jobs [not null]
+
+  indexes {
+    (jobId, name) [unique]
+  }
+
+  Note: 'Stores arbitrary name/value metadata for jobs.
+Allows storage of extra source-specific or custom fields.'
+}
+
+Table job_sources {
+  id Int [pk, increment]
+  jobId Int [not null]
+  source String [not null]
+  externalId String
+  rawUrl String
+  data Json
+  createdAt DateTime [default: `now()`, not null]
+  job jobs [not null]
+
+  indexes {
+    (source, externalId) [unique]
+  }
+
+  Note: 'Tracks the source(s) from which this job was imported.
+Used for provenance, deduplication, and full source data storage.'
+}
+
+Table taggables {
+  id Int [pk, increment]
+  tagId Int [not null]
+  tagType String [not null]
+  taggableId Int [not null]
+  tag tags [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  Note: 'Enables polymorphic tagging (linking tags to any model, not just jobs).
+For future extensibility; currently jobs use JobTag directly.'
+}
+
+Table reddit_posts {
+  id Int [pk, increment]
+  title String [not null]
+  author String [not null]
+  subreddit String [not null]
+  url String [unique, not null]
+  type String [not null, default: 'reddit']
+  body String
+  bodyHtml String
+  upvotes Int [not null, default: 0]
+  downvotes Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  postedAt DateTime [not null, note: 'The original creation time on Reddit.']
+
+  Note: 'Stores posts scraped from Reddit.'
+}
+
+Table subscriptions {
+  id Int [pk, increment]
+  ipAddress String [not null]
+  type SubscriptionType [not null, default: 'web']
+  endpoint String [unique, not null]
+  keys Json [note: 'Auth keys required for sending push notifications.']
+  createdAt DateTime [default: `now()`, not null]
+  locations locations [not null]
+
+  indexes {
+    (endpoint, type, keys) [unique]
+  }
+
+  Note: 'Stores user subscriptions for push notifications.'
+}
+
+Table users {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  email String [unique, not null]
+  password String [not null]
+  firstname String
+  lastname String
+  role Role [not null, default: 'USER']
+  wallet String [unique]
+  is_active Boolean [default: true]
+}
+
+Table locations {
+  id Int [pk, increment]
+  ipAddress String [not null]
+  accuracy Float
+  altitude Float
+  altitudeAccuracy Float
+  heading Float
+  latitude Float
+  longitude Float
+  speed Float
+  mocked Boolean [not null, note: 'True if location was from a mock provider.']
+  timestamp BigInt [note: 'Original Unix timestamp from the client.']
+  city String
+  country String
+  district String
+  formattedAddress String
+  isoCountryCode String
+  name String
+  postalCode String
+  region String
+  street String
+  streetNumber String
+  subregion String
+  timezone String
+  createdAt DateTime [default: `now()`, not null]
+  subscriptionId Int [not null]
+  subscription subscriptions [not null]
+
+  Note: 'Stores location data points for subscriptions.'
+}
+
+Table reddit_messages {
+  id Int [pk, increment]
+  redditId String [unique, not null, note: 'The unique ID from the Reddit API.']
+  type String [not null, note: 'e.g., "comment", "post", "dm".']
+  author String [not null]
+  content String [not null]
+  bodyHtml String
+  subreddit String
+  contextUrl String
+  parentId String [note: 'For message threading.']
+  messageType String [note: 'e.g., "inbox", "sent", "modmail".']
+  isRead Boolean [not null, default: false]
+  isSubredditModMail Boolean [not null, default: false]
+  isInternal Boolean [not null, default: false, note: 'For mod-to-mod discussions.']
+  rawData Json [note: 'Stores the original API response.']
+  createdAt DateTime [not null, note: 'The original creation time on Reddit.']
+  receivedAt DateTime [default: `now()`, not null]
+
+  Note: 'Stores messages received from Reddit (comments, DMs, etc.).'
+}
+
+Table error_reports {
+  id String [pk]
+  message String [not null]
+  stack String
+  platform String [note: '\'android\', \'ios\', \'web\', etc.']
+  isFatal Boolean [note: 'True if the error crashed the client app.']
+  errorInfo Json [note: 'React Error Boundary info, like componentStack.']
+  payload Json [not null, note: 'The complete, raw JSON payload from the client.']
+  createdAt DateTime [default: `now()`, not null]
+
+  Note: 'Stores error reports sent from client applications.'
+}
+
+Enum SubscriptionType {
+  web
+  fcm
+}
+
+Enum Role {
+  ADMIN
+  USER
+}
+
+Ref: jobs.companyId > companies.id
+
+Ref: job_tags.jobId > jobs.id
+
+Ref: job_tags.tagId > tags.id
+
+Ref: job_metadata.jobId > jobs.id
+
+Ref: job_sources.jobId > jobs.id
+
+Ref: taggables.tagId > tags.id
+
+Ref: locations.subscriptionId > subscriptions.id

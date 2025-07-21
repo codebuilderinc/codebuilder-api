@@ -1,0 +1,109 @@
+{
+      "APP_SETTINGS": {
+            "port": 8090,
+            "body_limit": "50mb",
+            "body_parameter_limit": 50000
+      },
+      "JWT_ACCESS_SECRET": "tasdasdklaslkdaslkd",
+      "CORS_SETTINGS": {
+            "allowed_origins": [],
+            "allowed_paths": [],
+            "allowed_methods": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "OPTIONS"
+            ],
+            "allowed_credentials": false,
+            "allowed_headers": []
+      },
+      "LOGGER_SETTINGS": {
+            "level": "info",
+            "silence": [
+                  "healthz"
+            ]
+      },
+      "DB_SETTINGS": {
+            "host": "pg-1.dexcelerate.com",
+            "port": 5432,
+            "username": "nestjswebsockettest",
+            "password": "joker123!",
+            "database": "nestjswebsockettest",
+            "logging": "all",
+            "synchronize": true
+      },
+      "JWT_SETTINGS": {
+            "secret_key": "secret_key",
+            "algorithm": "HS512",
+            "access_token_expires_in": 20,
+            "refresh_token_expires_in": 10080
+      },
+      "REDIS_SETTINGS": {
+            "host": "redis-1.dexcelerate.com",
+            "port": 7001,
+            "key": "nestjs_example"
+      },
+      "REDIS_SERVERS": {
+            "STANDALONE": {
+                  "host": "redis-1.dexcelerate.com",
+                  "port": 6379,
+                  "tls": true,
+                  "password": "aslkdjkkjadwkljdaslkjdwqklqajd39821ikdjal"
+            },
+            "RATE": {
+                  "host": "redis-1.dexcelerate.com",
+                  "port": 3788,
+                  "tls": false,
+                  "password": "aslkdjkkjadwkljdaslkjdwqklqajd39821ikdjal"
+            },
+            "AUTH": {
+                  "host": "redis-1.dexcelerate.com",
+                  "port": 7001,
+                  "tls": true,
+                  "password": "aslkdjkkjadwkljdaslkjdwqklqajd39821ikdjal"
+            },
+            "TOKENS": {
+                  "host": "redis-1.dexcelerate.com",
+                  "port": 7001,
+                  "tls": true,
+                  "password": "aslkdjkkjadwkljdaslkjdwqklqajd39821ikdjal"
+            },
+            "CHAT": {
+                  "host": "redis-1.dexcelerate.com",
+                  "port": 7001,
+                  "tls": true,
+                  "password": "aslkdjkkjadwkljdaslkjdwqklqajd39821ikdjal"
+            }
+      },
+      "WSS_SETTINGS": {
+            "port": 8091,
+            "ping_interval": 3000,
+            "ping_timeout": 10000,
+            "path": "/socket.io"
+      },
+      "RABBITMQ_SETTINGS": {
+            "exchange": "nestjs_example_service",
+            "name": "rabbitmq",
+            "host": "localhost",
+            "vhost": "vhost",
+            "port": 5672,
+            "username": "admin",
+            "password": "password"
+      },
+      "GRAPHQL_SETTINGS": {
+            "playground": true,
+            "debug": true,
+            "introspection": true,
+            "installSubscriptionHandlers": true
+      },
+      "GRAPHQL_APIS": {
+            "api_1": "http://localhost:8090/graphql",
+            "api_2": "http://localhost:8091/graphql"
+      },
+      "GRAPHQL_GUARD": {
+            "username": "admin",
+            "password": "password"
+      }
+}
