@@ -39,6 +39,21 @@ jobs:
           echo "" >> .env
 
       # =======================================================
+      # 🧩 Initialize Git Submodules (for prisma)
+      # =======================================================
+      - name: '🧩 Init Git Submodules'
+        run: |
+          git submodule update --init --recursive
+
+      # =======================================================
+      # 🛠️ Generate Prisma Client
+      # =======================================================
+      - name: '🛠️ Run Prisma Generate'
+        run: |
+          npx prisma generate
+        working-directory: ./
+
+      # =======================================================
       # 🐳 Docker Operations
       # =======================================================
       - name: '🚀 Build, Launch, and Update Services'
@@ -76,19 +91,19 @@ jobs:
           echo "Ensuring build runs in default server mode..."
           export NEXT_OUTPUT_MODE='standalone'
 
-          # Step 4: Build the new api image.
-          echo "Building the latest api image..."
+          # Step 4: Build the new webapp image.
+          echo "Building the latest webapp image..."
           # Use 'codebuilder' as the stack prefix
-          docker compose -p codebuilder build api
+          docker compose -p codebuilder build webapp
 
-          # Step 5: Forcefully remove the old api container to prevent conflicts.
-          echo "Forcefully removing old api container if it exists..."
-          docker rm -f codebuilder-api || true
+          # Step 5: Forcefully remove the old webapp container to prevent conflicts.
+          echo "Forcefully removing old webapp container if it exists..."
+          docker rm -f codebuilder-webapp || true
 
-          # Step 6: Deploy the new api container.
-          echo "Deploying the new api container..."
+          # Step 6: Deploy the new webapp container.
+          echo "Deploying the new webapp container..."
           # Use 'codebuilder' as the stack prefix
-          docker compose -p codebuilder up -d --no-deps api
+          docker compose -p codebuilder up -d --no-deps webapp
 
       - name: '🗑 Prune Old Docker Images'
         if: always()
