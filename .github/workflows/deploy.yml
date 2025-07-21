@@ -10,15 +10,6 @@ jobs:
     name: '🐳 Build & Deploy'
 
     steps:
-      - name: '⬇️ Setup Node.js'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: '⬇️ Install pnpm'
-        run: npm install -g pnpm
 
       - name: '🔍 Checkout Code'
         uses: actions/checkout@v4
@@ -48,20 +39,7 @@ jobs:
           echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
           echo "" >> .env
 
-      # =======================================================
-      # 🧩 Initialize Git Submodules (for prisma)
-      # =======================================================
-      - name: '🧩 Init Git Submodules'
-        run: |
-          git submodule update --init --recursive
 
-      # =======================================================
-      # 🛠️ Generate Prisma Client
-      # =======================================================
-      - name: '🛠️ Run Prisma Generate'
-        run: |
-          npx prisma generate
-        working-directory: ./
 
       # =======================================================
       # 🐳 Docker Operations
