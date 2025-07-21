@@ -1,0 +1,74 @@
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  WebSocketGateway,
+  WebSocketServer,
+  MessageBody,
+  SubscribeMessage,
+  ConnectedSocket,
+} from '@nestjs/websockets';
+
+import io from 'socket.io';
+import { NextFunction } from 'express';
+import Redis from 'ioredis';
+import { Server, ServerOptions, Socket } from 'socket.io';
+import { LogService } from '../common/log/log.service';
+
+//const wss_settings = config.get<IWssSettings>('WSS_SETTINGS');
+/*
+@WebSocketGateway(8081, {
+  pingInterval: 3000,
+  pingTimeout: 10000,
+  path: '/ws',
+})*/
+@WebSocketGateway(8081, {
+  pingInterval: 3000,
+  pingTimeout: 10000,
+  path: '/ws',
+  transport: ['websocket'],
+})
+export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  @WebSocketServer()
+  wss;
+  public server: io.Server;
+
+  constructor(private readonly logService: LogService) {}
+
+  private getClientQuery(client: io.Socket): Record<string, unknown> {
+    console.log('ASDASDASD');
+    return client.handshake.query;
+  }
+
+  public broadcastAll(event_name: string, message: Record<string, unknown>) {
+    console.log('sadadsdasdasd');
+    this.server.emit(event_name, message);
+  }
+
+  handleConnection(client: io.Socket) {
+    console.log('wtf');
+    client.join('msgRoom');
+    const { user_id } = this.getClientQuery(client);
+
+    this.logService.info(`WssGateway: handleConnection ${user_id}`);
+
+    return this.broadcastAll('event', { connected: user_id });
+  }
+
+  handleDisconnect(client: io.Socket) {
+    const { user_id } = this.getClientQuery(client);
+
+    this.logService.info(`WssGateway: handleDisconnect ${user_id}`);
+
+    return this.broadcastAll('event', { disconnected: user_id });
+  }
+
+  @SubscribeMessage('send_message')
+  async listenForMessages(@MessageBody() content: string, @ConnectedSocket() socket: Socket) {
+    const { user_id } = this.getClientQuery(socket);
+
+    this.server.sockets.emit('receive_message', {
+      content,
+      user_id,
+    });
+  }
+}

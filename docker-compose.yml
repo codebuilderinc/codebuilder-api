@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    container_name: nest-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-nestjs}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-nestpass}
+      POSTGRES_DB: ${DB_NAME:-nestdb}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - codebuilder-net
+
+  nest-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-nestjs}
+      DB_PASSWORD: ${DB_PASSWORD:-nestpass}
+      DB_NAME: ${DB_NAME:-nestdb}
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    entrypoint: ["./docker-entrypoint.sh"]
+    networks:
+      - codebuilder-net
+
+volumes:
+  db-data:
+
+networks:
+  codebuilder-net:
+    external: true

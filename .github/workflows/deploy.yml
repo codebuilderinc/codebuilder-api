@@ -1,0 +1,93 @@
+name: '🚀 Deploy NestJS API Docker App'
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    name: '🐳 Build & Deploy'
+
+    steps:
+      - name: '🔍 Checkout Code'
+        uses: actions/checkout@v4
+
+      - name: '🔒 Verify SSH Secrets Exist'
+        run: |
+          missing=0
+          for var in SERVER_HOST SERVER_USER SERVER_SSH_KEY; do
+            # Use indirect expansion to check each env var
+            if [ -z "${!var}" ]; then
+              echo "❌ Critical error: Secret $var is missing!"
+              missing=1
+            else
+              echo "✅ Secret $var is present"
+            fi
+          done
+          if [ $missing -ne 0 ]; then
+            exit 1
+          fi
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: '🐳 Log in to GitHub Container Registry'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: '📦 Build & Push Docker Image'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/codebuilderinc/codebuilder-api:latest
+        env:
+          BUILDKIT_PROGRESS: plain
+
+      - name: '🚀 Deploy to Remote Server'
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            echo "➡️  Ensuring Docker network 'codebuilder-net' exists..."
+            if ! docker network ls | grep -q codebuilder-net; then
+              echo "🆕 Creating network codebuilder-net"
+              docker network create codebuilder-net
+            else
+              echo "✔️ Network codebuilder-net already exists"
+            fi
+
+            echo "➡️  Ensuring database container is running..."
+            if docker ps -a --format '{{.Names}}' | grep -q '^nest-db$'; then
+              if ! docker ps --format '{{.Names}}' | grep -q '^nest-db$'; then
+                echo "🟡 Starting existing 'nest-db' container..."
+                docker start nest-db
+              else
+                echo "✔️ Database container 'nest-db' is already running"
+              fi
+            else
+              echo "🆕 Deploying fresh database container..."
+              docker-compose -f docker-compose.nest.yml up -d db
+            fi
+
+            echo "⏳ Waiting for database to be healthy on db:5432..."
+            until nc -z db 5432; do sleep 1; done
+            echo "✅ Database is healthy"
+
+            echo "➡️  Pulling latest NestJS image..."
+            docker pull ghcr.io/codebuilderinc/codebuilder-api:latest
+
+            echo "🔄 Deploying NestJS API service on port 4000..."
+            docker-compose -f docker-compose.nest.yml up -d --no-deps nest-api
+
+      - name: '🗑️ Prune Old Docker Images'
+        if: always()
+        run: docker image prune -af
