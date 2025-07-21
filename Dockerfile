@@ -6,9 +6,10 @@ RUN npm install -g pnpm
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy only manifest and lockfile first for better caching
-COPY package.json pnpm-lock.yaml ./
 
+# Copy only manifest, lockfile, and prisma schema for better caching
+COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 
 # Install all dependencies (including devDependencies for build)
 RUN pnpm install
