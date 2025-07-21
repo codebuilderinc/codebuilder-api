@@ -1,36 +1,31 @@
-# Ensure devDependencies are installed for build
-# Install pnpm if not present, then install all dependencies including devDependencies
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install
-
-# Build the app (nest CLI will be available)
-RUN pnpm build
-# syntax=docker/dockerfile:1
 FROM node:24-alpine
 
-# install pnpm globally
+# Install pnpm globally
 RUN npm install -g pnpm
 
-# your working dir in container
+# Set working directory
 WORKDIR /usr/src/app
 
-
-# copy only manifest and lockfile, install all deps (including devDependencies)
+# Copy only manifest and lockfile first for better caching
 COPY package.json pnpm-lock.yaml ./
+
+# Install all dependencies (including devDependencies for build)
 RUN pnpm install
 
-# copy source & build
+# Copy the rest of the source code
 COPY . .
+
+# Build the app (requires @nestjs/cli as devDependency)
 RUN pnpm build
 
-# prune devDependencies for smaller final image
+# Prune devDependencies for smaller final image
 RUN pnpm prune --prod
 
-# ensure entrypoint is executable
+# Ensure entrypoint is executable
 RUN chmod +x docker-entrypoint.sh
 
-# expose the NestJS port
+# Expose the NestJS port
 EXPOSE 4000
 
-# run migrations then start
+# Run migrations then start
 ENTRYPOINT ["./docker-entrypoint.sh"]
