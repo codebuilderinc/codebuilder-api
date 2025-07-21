@@ -13,25 +13,6 @@ jobs:
       - name: '🔍 Checkout Code'
         uses: actions/checkout@v4
 
-      - name: '🔒 Verify SSH Secrets Exist'
-        run: |
-          missing=0
-          for var in SERVER_HOST SERVER_USER SERVER_SSH_KEY; do
-            # Use indirect expansion to check each env var
-            if [ -z "${!var}" ]; then
-              echo "❌ Critical error: Secret $var is missing!"
-              missing=1
-            else
-              echo "✅ Secret $var is present"
-            fi
-          done
-          if [ $missing -ne 0 ]; then
-            exit 1
-          fi
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: '🔒 Verify Secrets Exist'
         run: |
