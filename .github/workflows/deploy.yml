@@ -76,19 +76,19 @@ jobs:
           echo "Ensuring build runs in default server mode..."
           export NEXT_OUTPUT_MODE='standalone'
 
-          # Step 4: Build the new webapp image.
-          echo "Building the latest webapp image..."
+          # Step 4: Build the new api image.
+          echo "Building the latest api image..."
           # Use 'codebuilder' as the stack prefix
-          docker compose -p codebuilder build webapp
+          docker compose -p codebuilder build api
 
-          # Step 5: Forcefully remove the old webapp container to prevent conflicts.
-          echo "Forcefully removing old webapp container if it exists..."
-          docker rm -f codebuilder-webapp || true
+          # Step 5: Forcefully remove the old api container to prevent conflicts.
+          echo "Forcefully removing old api container if it exists..."
+          docker rm -f codebuilder-api || true
 
-          # Step 6: Deploy the new webapp container.
-          echo "Deploying the new webapp container..."
+          # Step 6: Deploy the new api container.
+          echo "Deploying the new api container..."
           # Use 'codebuilder' as the stack prefix
-          docker compose -p codebuilder up -d --no-deps webapp
+          docker compose -p codebuilder up -d --no-deps api
 
       - name: '🗑 Prune Old Docker Images'
         if: always()
