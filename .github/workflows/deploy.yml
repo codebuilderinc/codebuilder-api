@@ -33,61 +33,82 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: '🐳 Log in to GitHub Container Registry'
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: '🔒 Verify Secrets Exist'
+        run: |
+          if [ -z "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" ]; then
+            echo "❌ Critical error: GOOGLE_SERVICES_JSON_BASE64 secret missing!"
+            exit 1
+          fi
+          echo "✅ All secrets present"
 
-      - name: '📦 Build & Push Docker Image'
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/codebuilderinc/codebuilder-api:latest
+      - name: '📁 Create google-services.json'
+        run: |
+          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > google-services.json
+          echo "🔄 Validating JSON..."
+          if ! jq empty google-services.json; then
+            echo "❌ JSON validation failed!"
+            exit 1
+          fi
         env:
-          BUILDKIT_PROGRESS: plain
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
-      - name: '🚀 Deploy to Remote Server'
-        if: github.ref == 'refs/heads/main'
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            echo "➡️  Ensuring Docker network 'codebuilder-net' exists..."
-            if ! docker network ls | grep -q codebuilder-net; then
-              echo "🆕 Creating network codebuilder-net"
-              docker network create codebuilder-net
-            else
-              echo "✔️ Network codebuilder-net already exists"
+      - name: '⚙️ Create .env File'
+        run: |
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+          echo "" >> .env
+
+      # =======================================================
+      # 🐳 Docker Operations
+      # =======================================================
+      - name: '🚀 Build, Launch, and Update Services'
+        run: |
+          # Step 1: Ensure the Docker network exists.
+          if ! docker network ls | grep -q "codebuilder-net"; then
+            echo "Network 'codebuilder-net' not found. Creating it..."
+            docker network create codebuilder-net
+          else
+            echo "Network 'codebuilder-net' already exists. Skipping creation."
+          fi
+
+          # Step 2: Ensure the database container is running.
+          DB_CONTAINER_NAME="codebuilder-postgres-db"
+          if [ $(docker ps -a -q -f name=^/${DB_CONTAINER_NAME}$) ]; then
+            if ! [ $(docker ps -q -f name=^/${DB_CONTAINER_NAME}$) ]; then
+              echo "Database container exists but is stopped. Starting it..."
+              docker start ${DB_CONTAINER_NAME}
             fi
+          else
+            echo "Database container not found. Creating it..."
+            # Added -p flag to associate with the correct stack
+            docker compose -p codebuilder-frontend up -d db
+          fi
 
-            echo "➡️  Ensuring database container is running..."
-            if docker ps -a --format '{{.Names}}' | grep -q '^nest-db$'; then
-              if ! docker ps --format '{{.Names}}' | grep -q '^nest-db$'; then
-                echo "🟡 Starting existing 'nest-db' container..."
-                docker start nest-db
-              else
-                echo "✔️ Database container 'nest-db' is already running"
-              fi
-            else
-              echo "🆕 Deploying fresh database container..."
-              docker-compose -f docker-compose.nest.yml up -d db
-            fi
+          # Step 3: Wait for the database to be healthy.
+          echo "Waiting for database to become available on localhost:5434..."
+          while ! nc -z localhost 5434; do sleep 1; done
+          echo "✅ Database is healthy."
 
-            echo "⏳ Waiting for database to be healthy on db:5432..."
-            until nc -z db 5432; do sleep 1; done
-            echo "✅ Database is healthy"
+          # =====================================================================
+          # THE FIX: Force the build to run in default server mode.
+          # This overrides any conflicting environment variables.
+          # =====================================================================
+          echo "Ensuring build runs in default server mode..."
+          export NEXT_OUTPUT_MODE='standalone'
 
-            echo "➡️  Pulling latest NestJS image..."
-            docker pull ghcr.io/codebuilderinc/codebuilder-api:latest
+          # Step 4: Build the new webapp image.
+          echo "Building the latest webapp image..."
+          # Added -p flag to ensure build context is correct
+          docker compose -p codebuilder-frontend build webapp
 
-            echo "🔄 Deploying NestJS API service on port 4000..."
-            docker-compose -f docker-compose.nest.yml up -d --no-deps nest-api
+          # Step 5: Forcefully remove the old webapp container to prevent conflicts.
+          echo "Forcefully removing old webapp container if it exists..."
+          docker rm -f codebuilder-webapp || true
 
-      - name: '🗑️ Prune Old Docker Images'
+          # Step 6: Deploy the new webapp container.
+          echo "Deploying the new webapp container..."
+          # Added -p flag to associate with the correct stack
+          docker compose -p codebuilder-frontend up -d --no-deps webapp
+
+      - name: '🗑 Prune Old Docker Images'
         if: always()
         run: docker image prune -af
