@@ -9,8 +9,12 @@ WORKDIR /usr/src/app
 # Copy only manifest and lockfile first for better caching
 COPY package.json pnpm-lock.yaml ./
 
+
 # Install all dependencies (including devDependencies for build)
 RUN pnpm install
+
+# Generate Prisma Client
+RUN pnpm prisma generate
 
 # Copy the rest of the source code
 COPY . .
