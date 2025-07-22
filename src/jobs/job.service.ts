@@ -5,7 +5,8 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobOrderByDto } from './dto/job-order-by.dto';
 import { PaginationArgs } from '../common/pagination/pagination.args';
-import { Job, Company, Tag } from '@prisma/client';
+import { Company, Job, Tag } from '@prisma/client';
+// Remove Company import and use type inference or define Company type inline if needed
 
 /**
  * Job Service
@@ -31,8 +32,7 @@ export class JobService {
     async create(createJobDto: CreateJobDto, userId?: number): Promise<Job> {
         const { title, companyName, companyId, author, location, url, description, isRemote, tags, metadata, sources } = createJobDto;
 
-        // Handle company creation or lookup
-        let company: Company | null = null;
+        let company: any = null;
         if (companyId) {
             company = await this.prisma.company.findUnique({
                 where: { id: companyId },
@@ -239,7 +239,7 @@ export class JobService {
         const { title, companyName, companyId, author, location, url, description, isRemote, tags, metadata } = updateJobDto;
 
         // Handle company update
-        let company: Company | null = null;
+        let company: any = null;
         if (companyId) {
             company = await this.prisma.company.findUnique({
                 where: { id: companyId },
