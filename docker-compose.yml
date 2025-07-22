@@ -26,7 +26,15 @@ services:
       - "4000:4000"
     depends_on:
       - db
-    entrypoint: ["./docker-entrypoint.sh"]
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo "==== ENVIRONMENT VARIABLES ===="
+        env
+        echo "==== REDIS_SERVERS ===="
+        echo "$REDIS_SERVERS"
+        ./docker-entrypoint.sh
     networks:
       - codebuilder-net
 
