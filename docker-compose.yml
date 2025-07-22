@@ -1,28 +1,27 @@
 services:
+
   db:
     image: postgres:13-alpine
-    container_name: codebuilder-db
-    environment:
-      POSTGRES_USER: ${DB_USER:-nestjs}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-nestpass}
-      POSTGRES_DB: ${DB_NAME:-nestdb}
+    container_name: codebuilder-postgres-db
+    restart: unless-stopped
+    env_file:
+      - ./.env
     volumes:
       - codebuilder-db-data:/var/lib/postgresql/data
     networks:
       - codebuilder-net
+    ports:
+      - "5434:5432"
+
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: codebuilder-api
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: ${DB_USER:-nestjs}
-      DB_PASSWORD: ${DB_PASSWORD:-nestpass}
-      DB_NAME: ${DB_NAME:-nestdb}
-      PORT: 4000
+    restart: unless-stopped
+    env_file:
+      - ./.env
     ports:
       - "4000:4000"
     depends_on:
@@ -32,8 +31,10 @@ services:
       - codebuilder-net
 
 
+
 volumes:
   codebuilder-db-data:
+
 
 networks:
   codebuilder-net:
