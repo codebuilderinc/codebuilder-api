@@ -8,6 +8,10 @@
 // and capture telemetry from the very beginning of the application's lifecycle.
 //
 import { NodeSDK } from '@opentelemetry/sdk-node';
+
+// DEBUG: Print REDIS_SERVERS and all env vars at startup
+console.log('DEBUG: REDIS_SERVERS env:', process.env.REDIS_SERVERS);
+console.log('DEBUG: All environment variables:', JSON.stringify(process.env, null, 2));
 //import openTelemetryConfig from './open-telemetry.config.json'; // Assuming this config file exists in your new project
 
 // const openTelemetry = new NodeSDK(openTelemetryConfig);

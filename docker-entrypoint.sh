@@ -3,8 +3,9 @@
 # This script is the entrypoint for the Docker container.
 # It ensures the database is ready before running migrations and starting the app.
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+
+# Exit immediately if a command exits with a non-zero status and print each command before executing it (debugging)
+set -ex
 
 # Enable color output
 export FORCE_COLOR=1
