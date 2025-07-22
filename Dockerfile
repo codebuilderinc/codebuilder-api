@@ -11,14 +11,26 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
+
 # Install dependencies
-RUN pnpm install --unsafe-perm
+RUN pnpm install --unsafe-perm \
+      && echo '--- DEBUG: pnpm version ---' \
+      && pnpm --version \
+      && echo '--- DEBUG: node version ---' \
+      && node --version \
+      && echo '--- DEBUG: npx version ---' \
+      && npx --version \
+      && echo '--- DEBUG: prisma version (if installed) ---' \
+      && npx prisma --version || true \
+      && echo '--- DEBUG: node_modules/.bin contents ---' \
+      && ls -l node_modules/.bin || true
 
 # Copy the rest of your application code
 COPY . .
 
-# Run Prisma Generate
-RUN npx prisma generate
+# Debug before running prisma generate
+RUN echo '--- DEBUG: Running npx prisma generate ---' \
+      && npx prisma generate
 
 # Build the application
 RUN pnpm build

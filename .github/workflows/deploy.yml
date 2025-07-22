@@ -44,7 +44,16 @@ jobs:
       # =======================================================
       # 🐳 Docker Operations
       # =======================================================
-      - name: '🚀 Build, Launch, and Update Services'
+      - name: '� Debug: List workspace files and show package.json'
+        run: |
+          echo '--- DEBUG: Listing workspace files ---'
+          ls -alh
+          echo '--- DEBUG: Showing package.json ---'
+          cat package.json
+          echo '--- DEBUG: Listing node_modules/.bin if exists ---'
+          if [ -d node_modules/.bin ]; then ls -l node_modules/.bin; else echo "node_modules/.bin does not exist"; fi
+
+      - name: '�🚀 Build, Launch, and Update Services'
         run: |
           # Step 1: Ensure the Docker network exists.
           if ! docker network ls | grep -q "codebuilder-net"; then
