@@ -126,6 +126,6 @@ export class JobMetadata extends BaseModel {
      * The job this metadata belongs to
      * Many-to-one relationship with Job
      */
-    @Field(() => () => typeof Job)
+    @Field(() => Job)
     job: Job;
 }
