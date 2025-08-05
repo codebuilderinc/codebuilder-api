@@ -47,6 +47,22 @@ function parseNestedJson(config: any): ApplicationConfig {
  * including the applied default values.
  */
 function validateConfig(envConfig: object): ApplicationConfig {
+    const validatedConfig: ApplicationConfig = { ...envConfig } as ApplicationConfig;
+
+    // Validate REDIS_SERVERS as JSON
+    if (typeof validatedConfig.REDIS_SERVERS === 'string') {
+        try {
+            validatedConfig.REDIS_SERVERS = JSON.parse(validatedConfig.REDIS_SERVERS);
+        } catch (error) {
+            throw new Error(`Config validation error: REDIS_SERVERS must be a valid JSON string`);
+        }
+    }
+
+    // Ensure REDIS_SERVERS is an object after parsing
+    if (typeof validatedConfig.REDIS_SERVERS !== 'object' || validatedConfig.REDIS_SERVERS === null) {
+        throw new Error(`Config validation error: REDIS_SERVERS must be a valid object`);
+    }
+
     const envVarsSchema: Joi.ObjectSchema<ApplicationConfig> = Joi.object<ApplicationConfig>({
         SERVICE_NAME: Joi.string().required(),
         SERVICE_VERSION: Joi.string().required(),
@@ -88,10 +104,10 @@ function validateConfig(envConfig: object): ApplicationConfig {
 
         EDGE_KV_URL: Joi.string().default('https://edge-kv-dexcelerate.workers.dev'),
         EDGE_KV_AUTHORIZATION_TOKEN: Joi.string().default(''),
-        REDIS_SERVERS: Joi.string().required(), // JSON string validated as plain string here
+        REDIS_SERVERS: Joi.object().required(), // Validate as an object
     });
 
-    const { error, value: validatedConfig } = envVarsSchema.validate(envConfig, {
+    const { error, value: configValue } = envVarsSchema.validate(validatedConfig, {
         allowUnknown: true,
     });
 
@@ -99,5 +115,5 @@ function validateConfig(envConfig: object): ApplicationConfig {
         throw new Error(`Config validation error: ${error.message}`);
     }
 
-    return validatedConfig;
+    return configValue;
 }
