@@ -13,6 +13,14 @@ services:
     ports:
       - "5434:5432"
 
+  redis:
+    image: redis:7-alpine
+    container_name: codebuilder-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - codebuilder-net
 
 
   api:
@@ -23,10 +31,16 @@ services:
     restart: unless-stopped
     env_file:
       - ./.env
+    environment:
+      # Use docker network alias for Redis
+      QUEUE_REDIS_HOST: redis
+      # Override application Redis servers config to use redis container
+      REDIS_SERVERS: '{"AUTH":{"host":"redis","port":6379,"password":"","tls":false},"CACHE":{"host":"redis","port":6379,"password":"","tls":false}}'
     ports:
       - "4000:4000"
     depends_on:
       - db
+      - redis
     entrypoint:
       - /bin/sh
       - -c
