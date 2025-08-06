@@ -118,22 +118,37 @@ export function createRedisProviders(): Array<Provider<RedisService>> {
 export const redisProviders: Provider[] = [
     {
         provide: REDIS_SUBSCRIBER_CLIENT,
-        useFactory: (): Redis => {
-            return new IORedis({
-                host: '127.0.0.1',
-                port: 6379,
-                // password: '', // uncomment if you need it
-            });
+        useFactory: (cfg: ConfigService): Redis => {
+            const host = cfg.get('QUEUE_REDIS_HOST');
+            const port = cfg.get('QUEUE_REDIS_PORT');
+            const password = cfg.get('QUEUE_REDIS_PASSWORD');
+            const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
+            const options: any = {
+                host,
+                port,
+                ...(password ? { password } : {}),
+                ...(useTls ? { tls: { servername: host } } : {}),
+            };
+            return new IORedis(options);
         },
+        inject: [ConfigService],
     },
     {
         provide: REDIS_PUBLISHER_CLIENT,
-        useFactory: (): Redis => {
-            return new IORedis({
-                host: '127.0.0.1',
-                port: 6379,
-            });
+        useFactory: (cfg: ConfigService): Redis => {
+            const host = cfg.get('QUEUE_REDIS_HOST');
+            const port = cfg.get('QUEUE_REDIS_PORT');
+            const password = cfg.get('QUEUE_REDIS_PASSWORD');
+            const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
+            const options: any = {
+                host,
+                port,
+                ...(password ? { password } : {}),
+                ...(useTls ? { tls: { servername: host } } : {}),
+            };
+            return new IORedis(options);
         },
+        inject: [ConfigService],
     },
     // Prefix-based providers are appended at module initialisation time:
     // ...createRedisProviders(),
