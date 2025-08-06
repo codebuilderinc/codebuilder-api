@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JobService } from './job.service';
 import { JobController } from './job.controller';
-import { JobResolver } from './job.resolver';
+//import { JobResolver } from './job.resolver';
 import { CommonModule } from '../common/common.module';
 
 /**
@@ -22,7 +22,7 @@ import { CommonModule } from '../common/common.module';
         CommonModule, // Provides database, authentication, and other shared services
     ],
     controllers: [JobController], // REST API endpoints
-    providers: [JobService, JobResolver], // Business logic and GraphQL resolvers
+    providers: [JobService], // Business logic and GraphQL resolvers //JobResolver
     exports: [JobService], // Allow other modules to use JobService
 })
 export class JobModule {}
