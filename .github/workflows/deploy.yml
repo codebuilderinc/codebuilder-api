@@ -53,6 +53,16 @@ jobs:
           echo '--- DEBUG: Listing node_modules/.bin if exists ---'
           if [ -d node_modules/.bin ]; then ls -l node_modules/.bin; else echo "node_modules/.bin does not exist"; fi
 
+      # Ensure the Postgres data volume exists before starting services
+      - name: '🔧 Ensure Postgres data volume exists'
+        run: |
+          if [ -z "$(docker volume ls -q -f name=codebuilder-postgres-data)" ]; then
+            echo "Volume 'codebuilder-postgres-data' not found. Creating it..."
+            docker volume create codebuilder-postgres-data
+          else
+            echo "Volume 'codebuilder-postgres-data' already exists. Skipping creation."
+          fi
+
       - name: '�🚀 Build, Launch, and Update Services'
         run: |
           # Step 1: Ensure the Docker network exists.
@@ -101,15 +111,6 @@ jobs:
           echo "Deploying the new api container..."
           # Use 'codebuilder' as the stack prefix
           docker compose -p codebuilder up -d --no-deps api
-
-      - name: '🔧 Ensure Postgres data volume exists'
-        run: |
-          if [ -z "$(docker volume ls -q -f name=codebuilder-postgres-data)" ]; then
-            echo "Volume 'codebuilder-postgres-data' not found. Creating it..."
-            docker volume create codebuilder-postgres-data
-          else
-            echo "Volume 'codebuilder-postgres-data' already exists. Skipping creation."
-          fi
 
       - name: '🗑 Prune Old Docker Images'
         if: always()
