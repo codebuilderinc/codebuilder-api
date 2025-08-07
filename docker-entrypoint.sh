@@ -49,4 +49,4 @@ echo -e "${BLUE}🚀 Starting NestJS application...${NC}"
 # ensuring it becomes the main process (PID 1) and receives signals correctly.
 exec "$@"
 
-echo -e "${RED}🚀 NestJS Application Process Exited...${NC}"
+echo -e "${RED}🚀 NestJS Application Process Exited...${NC} $@"

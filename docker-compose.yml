@@ -34,6 +34,8 @@ services:
     environment:
       # Use docker network alias for Redis
       QUEUE_REDIS_HOST: redis
+      # Redis port
+      QUEUE_REDIS_PORT: 6379
       # Override application Redis servers config to use redis container
       REDIS_SERVERS: '{"AUTH":{"host":"redis","port":6379,"password":"","tls":false},"CACHE":{"host":"redis","port":6379,"password":"","tls":false}}'
     ports:
@@ -41,18 +43,10 @@ services:
     depends_on:
       - db
       - redis
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        echo "==== ENVIRONMENT VARIABLES ===="
-        env
-        echo "==== REDIS_SERVERS ===="
-        echo "$REDIS_SERVERS"
-        ./docker-entrypoint.sh
-    command: ["pnpm", "start"]
     networks:
       - codebuilder-net
+    # Override default command to run the compiled production bundle
+    command: ["pnpm", "start:prod"]
 
 
 
