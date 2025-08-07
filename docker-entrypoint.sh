@@ -44,7 +44,11 @@ echo -e "${GREEN}✅ Migrations complete.${NC}"
 
 echo -e "${BLUE}🚀 Starting NestJS application...${NC}"
 
-# Now, execute the main command provided to the container (e.g., "pnpm start").
+# Before executing, if no command is provided, default to production start
+if [ "$#" -eq 0 ]; then
+  echo "[ENTRYPOINT] No command provided, defaulting to pnpm start:prod"
+  set -- pnpm start:prod
+fi
 # 'exec "$@"' replaces the shell process with the given command,
 # ensuring it becomes the main process (PID 1) and receives signals correctly.
 exec "$@"

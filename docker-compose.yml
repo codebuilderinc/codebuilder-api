@@ -18,7 +18,7 @@ services:
     container_name: codebuilder-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6376:6379"
     networks:
       - codebuilder-net
 
@@ -52,6 +52,8 @@ services:
 
 volumes:
   postgres-data:
+    external: true
+    name: codebuilder-postgres-data
 
 
 networks:
