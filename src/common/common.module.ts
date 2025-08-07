@@ -4,10 +4,11 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from './configs/config.module';
 import { LogModule } from './log/log.module';
 import { TraceModule } from './trace/trace.module';
+import { RedisModule } from './redis/redis.module';
 
 @Global()
 @Module({
-    imports: [DatabaseModule, ConfigModule, LogModule, TraceModule],
-    exports: [DatabaseModule, ConfigModule, LogModule, TraceModule],
+    imports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule.forRoot()],
+    exports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule],
 })
 export class CommonModule {}
