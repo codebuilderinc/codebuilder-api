@@ -164,7 +164,6 @@ async function bootstrap(): Promise<void> {
     const port = Number.parseInt(String(portEnv), 10);
     console.log(`🛫 CodeBuilder API app taking off listening on http://localhost:${port}`);
 
-
     if (Number.isNaN(port)) {
         throw new Error(`PORT environment variable is not a valid number: "${portEnv}"`);
     }
