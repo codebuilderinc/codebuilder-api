@@ -102,6 +102,15 @@ jobs:
           # Use 'codebuilder' as the stack prefix
           docker compose -p codebuilder up -d --no-deps api
 
+      - name: '🔧 Ensure Postgres data volume exists'
+        run: |
+          if [ -z "$(docker volume ls -q -f name=codebuilder-postgres-data)" ]; then
+            echo "Volume 'codebuilder-postgres-data' not found. Creating it..."
+            docker volume create codebuilder-postgres-data
+          else
+            echo "Volume 'codebuilder-postgres-data' already exists. Skipping creation."
+          fi
+
       - name: '🗑 Prune Old Docker Images'
         if: always()
         run: docker image prune -af
