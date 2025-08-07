@@ -64,5 +64,5 @@ EXPOSE 4000
 # Run migrations then start
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
-# The default command for the entrypoint script
-CMD ["pnpm", "start"]
+# The default command for the entrypoint script: run production build
+CMD ["pnpm", "start:prod"]
