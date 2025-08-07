@@ -39,7 +39,7 @@ services:
       # Override application Redis servers config to use redis container
       REDIS_SERVERS: '{"AUTH":{"host":"redis","port":6379,"password":"","tls":false},"CACHE":{"host":"redis","port":6379,"password":"","tls":false}}'
     ports:
-      - "4000:4000"
+      - "4000:4001"
     depends_on:
       - db
       - redis
