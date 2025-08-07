@@ -48,3 +48,5 @@ echo -e "${BLUE}🚀 Starting NestJS application...${NC}"
 # 'exec "$@"' replaces the shell process with the given command,
 # ensuring it becomes the main process (PID 1) and receives signals correctly.
 exec "$@"
+
+echo -e "${RED}🚀 NestJS Application Process Exited...${NC}"
