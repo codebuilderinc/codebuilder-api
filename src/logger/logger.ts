@@ -1,52 +1,39 @@
-import Pino, { Logger } from 'pino';
-import { LoggerOptions, destination } from 'pino';
-import { trace, context } from '@opentelemetry/api';
-import { colorizerFactory, prettyFactory } from 'pino-pretty';
-const levelColorize = colorizerFactory(true);
+// Colored console logger matching the user's Next.js style
 
-export const loggerOptions: LoggerOptions = {
-    level: 'info',
-    formatters: {
-        level(label) {
-            return { level: label };
-        },
-        // Workaround for PinoInstrumentation (does not support latest version yet)
-        log(object) {
-            const span = trace.getSpan(context.active());
-            if (!span) return { ...object };
-            let spanId = '';
-            let traceId = '';
-            const spanContext = trace.getSpan(context.active())?.spanContext();
-            if (spanContext) {
-                ({ spanId, traceId } = spanContext);
-            }
-            return { ...object, spanId, traceId };
-        },
-    },
-    //prettifier: process.env.NODE_ENV === 'local' ? require('pino-pretty') : false,
-    transport: {
-        target: 'pino-pretty',
-        options: {
-            autoLogging: false,
-            //colorize: true,
-            customPrettifiers: {
-                // The argument for this function will be the same
-                // string that's at the start of the log-line by default:
-                /*  time: (timestamp) => `🕰 ${timestamp}`,
+/** ANSI color codes for console output */
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  dim: '\x1b[2m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m',
+  white: '\x1b[37m',
+  gray: '\x1b[90m',
+} as const;
 
-        // The argument for the level-prettifier may vary depending
-        // on if the levelKey option is used or not.
-        // By default this will be the same numerics as the Pino default:
-        level: (logLevel) => `LEVEL: ${levelColorize(logLevel)}`,
-
-        // other prettifiers can be used for the other keys if needed, for example
-        hostname: (hostname) => hostname, //colorGreen(hostname),
-        pid: (pid) => pid, ///colorRed(pid),
-        name: (name) => name, //colorBlue(name),
-        caller: (caller) => caller, //colorCyan(caller),*/
-            },
-        },
-    },
+export const logger = {
+  info: (message: string, ...args: any[]) => {
+    console.log(`${colors.blue}[INFO]${colors.reset} ${message}`, ...args);
+  },
+  warn: (message: string, ...args: any[]) => {
+    console.log(`${colors.yellow}[WARN]${colors.reset} ${message}`, ...args);
+  },
+  error: (message: string, ...args: any[]) => {
+    console.log(`${colors.red}[ERROR]${colors.reset} ${message}`, ...args);
+  },
+  success: (message: string, ...args: any[]) => {
+    console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`, ...args);
+  },
+  debug: (message: string, ...args: any[]) => {
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'local') {
+      console.log(`${colors.gray}[DEBUG]${colors.reset} ${message}`, ...args);
+    }
+  },
 };
 
-export const logger: Logger = Pino(loggerOptions, Pino.destination());
+export type AppLogger = typeof logger;
+export { colors };

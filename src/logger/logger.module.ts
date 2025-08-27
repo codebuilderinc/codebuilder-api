@@ -1,17 +1,26 @@
-import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
-import { logger } from './logger';
-import { Module, RequestMethod } from '@nestjs/common';
+import { Module, RequestMethod, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { requestLoggingMiddleware } from './middleware';
 
 @Module({
-    imports: [
-        PinoLoggerModule.forRoot({
-            pinoHttp: {
-                logger: logger,
-            },
-            exclude: [{ method: RequestMethod.ALL, path: 'health' }],
-        }),
-    ],
-    controllers: [],
-    providers: [],
+  imports: [],
+  controllers: [],
+  providers: [],
 })
-export class LoggerModule {}
+export class LoggerModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(requestLoggingMiddleware)
+      .exclude(
+        { path: 'health', method: RequestMethod.ALL },
+        { path: 'favicon.ico', method: RequestMethod.ALL },
+        { path: 'robots.txt', method: RequestMethod.ALL },
+        { path: 'apple-touch-icon.png', method: RequestMethod.ALL },
+        { path: 'apple-touch-icon-precomposed.png', method: RequestMethod.ALL },
+        { path: 'favicon-16x16.png', method: RequestMethod.ALL },
+        { path: 'favicon-32x32.png', method: RequestMethod.ALL },
+        { path: 'site.webmanifest', method: RequestMethod.ALL },
+        { path: 'sitemap.xml', method: RequestMethod.ALL }
+      )
+      .forRoutes('*');
+  }
+}
