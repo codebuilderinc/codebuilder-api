@@ -28,55 +28,55 @@ import { RedisModule } from './common/redis/redis.module';
 // import { TradeModule } from './trades/trade.module';
 
 const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
-    metrics: {
-        hostMetrics: true,
-        apiMetrics: {
-            enable: true,
-        },
+  metrics: {
+    hostMetrics: true,
+    apiMetrics: {
+      enable: true,
     },
+  },
 });
 
 @Module({
-    imports: [
-        // Setup NestJS open telemetry auto instrumentation. This requires the configuration
-        // to be passed in again for some features (e.g. metrics) to work correctly.
-        //OpenTelemetryModule.forRoot(openTelemetryConfig),
-        ConfigModule,
-        //ConfigModule.forRoot({ isGlobal: true, load: [config] }),
-        LoggerModule,
-        OpenTelemetryModuleConfig,
-        RedisModule.forRoot(),
-        PrismaModule.forRoot({
-            isGlobal: true,
-            prismaServiceOptions: {
-                middlewares: [
-                    // configure your prisma middleware
-                    loggingMiddleware({
-                        logger: new Logger('PrismaMiddleware'),
-                        logLevel: 'log',
-                    }),
-                ],
-            },
-        }),
+  imports: [
+    // Setup NestJS open telemetry auto instrumentation. This requires the configuration
+    // to be passed in again for some features (e.g. metrics) to work correctly.
+    //OpenTelemetryModule.forRoot(openTelemetryConfig),
+    ConfigModule,
+    //ConfigModule.forRoot({ isGlobal: true, load: [config] }),
+    LoggerModule,
+    OpenTelemetryModuleConfig,
+    RedisModule.forRoot(),
+    PrismaModule.forRoot({
+      isGlobal: true,
+      prismaServiceOptions: {
+        middlewares: [
+          // configure your prisma middleware
+          loggingMiddleware({
+            logger: new Logger('PrismaMiddleware'),
+            logLevel: 'log',
+          }),
+        ],
+      },
+    }),
 
-        // GraphQLModule.forRootAsync<ApolloDriverConfig>({
-        //     driver: ApolloDriver,
-        //     useClass: GqlConfigService,
-        // }),
+    // GraphQLModule.forRootAsync<ApolloDriverConfig>({
+    //     driver: ApolloDriver,
+    //     useClass: GqlConfigService,
+    // }),
 
-        AppRouterModule,
-        CloudflareKvModule,
-        CommonModule,
-        DatabaseModule,
-        //UserModule,
-        QueueModule,
-        EventsModule,
-        //RedisModule,
+    AppRouterModule,
+    CloudflareKvModule,
+    CommonModule,
+    DatabaseModule,
+    //UserModule,
+    QueueModule,
+    EventsModule,
+    //RedisModule,
 
-        WssModule,
-    ],
-    providers: [],
+    WssModule,
+  ],
+  providers: [],
 })
 export class AppModule {
-    public configure(consumer: MiddlewareConsumer): void | MiddlewareConsumer {}
+  public configure(consumer: MiddlewareConsumer): void | MiddlewareConsumer {}
 }

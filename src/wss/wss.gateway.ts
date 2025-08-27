@@ -21,7 +21,7 @@ import { LogService } from '../common/log/log.service';
   pingTimeout: 10000,
   path: '/ws',
 })*/
-@WebSocketGateway(8081, {
+@WebSocketGateway(8083, {
   pingInterval: 3000,
   pingTimeout: 10000,
   path: '/ws',
@@ -34,9 +34,9 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly logService: LogService) {}
 
-  private getClientQuery(client: io.Socket): Record<string, unknown> {
+  private getClientQuery(client: io.Socket): { [key: string]: string } {
     console.log('ASDASDASD');
-    return client.handshake.query;
+    return client.handshake.query as { [key: string]: string };
   }
 
   public broadcastAll(event_name: string, message: Record<string, unknown>) {
@@ -63,7 +63,7 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('send_message')
-  async listenForMessages(@MessageBody() content: string, @ConnectedSocket() socket: Socket) {
+  listenForMessages(@MessageBody() content: string, @ConnectedSocket() socket: Socket) {
     const { user_id } = this.getClientQuery(socket);
 
     this.server.sockets.emit('receive_message', {

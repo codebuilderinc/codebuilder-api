@@ -8,9 +8,9 @@ import { ConfigService } from './../common/configs/config.service';
 import { RedisModule } from '../common/redis/redis.module';
 
 @Module({
-    imports: [AuthModule, RedisModule.forRoot()],
-    controllers: [UserController],
-    providers: [UserResolver, UserService, PasswordService],
-    exports: [UserService],
+  imports: [AuthModule, RedisModule.forRoot()],
+  controllers: [UserController],
+  providers: [UserResolver, UserService, PasswordService],
+  exports: [UserService],
 })
 export class UserModule {}

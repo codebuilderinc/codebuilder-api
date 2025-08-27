@@ -5,10 +5,7 @@ interface IErrData {
   raise?: boolean;
 }
 
-export const authorization_failed = (
-  data?: IErrData,
-  is_http_exception = true,
-) => {
+export const authorization_failed = (data?: IErrData, is_http_exception = true) => {
   let err: HttpException | Error = null;
 
   if (is_http_exception) {
@@ -17,7 +14,7 @@ export const authorization_failed = (
         status: 400,
         error: data?.msg || 'AUTHORIZATION_FAILED',
       },
-      400,
+      400
     );
   } else {
     err = new Error(data?.msg || 'AUTHORIZATION_FAILED');
@@ -39,7 +36,7 @@ export const unauthorized = (data?: IErrData, is_http_exception = true) => {
         status: 401,
         error: data?.msg || 'UNAUTHORIZED',
       },
-      401,
+      401
     );
   } else {
     err = new Error(data?.msg || 'UNAUTHORIZED');
@@ -52,10 +49,7 @@ export const unauthorized = (data?: IErrData, is_http_exception = true) => {
   return err;
 };
 
-export const access_token_expired_signature = (
-  data?: IErrData,
-  is_http_exception = true,
-) => {
+export const access_token_expired_signature = (data?: IErrData, is_http_exception = true) => {
   let err: HttpException | Error = null;
 
   if (is_http_exception) {
@@ -64,7 +58,7 @@ export const access_token_expired_signature = (
         status: 403,
         error: data?.msg || 'ACCESS_TOKEN_EXPIRED',
       },
-      403,
+      403
     );
   } else {
     err = new Error(data?.msg || 'ACCESS_TOKEN_EXPIRED');
@@ -77,10 +71,7 @@ export const access_token_expired_signature = (
   return err;
 };
 
-export const refresh_token_expired_signature = (
-  data?: IErrData,
-  is_http_exception = true,
-) => {
+export const refresh_token_expired_signature = (data?: IErrData, is_http_exception = true) => {
   let err: HttpException | Error = null;
 
   if (is_http_exception) {
@@ -89,7 +80,7 @@ export const refresh_token_expired_signature = (
         status: 419,
         error: data?.msg || 'REFRESH_TOKEN_EXPIRED',
       },
-      419,
+      419
     );
   } else {
     err = new Error(data?.msg || 'REFRESH_TOKEN_EXPIRED');
@@ -111,7 +102,7 @@ export const access_denied = (data?: IErrData, is_http_exception = true) => {
         status: 403,
         error: data?.msg || 'ACCESS_DENIED',
       },
-      403,
+      403
     );
   } else {
     err = new Error(data?.msg || 'ACCESS_DENIED');
@@ -133,7 +124,7 @@ export const account_blocked = (data?: IErrData, is_http_exception = true) => {
         status: 423,
         error: data?.msg || 'ACCOUNT_BLOCKED',
       },
-      423,
+      423
     );
   } else {
     err = new Error(data?.msg || 'ACCOUNT_BLOCKED');
@@ -155,7 +146,7 @@ export const bad_request = (data?: IErrData, is_http_exception = true) => {
         status: 400,
         error: data?.msg || 'BAD_REQUEST',
       },
-      400,
+      400
     );
   } else {
     err = new Error(data?.msg || 'BAD_REQUEST');
@@ -177,7 +168,7 @@ export const not_found = (data?: IErrData, is_http_exception = true) => {
         status: 404,
         error: data?.msg || 'NOT_FOUND',
       },
-      404,
+      404
     );
   } else {
     err = new Error(data?.msg || 'NOT_FOUND');
@@ -190,10 +181,7 @@ export const not_found = (data?: IErrData, is_http_exception = true) => {
   return err;
 };
 
-export const internal_server_error = (
-  data?: IErrData,
-  is_http_exception = true,
-) => {
+export const internal_server_error = (data?: IErrData, is_http_exception = true) => {
   let err: HttpException | Error = null;
 
   if (is_http_exception) {
@@ -202,7 +190,7 @@ export const internal_server_error = (
         status: 500,
         error: data?.msg || 'INTERNAL_SERVER_ERROR',
       },
-      500,
+      500
     );
   } else {
     err = new Error(data?.msg || 'INTERNAL_SERVER_ERROR');
@@ -215,10 +203,7 @@ export const internal_server_error = (
   return err;
 };
 
-export const service_unavailable = (
-  data?: IErrData,
-  is_http_exception = true,
-) => {
+export const service_unavailable = (data?: IErrData, is_http_exception = true) => {
   let err: HttpException | Error = null;
 
   if (is_http_exception) {
@@ -227,7 +212,7 @@ export const service_unavailable = (
         status: 503,
         error: data?.msg || 'SERVICE_UNAVAILABLE',
       },
-      503,
+      503
     );
   } else {
     err = new Error(data?.msg || 'SERVICE_UNAVAILABLE');
@@ -249,7 +234,7 @@ export const cors_not_allowed = (data?: IErrData, is_http_exception = true) => {
         status: 400,
         error: data?.msg || 'CORS_NOT_ALLOWED',
       },
-      400,
+      400
     );
   } else {
     err = new Error(data?.msg || 'CORS_NOT_ALLOWED');

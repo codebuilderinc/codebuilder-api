@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common'
-import { TraceService } from './trace.service'
+import { Module } from '@nestjs/common';
+import { TraceService } from './trace.service';
 
 @Module({
   providers: [TraceService],

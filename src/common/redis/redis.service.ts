@@ -7,113 +7,115 @@ import { REDIS_EXPIRE_TIME_IN_SECONDS, REDIS_PUBLISHER_CLIENT, REDIS_SUBSCRIBER_
 import { ConfigService } from '../configs/config.service';
 
 export interface IRedisSubscribeMessage {
-    readonly message: string;
-    readonly channel: string;
+  readonly message: string;
+  readonly channel: string;
 }
 
 function capitalize(s: string) {
-    return s[0].toUpperCase() + s.slice(1);
+  return s[0].toUpperCase() + s.slice(1);
 }
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class RedisService /* implements OnModuleInit, OnModuleDestroy */ {
-    public prefix?: string;
-    public client?: Redis;
+  public prefix?: string;
+  public client?: Redis;
 
-    constructor(
-        @Inject(REDIS_SUBSCRIBER_CLIENT) private readonly subClient: Redis,
-        @Inject(REDIS_PUBLISHER_CLIENT) private readonly pubClient: Redis,
-        private readonly cfg: ConfigService
-    ) {}
+  constructor(
+    @Inject(REDIS_SUBSCRIBER_CLIENT) private readonly subClient: Redis,
+    @Inject(REDIS_PUBLISHER_CLIENT) private readonly pubClient: Redis,
+    private readonly cfg: ConfigService
+  ) {}
 
-    /* ------------ utility ------------- */
+  /* ------------ utility ------------- */
 
-    setPrefix(prefix: string) {
-        this.prefix = prefix;
+  setPrefix(prefix: string) {
+    this.prefix = prefix;
+  }
+
+  getClientLabel(msg: string) {
+    return this.prefix ? `[${this.prefix}] ${msg}` : msg;
+  }
+
+  /* ------------ pub/sub -------------- */
+
+  fromEvent<T = any>(eventName: string): Observable<T> {
+    this.subClient.subscribe(eventName);
+
+    return new Observable((observer: Observer<IRedisSubscribeMessage>) =>
+      this.subClient.on('message', (channel, message) => observer.next({ channel, message }))
+    ).pipe(
+      filter(({ channel }) => channel === eventName),
+      map(({ message }) => JSON.parse(message))
+    );
+  }
+
+  async publish(channel: string, value: unknown): Promise<number> {
+    return await this.pubClient.publish(channel, JSON.stringify(value));
+  }
+
+  /* ------------ KV helpers ----------- */
+
+  private async safe<T>(fn: () => Promise<T>): Promise<T | 0> {
+    try {
+      return await fn();
+    } catch (e) {
+      console.log('!! Redis error:', e);
+      return 0 as const;
     }
+  }
 
-    getClientLabel(msg: string) {
-        return this.prefix ? `[${this.prefix}] ${msg}` : msg;
-    }
+  ReadOne(key: string) {
+    return this.safe(() => this.client.get(key));
+  }
 
-    /* ------------ pub/sub -------------- */
+  Write(key: string, value: string, expiry?: number) {
+    return this.safe(() => (expiry ? this.client.setex(key, expiry, value) : this.client.set(key, value)));
+  }
 
-    fromEvent<T = any>(eventName: string): Observable<T> {
-        this.subClient.subscribe(eventName);
+  DeleteOne(key: string) {
+    return this.safe(() => this.client.expire(key, -1));
+  }
 
-        return new Observable((observer: Observer<IRedisSubscribeMessage>) => this.subClient.on('message', (channel, message) => observer.next({ channel, message }))).pipe(
-            filter(({ channel }) => channel === eventName),
-            map(({ message }) => JSON.parse(message))
-        );
-    }
+  /* ----- JSON-serialised helpers ----- */
 
-    async publish(channel: string, value: unknown): Promise<number> {
-        return await this.pubClient.publish(channel, JSON.stringify(value));
-    }
+  async set(key: RedisKey, value: unknown, exp = REDIS_EXPIRE_TIME_IN_SECONDS) {
+    await this.pubClient.set(key, JSON.stringify(value), 'EX', exp);
+  }
 
-    /* ------------ KV helpers ----------- */
+  async get<T = any>(key: RedisKey) {
+    const raw = await this.pubClient.get(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  }
 
-    private async safe<T>(fn: () => Promise<T>): Promise<T | 0> {
-        try {
-            return await fn();
-        } catch (e) {
-            console.log('!! Redis error:', e);
-            return 0 as const;
-        }
-    }
+  /* ---------- hash helpers ----------- */
 
-    ReadOne(key: string) {
-        return this.safe(() => this.client.get(key));
-    }
+  hset(key: RedisKey, field: string, value: string) {
+    return this.pubClient.hset(key, field, value);
+  }
 
-    Write(key: string, value: string, expiry?: number) {
-        return this.safe(() => (expiry ? this.client.setex(key, expiry, value) : this.client.set(key, value)));
-    }
+  hdel(key: RedisKey, ...fields: string[]) {
+    return this.pubClient.hdel(key, ...fields);
+  }
 
-    DeleteOne(key: string) {
-        return this.safe(() => this.client.expire(key, -1));
-    }
+  hget(key: RedisKey, field: string) {
+    return this.pubClient.hget(key, field);
+  }
 
-    /* ----- JSON-serialised helpers ----- */
+  hgetall(key: RedisKey) {
+    return this.pubClient.hgetall(key);
+  }
 
-    async set(key: RedisKey, value: unknown, exp = REDIS_EXPIRE_TIME_IN_SECONDS) {
-        await this.pubClient.set(key, JSON.stringify(value), 'EX', exp);
-    }
+  /* ---------- misc helpers ----------- */
 
-    async get<T = any>(key: RedisKey) {
-        const raw = await this.pubClient.get(key);
-        return raw ? (JSON.parse(raw) as T) : null;
-    }
+  del(key: RedisKey) {
+    return this.pubClient.del(key);
+  }
 
-    /* ---------- hash helpers ----------- */
+  mget(keys: RedisKey[]) {
+    return this.pubClient.mget(keys).then((arr) => arr.map((v) => JSON.parse(v || null)));
+  }
 
-    hset(key: RedisKey, field: string, value: string) {
-        return this.pubClient.hset(key, field, value);
-    }
-
-    hdel(key: RedisKey, ...fields: string[]) {
-        return this.pubClient.hdel(key, ...fields);
-    }
-
-    hget(key: RedisKey, field: string) {
-        return this.pubClient.hget(key, field);
-    }
-
-    hgetall(key: RedisKey) {
-        return this.pubClient.hgetall(key);
-    }
-
-    /* ---------- misc helpers ----------- */
-
-    del(key: RedisKey) {
-        return this.pubClient.del(key);
-    }
-
-    mget(keys: RedisKey[]) {
-        return this.pubClient.mget(keys).then((arr) => arr.map((v) => JSON.parse(v || null)));
-    }
-
-    mset(data: (string | number)[]) {
-        return this.pubClient.mset(data);
-    }
+  mset(data: (string | number)[]) {
+    return this.pubClient.mset(data);
+  }
 }

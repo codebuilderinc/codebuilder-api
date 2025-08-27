@@ -31,6 +31,6 @@ export function groupBy<T>(array: T[], key: string): { [key: string]: T[] } {
 
       return acc;
     },
-    {} as { [key: string]: T[] },
+    {} as { [key: string]: T[] }
   );
 }

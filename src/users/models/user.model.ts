@@ -4,45 +4,45 @@ import { BaseModel } from '../../common/models/base.model';
 import { Role } from '@prisma/client';
 
 registerEnumType(Role, {
-    name: 'Role',
-    description: 'User role',
+  name: 'Role',
+  description: 'User role',
 });
 
 @ObjectType()
 export class User extends BaseModel {
-    //@Field()
-    //@IsEmail()
-    //email: string;
+  //@Field()
+  //@IsEmail()
+  //email: string;
 
-    @Field(() => Role)
-    role: Role;
+  @Field(() => Role)
+  role: Role;
 
-    // @Field(() => [Position], { nullable: true })
-    // positions?: [Position] | null;
+  // @Field(() => [Position], { nullable: true })
+  // positions?: [Position] | null;
 
-    // @Field(() => [Swap], { nullable: true })
-    // swaps?: [Swap] | null;
+  // @Field(() => [Swap], { nullable: true })
+  // swaps?: [Swap] | null;
 
-    @HideField()
-    password: string;
+  @HideField()
+  password: string;
 }
 
 interface UserWalletsBase {
-    walletAddress: string;
-    userId: bigint;
-    networkId: string;
+  walletAddress: string;
+  userId: bigint;
+  networkId: string;
 }
 
 export interface GetUserByUsername {
-    id: bigint;
-    email: string;
-    image: string;
-    username: string;
-    description: string;
-    country: string;
-    profileImageUrl: string;
-    bannerImageUrl: string;
-    twitter: string;
-    wallets: UserWalletsBase[];
-    createdOn: Date;
+  id: bigint;
+  email: string;
+  image: string;
+  username: string;
+  description: string;
+  country: string;
+  profileImageUrl: string;
+  bannerImageUrl: string;
+  twitter: string;
+  wallets: UserWalletsBase[];
+  createdOn: Date;
 }

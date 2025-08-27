@@ -8,7 +8,7 @@ import { RedisModule } from './redis/redis.module';
 
 @Global()
 @Module({
-    imports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule.forRoot()],
-    exports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule],
+  imports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule.forRoot()],
+  exports: [DatabaseModule, ConfigModule, LogModule, TraceModule, RedisModule],
 })
 export class CommonModule {}

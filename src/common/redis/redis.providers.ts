@@ -14,48 +14,48 @@ import { RedisService } from './redis.service';
  * source changed.
  */
 function redisFactory(redis: RedisService, prefix: string, cfg: ConfigService): RedisService {
-    if (prefix) {
-        redis.setPrefix(prefix);
+  if (prefix) {
+    redis.setPrefix(prefix);
 
-        // 🚚  Pull the JSON string from .env via ConfigService and turn it into an object
-        const serversRaw = cfg.get('REDIS_SERVERS');
-        const servers = typeof serversRaw === 'string' ? JSON.parse(serversRaw) : serversRaw;
-        const server = servers[prefix];
+    // 🚚  Pull the JSON string from .env via ConfigService and turn it into an object
+    const serversRaw = cfg.get('REDIS_SERVERS');
+    const servers = typeof serversRaw === 'string' ? JSON.parse(serversRaw) : serversRaw;
+    const server = servers[prefix];
 
-        if (!server) {
-            throw new Error(`[REDIS] No server definition for prefix "${prefix}" in REDIS_SERVERS`);
-        }
-
-        console.log(`[REDIS] Connecting to ${server.host}:${server.port}`);
-
-        const redisOptions = {
-            keepAlive: 30000,
-            autoResubscribe: false,
-            lazyConnect: true, // Don't attempt to connect when initialising the client
-            showFriendlyErrorStack: true, // See https://github.com/luin/ioredis#error-handling
-            maxRetriesPerRequest: 10, // Prevent infinite retries
-            ...(server.password && server.password.length > 0 && { password: server.password }),
-            ...(server.tls && {
-                tls: {
-                    servername: server.host,
-                },
-            }),
-        } as const;
-
-        console.log(server.port, server.host, redisOptions);
-        redis.client = new IORedis(server.port, server.host, redisOptions);
-
-        redis.client.on('connect', () => {
-            console.log(`[REDIS] ✅ Redis (${redis.prefix}) connected`);
-        });
-        redis.client.on('close', () => {
-            console.log(`[REDIS] ❌ ${redis.prefix} redis disconnect`);
-        });
-        redis.client.on('error', (err) => {
-            console.log(`[REDIS] ❌ Redis (${redis.prefix}) error: ${err}`);
-        });
+    if (!server) {
+      throw new Error(`[REDIS] No server definition for prefix "${prefix}" in REDIS_SERVERS`);
     }
-    return redis;
+
+    console.log(`[REDIS] Connecting to ${server.host}:${server.port}`);
+
+    const redisOptions = {
+      keepAlive: 30000,
+      autoResubscribe: false,
+      lazyConnect: true, // Don't attempt to connect when initialising the client
+      showFriendlyErrorStack: true, // See https://github.com/luin/ioredis#error-handling
+      maxRetriesPerRequest: 10, // Prevent infinite retries
+      ...(server.password && server.password.length > 0 && { password: server.password }),
+      ...(server.tls && {
+        tls: {
+          servername: server.host,
+        },
+      }),
+    } as const;
+
+    console.log(server.port, server.host, redisOptions);
+    redis.client = new IORedis(server.port, server.host, redisOptions);
+
+    redis.client.on('connect', () => {
+      console.log(`[REDIS] ✅ Redis (${redis.prefix}) connected`);
+    });
+    redis.client.on('close', () => {
+      console.log(`[REDIS] ❌ ${redis.prefix} redis disconnect`);
+    });
+    redis.client.on('error', (err) => {
+      console.log(`[REDIS] ❌ Redis (${redis.prefix}) error: ${err}`);
+    });
+  }
+  return redis;
 }
 
 /*
@@ -96,62 +96,62 @@ for (var key in redisServers) {
  * `RedisService<Prefix>`.
  */
 function createRedisProvider(prefix: string): Provider<RedisService> {
-    return {
-        provide: `RedisService${prefix}`,
-        // ⬇️ Inject both the base RedisService *and* ConfigService so the factory
-        //    can look up host/port/password.
-        useFactory: (redis: RedisService, cfg: ConfigService) => redisFactory(redis, prefix, cfg),
-        inject: [RedisService, ConfigService],
-    };
+  return {
+    provide: `RedisService${prefix}`,
+    // ⬇️ Inject both the base RedisService *and* ConfigService so the factory
+    //    can look up host/port/password.
+    useFactory: (redis: RedisService, cfg: ConfigService) => redisFactory(redis, prefix, cfg),
+    inject: [RedisService, ConfigService],
+  };
 }
 
 /**
  * Generates providers for *all* prefixes captured by the @RedisServer decorator.
  */
 export function createRedisProviders(): Array<Provider<RedisService>> {
-    return prefixesForRedisClients.map((prefix) => createRedisProvider(prefix));
+  return prefixesForRedisClients.map((prefix) => createRedisProvider(prefix));
 }
 
 /* --------------------------------------------------------------------------
  * Core pub/sub clients (unchanged)
  * --------------------------------------------------------------------------*/
 export const redisProviders: Provider[] = [
-    {
-        provide: REDIS_SUBSCRIBER_CLIENT,
-        useFactory: (cfg: ConfigService): Redis => {
-            const host = cfg.get('QUEUE_REDIS_HOST');
-            const port = cfg.get('QUEUE_REDIS_PORT');
-            const password = cfg.get('QUEUE_REDIS_PASSWORD');
-            const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
-            const options: any = {
-                host,
-                port,
-                ...(password ? { password } : {}),
-                ...(useTls ? { tls: { servername: host } } : {}),
-            };
-            return new IORedis(options);
-        },
-        inject: [ConfigService],
+  {
+    provide: REDIS_SUBSCRIBER_CLIENT,
+    useFactory: (cfg: ConfigService): Redis => {
+      const host = cfg.get('QUEUE_REDIS_HOST');
+      const port = cfg.get('QUEUE_REDIS_PORT');
+      const password = cfg.get('QUEUE_REDIS_PASSWORD');
+      const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
+      const options: any = {
+        host,
+        port,
+        ...(password ? { password } : {}),
+        ...(useTls ? { tls: { servername: host } } : {}),
+      };
+      return new IORedis(options);
     },
-    {
-        provide: REDIS_PUBLISHER_CLIENT,
-        useFactory: (cfg: ConfigService): Redis => {
-            const host = cfg.get('QUEUE_REDIS_HOST');
-            const port = cfg.get('QUEUE_REDIS_PORT');
-            const password = cfg.get('QUEUE_REDIS_PASSWORD');
-            const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
-            const options: any = {
-                host,
-                port,
-                ...(password ? { password } : {}),
-                ...(useTls ? { tls: { servername: host } } : {}),
-            };
-            return new IORedis(options);
-        },
-        inject: [ConfigService],
+    inject: [ConfigService],
+  },
+  {
+    provide: REDIS_PUBLISHER_CLIENT,
+    useFactory: (cfg: ConfigService): Redis => {
+      const host = cfg.get('QUEUE_REDIS_HOST');
+      const port = cfg.get('QUEUE_REDIS_PORT');
+      const password = cfg.get('QUEUE_REDIS_PASSWORD');
+      const useTls = cfg.get('QUEUE_REDIS_USE_TLS');
+      const options: any = {
+        host,
+        port,
+        ...(password ? { password } : {}),
+        ...(useTls ? { tls: { servername: host } } : {}),
+      };
+      return new IORedis(options);
     },
-    // Prefix-based providers are appended at module initialisation time:
-    // ...createRedisProviders(),
+    inject: [ConfigService],
+  },
+  // Prefix-based providers are appended at module initialisation time:
+  // ...createRedisProviders(),
 ];
 
 /* For visibility while booting */

@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiResponse } from 'src/common/models/api-response.model';
@@ -15,12 +10,9 @@ import { PaginationQuery } from './pagination-query.model';
 export class PaginationInterceptor implements NestInterceptor {
   constructor(private readonly traceService: TraceService) {}
 
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<ApiResponse | PaginatedResponse> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse | PaginatedResponse> {
     const span = this.traceService.startSpanRaw(
-      'Interceptor->Controller->PaginationInterceptor.intercept (pre-controller)',
+      'Interceptor->Controller->PaginationInterceptor.intercept (pre-controller)'
     );
     const request = context.switchToHttp().getRequest();
 
@@ -41,7 +33,7 @@ export class PaginationInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((response) => {
         const span = this.traceService.startSpanRaw(
-          'Interceptor->Controller->PaginationInterceptor.intercept (post-request)',
+          'Interceptor->Controller->PaginationInterceptor.intercept (post-request)'
         );
 
         if (!Array.isArray(response)) {
@@ -50,10 +42,7 @@ export class PaginationInterceptor implements NestInterceptor {
         }
 
         // Here we return pageSize because we added an extra earlier
-        const resultsLength =
-          response.length > request.query.pageSize + 1
-            ? response.length
-            : request.query.pageSize;
+        const resultsLength = response.length > request.query.pageSize + 1 ? response.length : request.query.pageSize;
         const results = (response || []).slice(0, resultsLength);
 
         span.end();
@@ -61,7 +50,7 @@ export class PaginationInterceptor implements NestInterceptor {
           results,
           hasNextPage: response.length > request.query.pageSize,
         };
-      }),
+      })
     );
   }
 }
