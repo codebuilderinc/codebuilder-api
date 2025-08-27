@@ -10,10 +10,8 @@ jobs:
     name: '🐳 Build & Deploy'
 
     steps:
-
       - name: '🔍 Checkout Code'
         uses: actions/checkout@v4
-
 
       - name: '🔒 Verify Secrets Exist'
         run: |
@@ -38,8 +36,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
           echo "" >> .env
-
-
 
       # =======================================================
       # 🐳 Docker Operations

@@ -6,21 +6,21 @@ import { ClassDeclaration } from 'typescript';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class TraceService extends NestTraceService {
-    constructor(@Inject(INQUIRER) private readonly inquirer: ClassDeclaration) {
-        super();
+  constructor(@Inject(INQUIRER) private readonly inquirer: ClassDeclaration) {
+    super();
+  }
+
+  startSpan(method: string, context?: string): Span {
+    let name = `Provider->${this.inquirer?.constructor.name}.${method}`;
+
+    if (context) {
+      name += ` (${context})`;
     }
 
-    startSpan(method: string, context?: string): Span {
-        let name = `Provider->${this.inquirer?.constructor.name}.${method}`;
+    return super.startSpan(name);
+  }
 
-        if (context) {
-            name += ` (${context})`;
-        }
-
-        return super.startSpan(name);
-    }
-
-    startSpanRaw(name: string): Span {
-        return super.startSpan(name);
-    }
+  startSpanRaw(name: string): Span {
+    return super.startSpan(name);
+  }
 }

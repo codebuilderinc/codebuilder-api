@@ -1,5 +1,4 @@
 services:
-
   db:
     image: postgres:15-alpine
     container_name: codebuilder-postgres-db
@@ -11,17 +10,16 @@ services:
     networks:
       - codebuilder-net
     ports:
-      - "5434:5432"
+      - '5434:5432'
 
   redis:
     image: redis:7-alpine
     container_name: codebuilder-redis
     restart: unless-stopped
     ports:
-      - "6376:6379"
+      - '6376:6379'
     networks:
       - codebuilder-net
-
 
   api:
     build:
@@ -39,22 +37,19 @@ services:
       # Override application Redis servers config to use redis container
       REDIS_SERVERS: '{"AUTH":{"host":"redis","port":6379,"password":"","tls":false},"CACHE":{"host":"redis","port":6379,"password":"","tls":false}}'
     ports:
-      - "4000:4001"
+      - '4000:4001'
     depends_on:
       - db
       - redis
     networks:
       - codebuilder-net
     # Override default command to run the compiled production bundle
-    command: ["pnpm", "start:prod"]
-
-
+    command: ['pnpm', 'start:prod']
 
 volumes:
   postgres-data:
     external: true
     name: codebuilder-postgres-data
-
 
 networks:
   codebuilder-net:

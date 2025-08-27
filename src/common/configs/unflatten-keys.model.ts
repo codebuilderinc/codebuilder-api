@@ -1,4 +1,4 @@
 export interface UnflattenApplicationConfig {
-    name: string;
-    children: string[];
+  name: string;
+  children: string[];
 }

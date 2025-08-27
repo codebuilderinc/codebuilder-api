@@ -104,9 +104,7 @@ export class RefreshTokenUpdateDTO extends RefreshTokenDTO {
  */
 
 function ValidUserName() {
-  const validUsernameRegex = new RegExp(
-    /^(?=.{3,25}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/,
-  );
+  const validUsernameRegex = new RegExp(/^(?=.{3,25}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/);
 
   return applyDecorators(
     IsNotEmpty(),
@@ -114,7 +112,7 @@ function ValidUserName() {
     Length(3, 25),
     Matches(validUsernameRegex, {
       message: USER_APIs_ERROR.USER_INVALID_USERNAME,
-    }),
+    })
   );
 }
 

@@ -10,34 +10,34 @@ import { loadConfig } from './config.helper';
  */
 @Injectable()
 export class ConfigService {
-    private readonly applicationConfig: ApplicationConfig;
+  private readonly applicationConfig: ApplicationConfig;
 
-    constructor() {
-        this.applicationConfig = loadConfig();
+  constructor() {
+    this.applicationConfig = loadConfig();
 
-        // We freeze the config to prevent modification
-        Object.freeze(this.applicationConfig);
-    }
+    // We freeze the config to prevent modification
+    Object.freeze(this.applicationConfig);
+  }
 
-    /**
-     * Returns the value of a specified environment config
-     *
-     * @template T
-     * @param {T} configName
-     * @returns {ApplicationConfig[T]}
-     * @memberof ConfigService
-     */
-    get<T extends keyof ApplicationConfig>(configName: T): ApplicationConfig[T] {
-        return this.applicationConfig[configName];
-    }
+  /**
+   * Returns the value of a specified environment config
+   *
+   * @template T
+   * @param {T} configName
+   * @returns {ApplicationConfig[T]}
+   * @memberof ConfigService
+   */
+  get<T extends keyof ApplicationConfig>(configName: T): ApplicationConfig[T] {
+    return this.applicationConfig[configName];
+  }
 
-    /**
-     * Returns entire environment config
-     *
-     * @returns {ApplicationConfig}
-     * @memberof ConfigService
-     */
-    getConfigs(): ApplicationConfig {
-        return this.applicationConfig;
-    }
+  /**
+   * Returns entire environment config
+   *
+   * @returns {ApplicationConfig}
+   * @memberof ConfigService
+   */
+  getConfigs(): ApplicationConfig {
+    return this.applicationConfig;
+  }
 }

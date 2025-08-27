@@ -5,7 +5,7 @@ const IS_TYPE = 'isType';
 
 export function IsType(
   types: Array<'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function'>,
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ): PropertyDecorator {
   return ValidateBy(
     {
@@ -17,6 +17,6 @@ export function IsType(
         },
       },
     },
-    validationOptions,
+    validationOptions
   );
 }

@@ -1,4 +1,10 @@
-import { registerDecorator, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments, ValidationOptions } from 'class-validator';
+import {
+  registerDecorator,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+  ValidationOptions,
+} from 'class-validator';
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from './../database/database.service';
@@ -9,13 +15,18 @@ import { DatabaseService } from './../database/database.service';
 export class IsUniqueConstraint implements ValidatorConstraintInterface {
   constructor(
     private readonly databaseService: DatabaseService,
-    private prisma: PrismaService,
+    private prisma: PrismaService
   ) {}
 
   async validate(value: string, args: ValidationArguments) {
     const [entity, column] = args.constraints;
 
-    let result = await this.prisma.$queryRawUnsafe(`SELECT * FROM $1 WHERE $2 = $3 WHERE LIMIT 1`, entity, column, value);
+    let result = await this.prisma.$queryRawUnsafe(
+      `SELECT * FROM $1 WHERE $2 = $3 WHERE LIMIT 1`,
+      entity,
+      column,
+      value
+    );
 
     if (result) {
       return false;

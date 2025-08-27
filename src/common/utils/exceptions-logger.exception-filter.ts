@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { LogService } from './../log/log.service';
@@ -13,7 +7,7 @@ import { LogService } from './../log/log.service';
 export class ExceptionsLoggerFilter implements ExceptionFilter {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
-    private readonly logService: LogService,
+    private readonly logService: LogService
   ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {

@@ -6,32 +6,32 @@ import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UserService {
-    constructor(
-        private prisma: PrismaService,
-        private passwordService: PasswordService
-    ) {}
+  constructor(
+    private prisma: PrismaService,
+    private passwordService: PasswordService
+  ) {}
 
-    updateUser(userId: number, newUserData: UpdateUserInput) {
-        return this.prisma.user.update({
-            data: newUserData,
-            where: {
-                id: userId,
-            },
-        });
+  updateUser(userId: number, newUserData: UpdateUserInput) {
+    return this.prisma.user.update({
+      data: newUserData,
+      where: {
+        id: userId,
+      },
+    });
+  }
+
+  async changePassword(userId: number, userPassword: string, changePassword: ChangePasswordInput) {
+    const passwordValid = await this.passwordService.validatePassword(changePassword.oldPassword, userPassword);
+
+    if (!passwordValid) {
+      throw new BadRequestException('Invalid password');
     }
 
-    async changePassword(userId: number, userPassword: string, changePassword: ChangePasswordInput) {
-        const passwordValid = await this.passwordService.validatePassword(changePassword.oldPassword, userPassword);
+    const hashedPassword = await this.passwordService.hashPassword(changePassword.newPassword);
 
-        if (!passwordValid) {
-            throw new BadRequestException('Invalid password');
-        }
-
-        const hashedPassword = await this.passwordService.hashPassword(changePassword.newPassword);
-
-        return this.prisma.user.update({
-            data: {},
-            where: { id: userId },
-        });
-    }
+    return this.prisma.user.update({
+      data: {},
+      where: { id: userId },
+    });
+  }
 }

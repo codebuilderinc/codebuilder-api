@@ -15,25 +15,25 @@ import { cors_options_delegate } from '../cors.options';
 //const jwt_settings = config.get<IJwtSettings>('JWT_SETTINGS');
 
 export class CustomRedisIoAdapter extends IoAdapter {
-    constructor(
-        app: INestApplication,
-        private readonly sub_client: Redis,
-        private readonly pub_client: Redis
-    ) {
-        super(app);
-    }
+  constructor(
+    app: INestApplication,
+    private readonly sub_client: Redis,
+    private readonly pub_client: Redis
+  ) {
+    super(app);
+  }
 
-    public createIOServer(port: number, options?: ServerOptions): Server {
-        //console.log('wut the fuck');
-        const server = super.createIOServer(port, {
-            ...options,
-            cors: cors_options_delegate,
-            allowEIO3: true,
-        });
+  public createIOServer(port: number, options?: ServerOptions): Server {
+    //console.log('wut the fuck');
+    const server = super.createIOServer(port, {
+      ...options,
+      cors: cors_options_delegate,
+      allowEIO3: true,
+    });
 
-        server.adapter(createAdapter(this.pub_client, this.sub_client));
-        //console.log('hasdhhdwuhu');
+    server.adapter(createAdapter(this.pub_client, this.sub_client));
+    //console.log('hasdhhdwuhu');
 
-        return server;
-    }
+    return server;
+  }
 }

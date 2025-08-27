@@ -9,6 +9,5 @@ export enum OrderDirection {
 
 registerEnumType(OrderDirection, {
   name: 'OrderDirection',
-  description:
-    'Possible directions in which to order a list of items when provided an `orderBy` argument.',
+  description: 'Possible directions in which to order a list of items when provided an `orderBy` argument.',
 });

@@ -11,16 +11,16 @@ import { UpdateUserInput } from './dto/update-user.input';
 @Resolver(() => User)
 @UseGuards(GqlAuthGuard)
 export class UserResolver {
-    constructor(
-        private userService: UserService,
-        private prisma: PrismaService
-    ) {}
+  constructor(
+    private userService: UserService,
+    private prisma: PrismaService
+  ) {}
 
-    @Query(() => User)
-    me(@UserEntity() user: User): User {
-        return user;
-    }
-    /*
+  @Query(() => User)
+  me(@UserEntity() user: User): User {
+    return user;
+  }
+  /*
   @UseGuards(GqlAuthGuard)
   @Mutation(() => User)
   async updateUser(
