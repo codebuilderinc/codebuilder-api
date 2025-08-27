@@ -3,6 +3,9 @@ import { JobService } from './job.service';
 import { JobController } from './job.controller';
 //import { JobResolver } from './job.resolver';
 import { CommonModule } from '../common/common.module';
+import { Web3CareerService } from './web3career.service';
+import { RedditService } from './reddit.service';
+import { NotificationsService } from './notifications.service';
 
 /**
  * Job Module
@@ -18,11 +21,11 @@ import { CommonModule } from '../common/common.module';
  * job tags, metadata, and company associations.
  */
 @Module({
-    imports: [
-        CommonModule, // Provides database, authentication, and other shared services
-    ],
-    controllers: [JobController], // REST API endpoints
-    providers: [JobService], // Business logic and GraphQL resolvers //JobResolver
-    exports: [JobService], // Allow other modules to use JobService
+  imports: [
+    CommonModule, // Provides database, authentication, and other shared services
+  ],
+  controllers: [JobController], // REST API endpoints
+  providers: [JobService, Web3CareerService, RedditService, NotificationsService], // Business logic and GraphQL resolvers //JobResolver
+  exports: [JobService, Web3CareerService, RedditService, NotificationsService], // Allow other modules to use these services
 })
 export class JobModule {}

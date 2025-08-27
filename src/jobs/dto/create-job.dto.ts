@@ -1,5 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsArray, IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl, Length, MinLength, ValidateNested, IsDateString, IsJSON } from 'class-validator';
+import {
+  IsInt,
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+  MinLength,
+  ValidateNested,
+  IsDateString,
+  IsJSON,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { InputType, Field as GraphQLField } from '@nestjs/graphql';
 
@@ -8,21 +22,21 @@ import { InputType, Field as GraphQLField } from '@nestjs/graphql';
  * Used to store additional job information not covered by main fields
  */
 export class JobMetadataDto {
-    @ApiProperty({
-        description: 'Metadata key name',
-        example: 'salary_range',
-    })
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @ApiProperty({
+    description: 'Metadata key name',
+    example: 'salary_range',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @ApiProperty({
-        description: 'Metadata value',
-        example: '$80,000 - $120,000',
-    })
-    @IsString()
-    @IsNotEmpty()
-    value: string;
+  @ApiProperty({
+    description: 'Metadata value',
+    example: '$80,000 - $120,000',
+  })
+  @IsString()
+  @IsNotEmpty()
+  value: string;
 }
 
 /**
@@ -30,39 +44,39 @@ export class JobMetadataDto {
  * Tracks where the job listing came from and stores original data
  */
 export class JobSourceDto {
-    @ApiProperty({
-        description: 'Source system name',
-        example: 'reddit',
-    })
-    @IsString()
-    @IsNotEmpty()
-    source: string;
+  @ApiProperty({
+    description: 'Source system name',
+    example: 'reddit',
+  })
+  @IsString()
+  @IsNotEmpty()
+  source: string;
 
-    @ApiProperty({
-        description: 'External ID from source system',
-        example: 'reddit_post_123',
-        required: false,
-    })
-    @IsOptional()
-    @IsString()
-    externalId?: string;
+  @ApiProperty({
+    description: 'External ID from source system',
+    example: 'reddit_post_123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  externalId?: string;
 
-    @ApiProperty({
-        description: 'Original URL from source system',
-        example: 'https://reddit.com/r/jobs/post/123',
-        required: false,
-    })
-    @IsOptional()
-    @IsUrl()
-    rawUrl?: string;
+  @ApiProperty({
+    description: 'Original URL from source system',
+    example: 'https://reddit.com/r/jobs/post/123',
+    required: false,
+  })
+  @IsOptional()
+  @IsUrl()
+  rawUrl?: string;
 
-    @ApiProperty({
-        description: 'Raw source data as JSON',
-        example: '{"upvotes": 45, "comments": 12}',
-        required: false,
-    })
-    @IsOptional()
-    data?: any;
+  @ApiProperty({
+    description: 'Raw source data as JSON',
+    example: '{"upvotes": 45, "comments": 12}',
+    required: false,
+  })
+  @IsOptional()
+  data?: any;
 }
 
 /**
@@ -84,133 +98,133 @@ export class JobSourceDto {
  */
 @InputType()
 export class CreateJobDto {
-    @ApiProperty({
-        description: 'Job title',
-        example: 'Senior Software Engineer',
-        minLength: 1,
-        maxLength: 255,
-    })
-    @GraphQLField()
-    @IsString()
-    @IsNotEmpty()
-    @Length(1, 255)
-    title: string;
+  @ApiProperty({
+    description: 'Job title',
+    example: 'Senior Software Engineer',
+    minLength: 1,
+    maxLength: 255,
+  })
+  @GraphQLField()
+  @IsString()
+  @IsNotEmpty()
+  @Length(1, 255)
+  title: string;
 
-    @ApiProperty({
-        description: 'Company ID (existing company)',
-        example: 1,
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsInt()
-    companyId?: number;
+  @ApiProperty({
+    description: 'Company ID (existing company)',
+    example: 1,
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsInt()
+  companyId?: number;
 
-    @ApiProperty({
-        description: 'Company name (will create if not exists)',
-        example: 'Tech Corp Inc',
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsString()
-    @Length(1, 255)
-    companyName?: string;
+  @ApiProperty({
+    description: 'Company name (will create if not exists)',
+    example: 'Tech Corp Inc',
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  companyName?: string;
 
-    @ApiProperty({
-        description: 'Job post author',
-        example: 'john_doe',
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsString()
-    @Length(1, 255)
-    author?: string;
+  @ApiProperty({
+    description: 'Job post author',
+    example: 'john_doe',
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  author?: string;
 
-    @ApiProperty({
-        description: 'Job location',
-        example: 'San Francisco, CA',
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsString()
-    @Length(1, 255)
-    location?: string;
+  @ApiProperty({
+    description: 'Job location',
+    example: 'San Francisco, CA',
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  location?: string;
 
-    @ApiProperty({
-        description: 'Unique job URL',
-        example: 'https://company.com/jobs/senior-engineer',
-    })
-    @GraphQLField()
-    @IsUrl()
-    @IsNotEmpty()
-    url: string;
+  @ApiProperty({
+    description: 'Unique job URL',
+    example: 'https://company.com/jobs/senior-engineer',
+  })
+  @GraphQLField()
+  @IsUrl()
+  @IsNotEmpty()
+  url: string;
 
-    @ApiProperty({
-        description: 'When the job was originally posted',
-        example: '2024-01-15T10:30:00Z',
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsDateString()
-    postedAt?: string;
+  @ApiProperty({
+    description: 'When the job was originally posted',
+    example: '2024-01-15T10:30:00Z',
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsDateString()
+  postedAt?: string;
 
-    @ApiProperty({
-        description: 'Job description',
-        example: 'We are looking for a skilled software engineer...',
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsString()
-    description?: string;
+  @ApiProperty({
+    description: 'Job description',
+    example: 'We are looking for a skilled software engineer...',
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsString()
+  description?: string;
 
-    @ApiProperty({
-        description: 'Is this a remote position?',
-        example: true,
-        required: false,
-    })
-    @GraphQLField({ nullable: true })
-    @IsOptional()
-    @IsBoolean()
-    isRemote?: boolean;
+  @ApiProperty({
+    description: 'Is this a remote position?',
+    example: true,
+    required: false,
+  })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  isRemote?: boolean;
 
-    @ApiProperty({
-        description: 'Job tags/skills',
-        example: ['TypeScript', 'Node.js', 'React'],
-        required: false,
-        type: [String],
-    })
-    @GraphQLField(() => [String], { nullable: true })
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    tags?: string[];
+  @ApiProperty({
+    description: 'Job tags/skills',
+    example: ['TypeScript', 'Node.js', 'React'],
+    required: false,
+    type: [String],
+  })
+  @GraphQLField(() => [String], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
 
-    @ApiProperty({
-        description: 'Additional job metadata',
-        required: false,
-        type: [JobMetadataDto],
-    })
-    @GraphQLField(() => [JobMetadataDto], { nullable: true })
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => JobMetadataDto)
-    metadata?: JobMetadataDto[];
+  @ApiProperty({
+    description: 'Additional job metadata',
+    required: false,
+    type: [JobMetadataDto],
+  })
+  @GraphQLField(() => [JobMetadataDto], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => JobMetadataDto)
+  metadata?: JobMetadataDto[];
 
-    @ApiProperty({
-        description: 'Job source information',
-        required: false,
-        type: [JobSourceDto],
-    })
-    @GraphQLField(() => [JobSourceDto], { nullable: true })
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => JobSourceDto)
-    sources?: JobSourceDto[];
+  @ApiProperty({
+    description: 'Job source information',
+    required: false,
+    type: [JobSourceDto],
+  })
+  @GraphQLField(() => [JobSourceDto], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => JobSourceDto)
+  sources?: JobSourceDto[];
 }

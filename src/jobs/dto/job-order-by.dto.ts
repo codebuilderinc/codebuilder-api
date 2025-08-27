@@ -6,14 +6,14 @@ import { InputType, Field as GraphQLField, registerEnumType } from '@nestjs/grap
  * Sort order enum for job queries
  */
 export enum SortOrder {
-    ASC = 'asc',
-    DESC = 'desc',
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 // Register enum for GraphQL
 registerEnumType(SortOrder, {
-    name: 'SortOrder',
-    description: 'Sort order for queries',
+  name: 'SortOrder',
+  description: 'Sort order for queries',
 });
 
 /**
@@ -31,53 +31,53 @@ registerEnumType(SortOrder, {
  */
 @InputType()
 export class JobOrderByDto {
-    @ApiProperty({
-        description: 'Sort by creation date',
-        enum: SortOrder,
-        required: false,
-    })
-    @GraphQLField(() => SortOrder, { nullable: true })
-    @IsOptional()
-    @IsEnum(SortOrder)
-    createdAt?: SortOrder;
+  @ApiProperty({
+    description: 'Sort by creation date',
+    enum: SortOrder,
+    required: false,
+  })
+  @GraphQLField(() => SortOrder, { nullable: true })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  createdAt?: SortOrder;
 
-    @ApiProperty({
-        description: 'Sort by last update date',
-        enum: SortOrder,
-        required: false,
-    })
-    @GraphQLField(() => SortOrder, { nullable: true })
-    @IsOptional()
-    @IsEnum(SortOrder)
-    updatedAt?: SortOrder;
+  @ApiProperty({
+    description: 'Sort by last update date',
+    enum: SortOrder,
+    required: false,
+  })
+  @GraphQLField(() => SortOrder, { nullable: true })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  updatedAt?: SortOrder;
 
-    @ApiProperty({
-        description: 'Sort by original posting date',
-        enum: SortOrder,
-        required: false,
-    })
-    @GraphQLField(() => SortOrder, { nullable: true })
-    @IsOptional()
-    @IsEnum(SortOrder)
-    postedAt?: SortOrder;
+  @ApiProperty({
+    description: 'Sort by original posting date',
+    enum: SortOrder,
+    required: false,
+  })
+  @GraphQLField(() => SortOrder, { nullable: true })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  postedAt?: SortOrder;
 
-    @ApiProperty({
-        description: 'Sort by job title',
-        enum: SortOrder,
-        required: false,
-    })
-    @GraphQLField(() => SortOrder, { nullable: true })
-    @IsOptional()
-    @IsEnum(SortOrder)
-    title?: SortOrder;
+  @ApiProperty({
+    description: 'Sort by job title',
+    enum: SortOrder,
+    required: false,
+  })
+  @GraphQLField(() => SortOrder, { nullable: true })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  title?: SortOrder;
 
-    @ApiProperty({
-        description: 'Sort by company name',
-        enum: SortOrder,
-        required: false,
-    })
-    @GraphQLField(() => SortOrder, { nullable: true })
-    @IsOptional()
-    @IsEnum(SortOrder)
-    company?: SortOrder;
+  @ApiProperty({
+    description: 'Sort by company name',
+    enum: SortOrder,
+    required: false,
+  })
+  @GraphQLField(() => SortOrder, { nullable: true })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  company?: SortOrder;
 }

@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { hash, compare } from 'bcrypt';
-import { SecurityConfig } from './../configs/config.interface';
 
 @Injectable()
 export class PasswordService {
-    get bcryptSaltRounds(): string | number {
-        const securityConfig = this.configService.get<SecurityConfig>('security');
-        const saltOrRounds = securityConfig.bcryptSaltOrRound;
+  get bcryptSaltRounds(): string | number {
+    return 10; // Default salt rounds
+  }
 
-        return Number.isInteger(Number(saltOrRounds)) ? Number(saltOrRounds) : saltOrRounds;
-    }
+  constructor() {}
 
-    constructor(private configService: ConfigService) {}
+  validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+    return compare(password, hashedPassword);
+  }
 
-    validatePassword(password: string, hashedPassword: string): Promise<boolean> {
-        return compare(password, hashedPassword);
-    }
-
-    hashPassword(password: string): Promise<string> {
-        return hash(password, this.bcryptSaltRounds);
-    }
+  hashPassword(password: string): Promise<string> {
+    return hash(password, this.bcryptSaltRounds);
+  }
 }

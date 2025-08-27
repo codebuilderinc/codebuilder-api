@@ -1,9 +1,9 @@
 export interface JwtPayload extends JwtUserInfo {
-    accessToken: string;
-    refreshToken: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface JwtUserInfo {
-    userId: number;
-    username: string;
+  userId: number;
+  username: string;
 }

@@ -9,35 +9,35 @@ import { User } from './../../users/models/user.model';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-    constructor(private readonly auth: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-    @Mutation(() => Auth)
-    async signup(@Args('data') data: SignupInput) {
-        data.email = data.email.toLowerCase();
-        const { accessToken, refreshToken } = await this.auth.createUser(data);
-        return {
-            accessToken,
-            refreshToken,
-        };
-    }
+  @Mutation(() => Auth)
+  async signup(@Args('data') data: SignupInput) {
+    data.email = data.email.toLowerCase();
+    const { accessToken, refreshToken } = await this.authService.createUser(data);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
-    @Mutation(() => Auth)
-    async login(@Args('data') { email, password }: LoginInput) {
-        const { accessToken, refreshToken } = await this.auth.login(email.toLowerCase(), password);
+  @Mutation(() => Auth)
+  async login(@Args('data') { email, password }: LoginInput) {
+    const { accessToken, refreshToken } = await this.authService.login(email.toLowerCase(), password);
 
-        return {
-            accessToken,
-            refreshToken,
-        };
-    }
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
-    @Mutation(() => Token)
-    refreshToken(@Args() { token }: RefreshTokenInput) {
-        return this.auth.refreshToken(token);
-    }
+  @Mutation(() => Token)
+  refreshToken(@Args() { token }: RefreshTokenInput) {
+    return this.authService.refreshToken(token);
+  }
 
-    @ResolveField('user', () => User)
-    async user(@Parent() auth: Auth) {
-        return await this.auth.getUserFromToken(auth.accessToken);
-    }
+  @ResolveField('user', () => User)
+  async user(@Parent() auth: Auth) {
+    return await this.authService.getUserFromToken(auth.accessToken);
+  }
 }

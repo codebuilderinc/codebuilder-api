@@ -18,32 +18,32 @@ import { JobOrderByDto } from '../dto/job-order-by.dto';
  */
 @ArgsType()
 export class JobArgs extends PaginationArgs {
-    @Field(() => JobOrderByDto, { nullable: true })
-    @IsOptional()
-    orderBy?: JobOrderByDto;
+  @Field(() => JobOrderByDto, { nullable: true })
+  @IsOptional()
+  orderBy?: JobOrderByDto;
 
-    @Field({ nullable: true })
-    @IsOptional()
-    @IsString()
-    search?: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  search?: string;
 
-    @Field(() => Int, { nullable: true })
-    @IsOptional()
-    @IsInt()
-    companyId?: number;
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  companyId?: number;
 
-    @Field({ nullable: true })
-    @IsOptional()
-    @IsString()
-    location?: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  location?: string;
 
-    @Field({ nullable: true })
-    @IsOptional()
-    @IsBoolean()
-    isRemote?: boolean;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  isRemote?: boolean;
 
-    @Field(() => [String], { nullable: true })
-    @IsOptional()
-    @IsString({ each: true })
-    tags?: string[];
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  @IsString({ each: true })
+  tags?: string[];
 }
