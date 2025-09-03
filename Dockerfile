@@ -9,6 +9,11 @@ RUN npm install -g pnpm
 
 # Copy package manifests and lockfile
 COPY package.json pnpm-lock.yaml ./
+
+# Add a build argument to bust cache when the submodule changes
+# This ensures that Docker will re-copy the prisma directory when the submodule is updated
+ARG PRISMA_COMMIT
+# Copy the prisma directory
 COPY prisma ./prisma
 
 

@@ -25,6 +25,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - PRISMA_COMMIT=${PRISMA_COMMIT:-latest}
     container_name: codebuilder-api
     restart: unless-stopped
     env_file:
