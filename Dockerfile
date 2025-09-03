@@ -13,9 +13,6 @@ COPY package.json pnpm-lock.yaml ./
 # Add a build argument to bust cache when the submodule changes
 # This ensures that Docker will re-copy the prisma directory when the submodule is updated
 ARG PRISMA_COMMIT
-# Copy the prisma directory
-COPY prisma ./prisma
-
 
 # Install dependencies
 RUN pnpm install --unsafe-perm \
@@ -29,6 +26,12 @@ RUN pnpm install --unsafe-perm \
       && npx prisma --version || true \
       && echo '--- DEBUG: node_modules/.bin contents ---' \
       && ls -l node_modules/.bin || true
+
+# Copy prisma directory and generate client based on the commit
+# This creates a single layer that will be invalidated when PRISMA_COMMIT changes
+COPY prisma ./prisma
+RUN echo "Prisma commit: ${PRISMA_COMMIT:-unknown}" > /tmp/prisma-commit \
+    && npx prisma generate
 
 # Copy the rest of your application code
 COPY . .
