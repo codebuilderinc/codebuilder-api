@@ -14,7 +14,7 @@ COPY package.json pnpm-lock.yaml ./
 # This ensures that Docker will re-copy the prisma directory when the submodule is updated
 ARG PRISMA_COMMIT
 
-# Install dependencies
+# Install dependencies first to take advantage of caching
 RUN pnpm install --unsafe-perm \
       && echo '--- DEBUG: pnpm version ---' \
       && pnpm --version \
@@ -27,18 +27,25 @@ RUN pnpm install --unsafe-perm \
       && echo '--- DEBUG: node_modules/.bin contents ---' \
       && ls -l node_modules/.bin || true
 
-# Copy prisma directory and generate client based on the commit
-# This creates a single layer that will be invalidated when PRISMA_COMMIT changes
-COPY prisma ./prisma
-RUN echo "Prisma commit: ${PRISMA_COMMIT:-unknown}" > /tmp/prisma-commit \
-    && npx prisma generate
-
-# Copy the rest of your application code
+# Copy the complete application code including prisma schema
 COPY . .
 
-# Debug before running prisma generate
-RUN echo '--- DEBUG: Running npx prisma generate ---' \
-      && npx prisma generate
+# Use the build argument to invalidate the cache
+RUN echo "Prisma commit: ${PRISMA_COMMIT:-unknown}" > /tmp/prisma-commit \
+    && echo "Cleaning Prisma cache..." \
+    && rm -rf node_modules/.prisma node_modules/@prisma/client \
+    && echo "Generating Prisma client..." \
+    && npx prisma generate
+
+# Copy the complete application code including prisma schema
+COPY . .
+
+# Use the build argument to invalidate the cache
+RUN echo "Prisma commit: ${PRISMA_COMMIT:-unknown}" > /tmp/prisma-commit \
+    && echo "Cleaning Prisma cache..." \
+    && rm -rf node_modules/.prisma node_modules/@prisma/client \
+    && echo "Generating Prisma client..." \
+    && npx prisma generate
 
 # Build the application
 RUN pnpm build
