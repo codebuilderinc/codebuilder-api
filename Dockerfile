@@ -1,4 +1,3 @@
-
 # Stage 1: Build the application
 FROM node:24-alpine AS builder
 
@@ -22,6 +21,9 @@ RUN pnpm install --unsafe-perm \
       && npx prisma --version || true \
       && echo '--- DEBUG: node_modules/.bin contents ---' \
       && ls -l node_modules/.bin || true
+
+# Copy prisma directory separately
+COPY prisma ./prisma
 
 # Copy the rest of your application code
 COPY . .
