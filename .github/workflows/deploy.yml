@@ -96,8 +96,12 @@ jobs:
 
           # Step 4: Build the latest api image.
           echo "Building the latest api image..."
-          # Use 'codebuilder' as the stack prefix
-          docker compose -p codebuilder build api
+          # Get the current commit hash of the prisma submodule
+          # This ensures Docker rebuilds the prisma layer when the submodule is updated
+          PRISMA_COMMIT=$(git submodule status prisma | awk '{print $1}' | sed 's/^+//')
+          echo "Using Prisma submodule commit: $PRISMA_COMMIT"
+          # Use 'codebuilder' as the stack prefix with build-arg to bust cache
+          docker compose -p codebuilder build --build-arg PRISMA_COMMIT=$PRISMA_COMMIT api
 
           # Step 5: Forcefully remove the old api container to prevent conflicts.
           echo "Forcefully removing old api container if it exists..."
