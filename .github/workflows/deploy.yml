@@ -100,7 +100,8 @@ jobs:
           # This ensures Docker rebuilds the prisma layer when the submodule is updated
           PRISMA_COMMIT=$(git submodule status prisma | awk '{print $1}' | sed 's/^+//')
           echo "Using Prisma submodule commit: $PRISMA_COMMIT"
-          # Use 'codebuilder' as the stack prefix with build-arg to bust cache
+          
+          # Build with the prisma commit as a build argument
           docker compose -p codebuilder build --build-arg PRISMA_COMMIT=$PRISMA_COMMIT api
 
           # Step 5: Forcefully remove the old api container to prevent conflicts.
