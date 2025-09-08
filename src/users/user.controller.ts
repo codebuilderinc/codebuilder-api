@@ -18,7 +18,7 @@ import { PaginationQuery } from '../common/database/pagination/pagination-query.
 import { PaginationInterceptor } from '../common/database/pagination/pagination.interceptor';
 import { ExceptionsLoggerFilter } from '../common/utils/exceptions-logger.exception-filter';
 import { UserService } from './user.service';
-import { AuthUser, RedisAuthGuard } from './../common/auth/redis-auth.guard';
+import { AuthUser, RedisAuthGuard } from '../auth/redis-auth.guard';
 
 @Controller()
 @UsePipes(ValidationPipe)
