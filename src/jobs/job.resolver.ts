@@ -5,7 +5,7 @@
 // import { CreateJobDto } from './dto/create-job.dto';
 // import { UpdateJobDto } from './dto/update-job.dto';
 // import { JobArgs } from './args/job.args';
-// import { GqlAuthGuard } from '../common/auth/gql-auth.guard';
+// import { GqlAuthGuard } from '../auth/gql-auth.guard';
 // import { UserEntity as User } from './../common/decorators/user.decorator';
 
 // /**
