@@ -4,7 +4,7 @@ module.exports = {
       name: 'codebuilder-api',
       script: 'dist/main.js',
       env: {
-        PORT: 4001,
+        PORT: 4000,
         NODE_ENV: 'production',
       },
     },
