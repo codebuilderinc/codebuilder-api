@@ -1,7 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { Counter } from '@opentelemetry/api-metrics';
-import { PrismaClient, Prisma, PrismaPromise } from '@prisma/client';
+import { Prisma, PrismaClient, PrismaPromise } from '@prisma/client';
 import { ConfigService } from '../configs/config.service';
 import { LogService } from '../log/log.service';
 import { TraceService } from '../trace/trace.service';
@@ -14,7 +14,6 @@ export { default as DatabaseModel } from '@prisma/client';
 
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private prisma: PrismaClient;
   //private readonly queriesCounter: Counter;
   //private readonly pendingQueriesCounter: UpDownCounter;
 
@@ -23,10 +22,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
     private readonly configService: ConfigService,
     private readonly traceService: TraceService //private readonly meter,
   ) {
-    super();
-    logger.info(`Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL')}`);
-
-    this.prisma = new PrismaClient({
+    super({
       datasources: {
         db: {
           url: configService.get('DATABASE_URL'),
@@ -39,6 +35,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
       //   },
       // ]
     });
+    logger.info(`Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL')}`);
 
     /* this.meter = meterProvider.getMeter('example-exporter-collector');
 
@@ -55,6 +52,18 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   }
 
   async onModuleInit(): Promise<void> {
+    this.$use(async (params: any, next) => {
+      const span = this.traceService.startSpan(`prisma: ${params.model}.${params.action}`);
+      //this.queriesCounter.add(1);
+      // this.pendingQueriesCounter.add(1);
+      const result = await next(params);
+      span.end();
+
+      // this.pendingQueriesCounter.add(-1);
+
+      return result;
+    });
+
     const prismaEngine = (this as any)._engineConfig;
 
     await (this as any).$connect();
@@ -68,19 +77,8 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
     //   console.log(e)
     // })
 
-    this.prisma.$use(async (params: any, next) => {
-      //this.queriesCounter.add(1);
-      // this.pendingQueriesCounter.add(1);
-
-      const span = this.traceService.startSpan('$query');
-      span.setAttributes({ model: params.model, action: params.action });
-      const result = await next(params);
-      span.end();
-
-      // this.pendingQueriesCounter.add(-1);
-
-      return result;
-    });
+    //   console.log(e)
+    // })
   }
 
   async transaction<P extends PrismaPromise<any>[]>(arg: [...P]) {
@@ -92,7 +90,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   }
 
   async onModuleDestroy(): Promise<void> {
-    await this.$disconnect();
+    await super.$disconnect();
 
     this.logService.debug('Disconnected from Postgres instance');
   }
