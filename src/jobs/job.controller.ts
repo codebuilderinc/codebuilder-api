@@ -17,7 +17,7 @@ import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobOrderByDto } from './dto/job-order-by.dto';
-import { RedisAuthGuard } from '../common/auth/redis-auth.guard';
+import { RedisAuthGuard } from '../auth/redis-auth.guard';
 import { UserEntity as User } from '../common/decorators/user.decorator';
 import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
 import { PaginationArgs } from '../common/pagination/pagination.args';

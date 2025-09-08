@@ -12,7 +12,7 @@ import {
   ApiResponseOptions,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { AuthUser, RedisAuthGuard } from './../auth/redis-auth.guard';
+import { AuthUser, RedisAuthGuard } from '../../auth/redis-auth.guard';
 
 type ApiOptions = {
   apiOperationOptions?: Partial<ApiOperationOptions>;
