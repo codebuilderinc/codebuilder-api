@@ -12,11 +12,14 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiQuery, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Api } from '../common/decorators/api.decorator';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobOrderByDto } from './dto/job-order-by.dto';
+import { CompanyPathParamsDto, TagPathParamsDto, JobIdPathParamsDto } from './dto/job-path-params.dto';
+import { JobFilterQueryDto } from './dto/job-filter-query.dto';
 import { RedisAuthGuard } from '../auth/redis-auth.guard';
 import { UserEntity as User } from '../common/decorators/user.decorator';
 import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
@@ -24,6 +27,10 @@ import { PaginationArgs } from '../common/pagination/pagination.args';
 import { Web3CareerService } from './web3career.service';
 import { RedditService } from './reddit.service';
 import { NotificationsService } from './notifications.service';
+import { PaginatedResponse } from '../common/models/paginated-response';
+import { CreateJobDto as JobDto } from './dto/create-job.dto';
+
+class PaginatedJobResponse extends PaginatedResponse(JobDto) {}
 
 /**
  * Job Controller
@@ -49,11 +56,11 @@ export class JobController {
    * Fetch new jobs from Reddit and Web3Career, store them, and send notifications
    */
   @Get('fetch')
-  @ApiOperation({
+  @Api({
     summary: 'Fetch new jobs from Reddit and Web3Career',
     description: 'Fetches new jobs from both sources, stores them, and sends notifications.',
+    responses: [{ status: 200, description: 'Jobs fetched and notifications sent.' }],
   })
-  @ApiResponse({ status: 200, description: 'Jobs fetched and notifications sent.' })
   async fetchJobs(): Promise<{ redditJobs: any[]; web3CareerJobs: any[] }> {
     // Fetch Reddit jobs
     const redditSubreddits = [
@@ -83,15 +90,13 @@ export class JobController {
    * Retrieves all job listings for a specific company
    */
   @Get('company/:companyId')
-  @ApiOperation({
+  @Api({
     summary: 'Get jobs by company',
     description: 'Retrieves all job listings for a specific company',
-  })
-  @ApiParam({ name: 'companyId', description: 'Company ID', type: Number })
-  @ApiPaginationQuery()
-  @ApiResponse({
-    status: 200,
-    description: 'Company jobs retrieved successfully',
+    pathParamsFrom: CompanyPathParamsDto,
+  paginatedResponseType: JobDto,
+  envelope: true,
+    queriesFrom: [PaginationArgs],
   })
   async findByCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
@@ -116,15 +121,13 @@ export class JobController {
    * Retrieves all job listings that have a specific tag
    */
   @Get('tag/:tagName')
-  @ApiOperation({
+  @Api({
     summary: 'Get jobs by tag',
     description: 'Retrieves all job listings that have a specific tag',
-  })
-  @ApiParam({ name: 'tagName', description: 'Tag name', type: String })
-  @ApiPaginationQuery()
-  @ApiResponse({
-    status: 200,
-    description: 'Tagged jobs retrieved successfully',
+    pathParamsFrom: TagPathParamsDto,
+  paginatedResponseType: JobDto,
+  envelope: true,
+    queriesFrom: [PaginationArgs],
   })
   async findByTag(
     @Param('tagName') tagName: string,
@@ -149,23 +152,16 @@ export class JobController {
    * Creates a new job entry in the database with the provided information
    */
   @Post()
-  @UseGuards(RedisAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
+  @Api({
     summary: 'Create a new job listing',
     description: 'Creates a new job listing with title, description, company info, and other details',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Job successfully created',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid job data provided',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - authentication required',
+    bodyType: CreateJobDto,
+    authenticationRequired: true,
+    responses: [
+      { status: 201, description: 'Job successfully created' },
+      { status: 400, description: 'Invalid job data provided' },
+      { status: 401, description: 'Unauthorized - authentication required' },
+    ],
   })
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createJobDto: CreateJobDto, @User() user: any) {
@@ -177,19 +173,12 @@ export class JobController {
    * Supports filtering by company, location, remote status, and tags
    */
   @Get()
-  @ApiOperation({
+  @Api({
     summary: 'Get all job listings',
     description: 'Retrieves a paginated list of job listings with optional filtering',
-  })
-  @ApiPaginationQuery()
-  @ApiQuery({ name: 'search', required: false, description: 'Search in job title and description' })
-  @ApiQuery({ name: 'companyId', required: false, description: 'Filter by company ID' })
-  @ApiQuery({ name: 'location', required: false, description: 'Filter by location' })
-  @ApiQuery({ name: 'isRemote', required: false, description: 'Filter by remote status', type: Boolean })
-  @ApiQuery({ name: 'tags', required: false, description: 'Filter by tag names (comma-separated)' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of job listings retrieved successfully',
+  paginatedResponseType: JobDto,
+  envelope: true,
+    queriesFrom: [PaginationArgs, JobFilterQueryDto],
   })
   async findAll(
     @Query() paginationArgs: PaginationArgs,
@@ -228,18 +217,14 @@ export class JobController {
    * Returns detailed information about a single job including company, tags, and metadata
    */
   @Get(':id')
-  @ApiOperation({
+  @Api({
     summary: 'Get job by ID',
     description: 'Retrieves a specific job listing with all related data',
-  })
-  @ApiParam({ name: 'id', description: 'Job ID', type: Number })
-  @ApiResponse({
-    status: 200,
-    description: 'Job details retrieved successfully',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Job not found',
+    pathParamsFrom: JobIdPathParamsDto,
+    responses: [
+      { status: 200, description: 'Job details retrieved successfully' },
+      { status: 404, description: 'Job not found' },
+    ],
   })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.jobService.findOne(id);
@@ -250,24 +235,17 @@ export class JobController {
    * Updates job information - requires authentication
    */
   @Put(':id')
-  @UseGuards(RedisAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
+  @Api({
     summary: 'Update job listing',
     description: 'Updates an existing job listing with new information',
-  })
-  @ApiParam({ name: 'id', description: 'Job ID', type: Number })
-  @ApiResponse({
-    status: 200,
-    description: 'Job updated successfully',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Job not found',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - authentication required',
+    authenticationRequired: true,
+    bodyType: UpdateJobDto,
+    pathParamsFrom: JobIdPathParamsDto,
+    responses: [
+      { status: 200, description: 'Job updated successfully' },
+      { status: 404, description: 'Job not found' },
+      { status: 401, description: 'Unauthorized - authentication required' },
+    ],
   })
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateJobDto: UpdateJobDto, @User() user: any) {
     return this.jobService.update(id, updateJobDto, user.id);
@@ -278,24 +256,16 @@ export class JobController {
    * Removes a job listing from the database - requires authentication
    */
   @Delete(':id')
-  @UseGuards(RedisAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
+  @Api({
     summary: 'Delete job listing',
     description: 'Removes a job listing from the database',
-  })
-  @ApiParam({ name: 'id', description: 'Job ID', type: Number })
-  @ApiResponse({
-    status: 200,
-    description: 'Job deleted successfully',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Job not found',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - authentication required',
+    authenticationRequired: true,
+    pathParamsFrom: JobIdPathParamsDto,
+    responses: [
+      { status: 200, description: 'Job deleted successfully' },
+      { status: 404, description: 'Job not found' },
+      { status: 401, description: 'Unauthorized - authentication required' },
+    ],
   })
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number, @User() user: any) {
