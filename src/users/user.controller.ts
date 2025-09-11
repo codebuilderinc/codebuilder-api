@@ -1,43 +1,18 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Put,
-  Query,
-  UseFilters,
-  UseGuards,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { User } from '@prisma/client';
-import { ConfigService } from './../common/configs/config.service';
-import { PaginationQuery } from '../common/database/pagination/pagination-query.model';
-import { PaginationInterceptor } from '../common/database/pagination/pagination.interceptor';
-import { ExceptionsLoggerFilter } from '../common/utils/exceptions-logger.exception-filter';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthUser, RedisAuthGuard } from '../auth/redis-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { Api } from '../common/decorators/api.decorator';
 
 @Controller()
-@UsePipes(ValidationPipe)
-@UseFilters(ExceptionsLoggerFilter)
+@ApiTags('users')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private configService: ConfigService
-  ) {}
+  constructor(private userService: UserService) {}
 
   @UseGuards(RedisAuthGuard)
-  @UseInterceptors(PaginationInterceptor)
   @Get('/wallet/:token/sell')
-  walletTokenSell(
-    @Param('username') username: string,
-    @Query('pagination') pagination: PaginationQuery,
-    @AuthUser() user: User
-  ) {
-    return user.wallet;
-    //return this.userService.getSocialUserPosts(username, pagination);
+  @Api({ summary: 'Example secured endpoint', description: 'Placeholder user wallet endpoint.', envelope: true })
+  walletTokenSell(@Param('username') _username: string) {
+    return { message: 'Not yet implemented' };
   }
 }
