@@ -136,6 +136,8 @@ export class NotificationsService {
 
   async sendMassNotification(dto: MassNotificationDto) {
     const subscriptions = await this.listSubscriptions();
+    this.logger.log(`Subscriptions`, subscriptions);
+
     const payload: NotificationPayload = {
       title: dto.title,
       body: dto.body,

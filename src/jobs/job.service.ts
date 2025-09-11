@@ -156,6 +156,17 @@ export class JobService {
   }
 
   /**
+   * Lightweight existence check by canonical job URL.
+   * Returns true if a job record already exists. Used by external
+   * fetch/store services to short-circuit processing once we start
+   * encountering previously ingested (older) records.
+   */
+  async jobExists(url: string): Promise<boolean> {
+    const existing = await this.prisma.job.findUnique({ where: { url }, select: { id: true } });
+    return !!existing;
+  }
+
+  /**
    * Create a new job listing
    * Creates a job with associated company, tags, and metadata
    */
