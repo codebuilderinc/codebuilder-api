@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JobService } from './job.service';
-import { NotificationsService, NotificationPayload } from './notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationPayload } from '../notifications/interfaces/notification-payload.interface';
 import { DatabaseService } from '../common/database/database.service';
 
 @Injectable()
