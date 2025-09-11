@@ -14,7 +14,7 @@ export class NotificationsController {
   @Api({
     summary: 'Get VAPID public key',
     description: 'Returns the Web Push VAPID public key for browser clients.',
-  envelope: true,
+    envelope: true,
     responses: [{ status: 200, description: 'Public key returned.' }],
   })
   getPublicKey() {
@@ -27,7 +27,7 @@ export class NotificationsController {
     summary: 'Create or update push subscription',
     description: 'Stores (upserts) a Web Push or FCM subscription tied to the client.',
     bodyType: CreateSubscriptionDto,
-  envelope: true,
+    envelope: true,
     responses: [
       { status: 201, description: 'Subscription stored.' },
       { status: 400, description: 'Invalid subscription payload.' },
@@ -43,7 +43,7 @@ export class NotificationsController {
     summary: 'Send a mass notification',
     description: 'Sends a notification to all stored subscriptions.',
     bodyType: MassNotificationDto,
-  envelope: true,
+    envelope: true,
     responses: [
       { status: 200, description: 'Mass notification request accepted.' },
       { status: 400, description: 'Invalid notification payload.' },

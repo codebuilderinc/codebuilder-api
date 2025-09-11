@@ -1,19 +1,876 @@
 /* eslint-disable */
 export default async () => {
-    const t = {
-        ["./jobs/dto/create-job.dto"]: await import("./jobs/dto/create-job.dto"),
-        ["./jobs/dto/job-order-by.dto"]: await import("./jobs/dto/job-order-by.dto"),
-        ["./generated/nestjs-dto/job.entity"]: await import("./generated/nestjs-dto/job.entity"),
-        ["./generated/nestjs-dto/tag.entity"]: await import("./generated/nestjs-dto/tag.entity"),
-        ["./generated/nestjs-dto/jobTag.entity"]: await import("./generated/nestjs-dto/jobTag.entity"),
-        ["./generated/nestjs-dto/taggable.entity"]: await import("./generated/nestjs-dto/taggable.entity"),
-        ["./generated/nestjs-dto/company.entity"]: await import("./generated/nestjs-dto/company.entity"),
-        ["./generated/nestjs-dto/jobMetadata.entity"]: await import("./generated/nestjs-dto/jobMetadata.entity"),
-        ["./generated/nestjs-dto/jobSource.entity"]: await import("./generated/nestjs-dto/jobSource.entity"),
-        ["./generated/nestjs-dto/location.entity"]: await import("./generated/nestjs-dto/location.entity"),
-        ["./generated/nestjs-dto/subscription.entity"]: await import("./generated/nestjs-dto/subscription.entity"),
-        ["./auth/models/token.model"]: await import("./auth/models/token.model"),
-        ["./users/models/user.model"]: await import("./users/models/user.model")
-    };
-    return { "@nestjs/swagger/plugin": { "models": [[import("./jobs/dto/create-job.dto"), { "JobMetadataDto": { name: { required: true, type: () => String }, value: { required: true, type: () => String } }, "JobSourceDto": { source: { required: true, type: () => String }, externalId: { required: false, type: () => String }, rawUrl: { required: false, type: () => String, format: "uri" }, data: { required: false, type: () => Object } }, "CreateJobDto": { title: { required: true, type: () => String, minLength: 1, maxLength: 255 }, companyId: { required: false, type: () => Number }, companyName: { required: false, type: () => String, minLength: 1, maxLength: 255 }, author: { required: false, type: () => String, minLength: 1, maxLength: 255 }, location: { required: false, type: () => String, minLength: 1, maxLength: 255 }, url: { required: true, type: () => String, format: "uri" }, postedAt: { required: false, type: () => String }, description: { required: false, type: () => String }, isRemote: { required: false, type: () => Boolean }, tags: { required: false, type: () => [String] }, metadata: { required: false, type: () => [t["./jobs/dto/create-job.dto"].JobMetadataDto] }, sources: { required: false, type: () => [t["./jobs/dto/create-job.dto"].JobSourceDto] } } }], [import("./jobs/dto/update-job.dto"), { "UpdateJobDto": { title: { required: false, type: () => String, minLength: 1, maxLength: 255 }, companyId: { required: false, type: () => Number }, companyName: { required: false, type: () => String, minLength: 1, maxLength: 255 }, author: { required: false, type: () => String, minLength: 1, maxLength: 255 }, location: { required: false, type: () => String, minLength: 1, maxLength: 255 }, url: { required: false, type: () => String, format: "uri" }, postedAt: { required: false, type: () => String }, description: { required: false, type: () => String }, isRemote: { required: false, type: () => Boolean }, tags: { required: false, type: () => [String] }, metadata: { required: false, type: () => [t["./jobs/dto/create-job.dto"].JobMetadataDto] } } }], [import("./jobs/dto/job-order-by.dto"), { "JobOrderByDto": { createdAt: { required: false, enum: t["./jobs/dto/job-order-by.dto"].SortOrder }, updatedAt: { required: false, enum: t["./jobs/dto/job-order-by.dto"].SortOrder }, postedAt: { required: false, enum: t["./jobs/dto/job-order-by.dto"].SortOrder }, title: { required: false, enum: t["./jobs/dto/job-order-by.dto"].SortOrder }, company: { required: false, enum: t["./jobs/dto/job-order-by.dto"].SortOrder } } }], [import("./jobs/dto/job-path-params.dto"), { "CompanyPathParamsDto": { companyId: { required: true, type: () => Number } }, "TagPathParamsDto": { tagName: { required: true, type: () => String } }, "JobIdPathParamsDto": { id: { required: true, type: () => Number } } }], [import("./jobs/dto/job-filter-query.dto"), { "JobFilterQueryDto": { search: { required: false, type: () => String }, companyId: { required: false, type: () => Number }, location: { required: false, type: () => String }, isRemote: { required: false, type: () => Boolean }, tags: { required: false, type: () => String } } }], [import("./notifications/dto/create-subscription.dto"), { "CreateSubscriptionDto": { type: { required: true, type: () => Object }, endpoint: { required: true, type: () => String }, keys: { required: true, type: () => Object } } }], [import("./notifications/dto/mass-notification.dto"), { "MassNotificationDto": { title: { required: true, type: () => String }, body: { required: true, type: () => String }, url: { required: true, type: () => String, format: "uri" }, icon: { required: false, type: () => String }, badge: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/company.entity"), { "Company": { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, jobs: { required: false, type: () => [t["./generated/nestjs-dto/job.entity"].Job] }, createdAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/taggable.entity"), { "Taggable": { id: { required: true, type: () => Number }, tagId: { required: true, type: () => Number }, tagType: { required: true, type: () => String }, taggableId: { required: true, type: () => Number }, tag: { required: false, type: () => t["./generated/nestjs-dto/tag.entity"].Tag }, createdAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/tag.entity"), { "Tag": { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, jobTags: { required: false, type: () => [t["./generated/nestjs-dto/jobTag.entity"].JobTag] }, taggables: { required: false, type: () => [t["./generated/nestjs-dto/taggable.entity"].Taggable] } } }], [import("./generated/nestjs-dto/jobTag.entity"), { "JobTag": { id: { required: true, type: () => Number }, jobId: { required: true, type: () => Number }, tagId: { required: true, type: () => Number }, job: { required: false, type: () => t["./generated/nestjs-dto/job.entity"].Job }, tag: { required: false, type: () => t["./generated/nestjs-dto/tag.entity"].Tag } } }], [import("./generated/nestjs-dto/jobMetadata.entity"), { "JobMetadata": { id: { required: true, type: () => Number }, jobId: { required: true, type: () => Number }, name: { required: true, type: () => String }, value: { required: true, type: () => String }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, job: { required: false, type: () => t["./generated/nestjs-dto/job.entity"].Job } } }], [import("./generated/nestjs-dto/jobSource.entity"), { "JobSource": { id: { required: true, type: () => Number }, jobId: { required: true, type: () => Number }, source: { required: true, type: () => String }, externalId: { required: true, type: () => String, nullable: true }, rawUrl: { required: true, type: () => String, nullable: true }, data: { required: true, type: () => Object, nullable: true }, createdAt: { required: true, type: () => Date }, job: { required: false, type: () => t["./generated/nestjs-dto/job.entity"].Job } } }], [import("./generated/nestjs-dto/job.entity"), { "Job": { id: { required: true, type: () => Number }, title: { required: true, type: () => String }, companyId: { required: true, type: () => Number, nullable: true }, company: { required: false, type: () => t["./generated/nestjs-dto/company.entity"].Company, nullable: true }, author: { required: true, type: () => String, nullable: true }, location: { required: true, type: () => String, nullable: true }, url: { required: true, type: () => String }, postedAt: { required: true, type: () => Date, nullable: true }, description: { required: true, type: () => String, nullable: true }, isRemote: { required: true, type: () => Boolean, nullable: true }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, tags: { required: false, type: () => [t["./generated/nestjs-dto/jobTag.entity"].JobTag] }, metadata: { required: false, type: () => [t["./generated/nestjs-dto/jobMetadata.entity"].JobMetadata] }, sources: { required: false, type: () => [t["./generated/nestjs-dto/jobSource.entity"].JobSource] } } }], [import("./generated/nestjs-dto/subscription.entity"), { "Subscription": { id: { required: true, type: () => Number }, ipAddress: { required: true, type: () => String }, type: { required: true, type: () => Object }, endpoint: { required: true, type: () => String }, keys: { required: true, type: () => Object, nullable: true }, createdAt: { required: true, type: () => Date }, locations: { required: false, type: () => [t["./generated/nestjs-dto/location.entity"].Location] } } }], [import("./generated/nestjs-dto/location.entity"), { "Location": { id: { required: true, type: () => Number }, ipAddress: { required: true, type: () => String }, accuracy: { required: true, type: () => Number, nullable: true }, altitude: { required: true, type: () => Number, nullable: true }, altitudeAccuracy: { required: true, type: () => Number, nullable: true }, heading: { required: true, type: () => Number, nullable: true }, latitude: { required: true, type: () => Number, nullable: true }, longitude: { required: true, type: () => Number, nullable: true }, speed: { required: true, type: () => Number, nullable: true }, mocked: { required: true, type: () => Boolean }, timestamp: { required: true, type: () => BigInt, nullable: true }, city: { required: true, type: () => String, nullable: true }, country: { required: true, type: () => String, nullable: true }, district: { required: true, type: () => String, nullable: true }, formattedAddress: { required: true, type: () => String, nullable: true }, isoCountryCode: { required: true, type: () => String, nullable: true }, name: { required: true, type: () => String, nullable: true }, postalCode: { required: true, type: () => String, nullable: true }, region: { required: true, type: () => String, nullable: true }, street: { required: true, type: () => String, nullable: true }, streetNumber: { required: true, type: () => String, nullable: true }, subregion: { required: true, type: () => String, nullable: true }, timezone: { required: true, type: () => String, nullable: true }, createdAt: { required: true, type: () => Date }, subscriptionId: { required: true, type: () => Number }, subscription: { required: false, type: () => t["./generated/nestjs-dto/subscription.entity"].Subscription } } }], [import("./generated/nestjs-dto/connect-company.dto"), { "ConnectCompanyDto": { id: { required: false, type: () => Number }, name: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-errorReport.dto"), { "ConnectErrorReportDto": { id: { required: true, type: () => String } } }], [import("./generated/nestjs-dto/connect-job.dto"), { "ConnectJobDto": { id: { required: false, type: () => Number }, url: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-jobMetadata.dto"), { "ConnectJobMetadataDto": { id: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/connect-jobSource.dto"), { "ConnectJobSourceDto": { id: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/connect-jobTag.dto"), { "ConnectJobTagDto": { id: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/connect-location.dto"), { "ConnectLocationDto": { id: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/connect-redditMessage.dto"), { "ConnectRedditMessageDto": { id: { required: false, type: () => Number }, redditId: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-redditPost.dto"), { "ConnectRedditPostDto": { id: { required: false, type: () => Number }, url: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-subscription.dto"), { "ConnectSubscriptionDto": { id: { required: false, type: () => Number }, endpoint: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-tag.dto"), { "ConnectTagDto": { id: { required: false, type: () => Number }, name: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/connect-taggable.dto"), { "ConnectTaggableDto": { id: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/connect-user.dto"), { "ConnectUserDto": { id: { required: false, type: () => Number }, email: { required: false, type: () => String }, googleId: { required: false, type: () => String }, wallet: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/create-company.dto"), { "CreateCompanyDto": { name: { required: true, type: () => String } } }], [import("./generated/nestjs-dto/create-errorReport.dto"), { "CreateErrorReportDto": { message: { required: true, type: () => String }, stack: { required: false, type: () => String }, platform: { required: false, type: () => String }, isFatal: { required: false, type: () => Boolean }, errorInfo: { required: false, type: () => Object }, payload: { required: true, type: () => Object } } }], [import("./generated/nestjs-dto/create-job.dto"), { "CreateJobDto": { title: { required: true, type: () => String }, author: { required: false, type: () => String }, location: { required: false, type: () => String }, url: { required: true, type: () => String }, postedAt: { required: false, type: () => Date }, description: { required: false, type: () => String }, isRemote: { required: false, type: () => Boolean } } }], [import("./generated/nestjs-dto/create-jobMetadata.dto"), { "CreateJobMetadataDto": { name: { required: true, type: () => String }, value: { required: true, type: () => String } } }], [import("./generated/nestjs-dto/create-jobSource.dto"), { "CreateJobSourceDto": { source: { required: true, type: () => String }, externalId: { required: false, type: () => String }, rawUrl: { required: false, type: () => String }, data: { required: false, type: () => Object } } }], [import("./generated/nestjs-dto/create-jobTag.dto"), { "CreateJobTagDto": {} }], [import("./generated/nestjs-dto/create-location.dto"), { "CreateLocationDto": { ipAddress: { required: true, type: () => String }, accuracy: { required: false, type: () => Number }, altitude: { required: false, type: () => Number }, altitudeAccuracy: { required: false, type: () => Number }, heading: { required: false, type: () => Number }, latitude: { required: false, type: () => Number }, longitude: { required: false, type: () => Number }, speed: { required: false, type: () => Number }, mocked: { required: true, type: () => Boolean }, timestamp: { required: false, type: () => BigInt }, city: { required: false, type: () => String }, country: { required: false, type: () => String }, district: { required: false, type: () => String }, formattedAddress: { required: false, type: () => String }, isoCountryCode: { required: false, type: () => String }, name: { required: false, type: () => String }, postalCode: { required: false, type: () => String }, region: { required: false, type: () => String }, street: { required: false, type: () => String }, streetNumber: { required: false, type: () => String }, subregion: { required: false, type: () => String }, timezone: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/create-redditMessage.dto"), { "CreateRedditMessageDto": { redditId: { required: true, type: () => String }, type: { required: true, type: () => String }, author: { required: true, type: () => String }, content: { required: true, type: () => String }, bodyHtml: { required: false, type: () => String }, subreddit: { required: false, type: () => String }, contextUrl: { required: false, type: () => String }, parentId: { required: false, type: () => String }, messageType: { required: false, type: () => String }, rawData: { required: false, type: () => Object }, createdAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/create-redditPost.dto"), { "CreateRedditPostDto": { title: { required: true, type: () => String }, author: { required: true, type: () => String }, subreddit: { required: true, type: () => String }, url: { required: true, type: () => String }, body: { required: false, type: () => String }, bodyHtml: { required: false, type: () => String }, postedAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/create-subscription.dto"), { "CreateSubscriptionDto": { ipAddress: { required: true, type: () => String }, endpoint: { required: true, type: () => String }, keys: { required: false, type: () => Object } } }], [import("./generated/nestjs-dto/create-tag.dto"), { "CreateTagDto": { name: { required: true, type: () => String } } }], [import("./generated/nestjs-dto/create-taggable.dto"), { "CreateTaggableDto": { tagType: { required: true, type: () => String }, taggableId: { required: true, type: () => Number } } }], [import("./generated/nestjs-dto/create-user.dto"), { "CreateUserDto": { email: { required: true, type: () => String }, password: { required: true, type: () => String }, firstname: { required: false, type: () => String }, lastname: { required: false, type: () => String }, username: { required: false, type: () => String }, profilePicture: { required: false, type: () => String }, googleId: { required: false, type: () => String }, wallet: { required: false, type: () => String }, is_active: { required: false, type: () => Boolean } } }], [import("./generated/nestjs-dto/errorReport.entity"), { "ErrorReport": { id: { required: true, type: () => String }, message: { required: true, type: () => String }, stack: { required: true, type: () => String, nullable: true }, platform: { required: true, type: () => String, nullable: true }, isFatal: { required: true, type: () => Boolean, nullable: true }, errorInfo: { required: true, type: () => Object, nullable: true }, payload: { required: true, type: () => Object }, createdAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/redditMessage.entity"), { "RedditMessage": { id: { required: true, type: () => Number }, redditId: { required: true, type: () => String }, type: { required: true, type: () => String }, author: { required: true, type: () => String }, content: { required: true, type: () => String }, bodyHtml: { required: true, type: () => String, nullable: true }, subreddit: { required: true, type: () => String, nullable: true }, contextUrl: { required: true, type: () => String, nullable: true }, parentId: { required: true, type: () => String, nullable: true }, messageType: { required: true, type: () => String, nullable: true }, isRead: { required: true, type: () => Boolean }, isSubredditModMail: { required: true, type: () => Boolean }, isInternal: { required: true, type: () => Boolean }, rawData: { required: true, type: () => Object, nullable: true }, createdAt: { required: true, type: () => Date }, receivedAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/redditPost.entity"), { "RedditPost": { id: { required: true, type: () => Number }, title: { required: true, type: () => String }, author: { required: true, type: () => String }, subreddit: { required: true, type: () => String }, url: { required: true, type: () => String }, type: { required: true, type: () => String }, body: { required: true, type: () => String, nullable: true }, bodyHtml: { required: true, type: () => String, nullable: true }, upvotes: { required: true, type: () => Number }, downvotes: { required: true, type: () => Number }, createdAt: { required: true, type: () => Date }, postedAt: { required: true, type: () => Date } } }], [import("./generated/nestjs-dto/update-company.dto"), { "UpdateCompanyDto": { name: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/update-errorReport.dto"), { "UpdateErrorReportDto": { message: { required: false, type: () => String }, stack: { required: false, type: () => String }, platform: { required: false, type: () => String }, isFatal: { required: false, type: () => Boolean }, errorInfo: { required: false, type: () => Object }, payload: { required: false, type: () => Object } } }], [import("./generated/nestjs-dto/update-job.dto"), { "UpdateJobDto": { title: { required: false, type: () => String }, author: { required: false, type: () => String }, location: { required: false, type: () => String }, url: { required: false, type: () => String }, postedAt: { required: false, type: () => Date }, description: { required: false, type: () => String }, isRemote: { required: false, type: () => Boolean } } }], [import("./generated/nestjs-dto/update-jobMetadata.dto"), { "UpdateJobMetadataDto": { name: { required: false, type: () => String }, value: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/update-jobSource.dto"), { "UpdateJobSourceDto": { source: { required: false, type: () => String }, externalId: { required: false, type: () => String }, rawUrl: { required: false, type: () => String }, data: { required: false, type: () => Object } } }], [import("./generated/nestjs-dto/update-jobTag.dto"), { "UpdateJobTagDto": {} }], [import("./generated/nestjs-dto/update-location.dto"), { "UpdateLocationDto": { ipAddress: { required: false, type: () => String }, accuracy: { required: false, type: () => Number }, altitude: { required: false, type: () => Number }, altitudeAccuracy: { required: false, type: () => Number }, heading: { required: false, type: () => Number }, latitude: { required: false, type: () => Number }, longitude: { required: false, type: () => Number }, speed: { required: false, type: () => Number }, mocked: { required: false, type: () => Boolean }, timestamp: { required: false, type: () => BigInt }, city: { required: false, type: () => String }, country: { required: false, type: () => String }, district: { required: false, type: () => String }, formattedAddress: { required: false, type: () => String }, isoCountryCode: { required: false, type: () => String }, name: { required: false, type: () => String }, postalCode: { required: false, type: () => String }, region: { required: false, type: () => String }, street: { required: false, type: () => String }, streetNumber: { required: false, type: () => String }, subregion: { required: false, type: () => String }, timezone: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/update-redditMessage.dto"), { "UpdateRedditMessageDto": { redditId: { required: false, type: () => String }, type: { required: false, type: () => String }, author: { required: false, type: () => String }, content: { required: false, type: () => String }, bodyHtml: { required: false, type: () => String }, subreddit: { required: false, type: () => String }, contextUrl: { required: false, type: () => String }, parentId: { required: false, type: () => String }, messageType: { required: false, type: () => String }, rawData: { required: false, type: () => Object }, createdAt: { required: false, type: () => Date } } }], [import("./generated/nestjs-dto/update-redditPost.dto"), { "UpdateRedditPostDto": { title: { required: false, type: () => String }, author: { required: false, type: () => String }, subreddit: { required: false, type: () => String }, url: { required: false, type: () => String }, body: { required: false, type: () => String }, bodyHtml: { required: false, type: () => String }, postedAt: { required: false, type: () => Date } } }], [import("./generated/nestjs-dto/update-subscription.dto"), { "UpdateSubscriptionDto": { ipAddress: { required: false, type: () => String }, endpoint: { required: false, type: () => String }, keys: { required: false, type: () => Object } } }], [import("./generated/nestjs-dto/update-tag.dto"), { "UpdateTagDto": { name: { required: false, type: () => String } } }], [import("./generated/nestjs-dto/update-taggable.dto"), { "UpdateTaggableDto": { tagType: { required: false, type: () => String }, taggableId: { required: false, type: () => Number } } }], [import("./generated/nestjs-dto/update-user.dto"), { "UpdateUserDto": { email: { required: false, type: () => String }, password: { required: false, type: () => String }, firstname: { required: false, type: () => String }, lastname: { required: false, type: () => String }, username: { required: false, type: () => String }, profilePicture: { required: false, type: () => String }, googleId: { required: false, type: () => String }, wallet: { required: false, type: () => String }, is_active: { required: false, type: () => Boolean } } }], [import("./generated/nestjs-dto/user.entity"), { "User": { id: { required: true, type: () => Number }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date }, email: { required: true, type: () => String }, password: { required: true, type: () => String }, firstname: { required: true, type: () => String, nullable: true }, lastname: { required: true, type: () => String, nullable: true }, username: { required: true, type: () => String, nullable: true }, profilePicture: { required: true, type: () => String, nullable: true }, googleId: { required: true, type: () => String, nullable: true }, role: { required: true, type: () => Object }, wallet: { required: true, type: () => String, nullable: true }, is_active: { required: true, type: () => Boolean, nullable: true } } }], [import("./users/dto/user.dto"), { "UserDTO": { name: { required: true, type: () => String, minLength: 1 }, image: { required: true, type: () => String, format: "uri" } }, "UpdateUserDTO": { description: { required: true, type: () => String, minLength: 3, maxLength: 255 }, profileImageUrl: { required: true, type: () => String, format: "uri", pattern: "nyc3.digitaloceanspaces.com" }, bannerImageUrl: { required: true, type: () => String, format: "uri", pattern: "nyc3.digitaloceanspaces.com" }, twitter: { required: true, type: () => String, minLength: 1, maxLength: 50 } }, "RegisterUserDTO": { email: { required: true, type: () => String, format: "email" }, username: { required: true, type: () => String }, password: { required: true, type: () => String }, passwordConfirmation: { required: true, type: () => String } }, "LoginUserDTO": { username: { required: true, type: () => String }, password: { required: true, type: () => String } }, "RefreshTokenDTO": { accessToken: { required: true, type: () => String }, refreshToken: { required: true, type: () => String } }, "RefreshTokenUpdateDTO": { isValid: { required: true, type: () => Boolean } }, "CheckUsernameDTO": { username: { required: true, type: () => String } }, "RegisterWalletDTO": { walletAddress: { required: true, type: () => String }, networkId: { required: true, type: () => String }, signature: { required: true, type: () => String } } }]], "controllers": [[import("./jobs/job.controller"), { "JobController": { "fetchJobs": {}, "findByCompany": {}, "findByTag": {}, "create": {}, "findAll": {}, "findOne": {}, "update": {}, "remove": {} } }], [import("./auth/auth.controller"), { "AuthController": { "googleAuth": { type: t["./auth/models/token.model"].Token } } }], [import("./app.controller"), { "AppController": { "getHello": { type: String } } }], [import("./notifications/notifications.controller"), { "NotificationsController": { "getPublicKey": {}, "subscribe": {}, "mass": {} } }], [import("./users/user.controller"), { "UserController": { "walletTokenSell": { type: String } } }]] }, "@nestjs/graphql/plugin": { "models": [[import("./common/pagination/pagination.args"), { "PaginationArgs": { skip: { nullable: true }, after: { nullable: true }, before: { nullable: true }, first: { nullable: true }, last: { nullable: true } } }], [import("./common/models/base.model"), { "BaseModel": { id: {}, createdAt: {}, updatedAt: {} } }], [import("./users/models/user.model"), { "User": { role: {} } }], [import("./auth/dto/signup.input"), { "SignupInput": { email: {}, password: {}, firstname: { nullable: true }, lastname: { nullable: true } } }], [import("./auth/models/token.model"), { "Token": { accessToken: {}, refreshToken: {} } }], [import("./auth/models/auth.model"), { "Auth": { user: { type: () => t["./users/models/user.model"].User } } }], [import("./auth/dto/login.input"), { "LoginInput": { email: {}, password: {} } }], [import("./auth/dto/refresh-token.input"), { "RefreshTokenInput": { token: {} } }], [import("./auth/dto/google-auth.input"), { "GoogleAuthInput": { idToken: {}, buildType: { nullable: true } } }], [import("./users/dto/change-password.input"), { "ChangePasswordInput": { oldPassword: {}, newPassword: {} } }], [import("./users/dto/update-user.input"), { "UpdateUserInput": { firstname: { nullable: true }, lastname: { nullable: true } } }], [import("./common/pagination/page-info.model"), { "PageInfo": { endCursor: { nullable: true }, hasNextPage: {}, hasPreviousPage: {}, startCursor: { nullable: true } } }], [import("./jobs/args/job.args"), { "JobArgs": { orderBy: { nullable: true }, search: { nullable: true }, companyId: { nullable: true }, location: { nullable: true }, isRemote: { nullable: true }, tags: { nullable: true } } }]] } };
+  const t = {
+    ['./jobs/dto/create-job.dto']: await import('./jobs/dto/create-job.dto'),
+    ['./jobs/dto/job-order-by.dto']: await import('./jobs/dto/job-order-by.dto'),
+    ['./generated/nestjs-dto/job.entity']: await import('./generated/nestjs-dto/job.entity'),
+    ['./generated/nestjs-dto/tag.entity']: await import('./generated/nestjs-dto/tag.entity'),
+    ['./generated/nestjs-dto/jobTag.entity']: await import('./generated/nestjs-dto/jobTag.entity'),
+    ['./generated/nestjs-dto/taggable.entity']: await import('./generated/nestjs-dto/taggable.entity'),
+    ['./generated/nestjs-dto/company.entity']: await import('./generated/nestjs-dto/company.entity'),
+    ['./generated/nestjs-dto/jobMetadata.entity']: await import('./generated/nestjs-dto/jobMetadata.entity'),
+    ['./generated/nestjs-dto/jobSource.entity']: await import('./generated/nestjs-dto/jobSource.entity'),
+    ['./generated/nestjs-dto/location.entity']: await import('./generated/nestjs-dto/location.entity'),
+    ['./generated/nestjs-dto/subscription.entity']: await import('./generated/nestjs-dto/subscription.entity'),
+    ['./auth/models/token.model']: await import('./auth/models/token.model'),
+    ['./users/models/user.model']: await import('./users/models/user.model'),
+  };
+  return {
+    '@nestjs/swagger/plugin': {
+      models: [
+        [
+          import('./jobs/dto/create-job.dto'),
+          {
+            JobMetadataDto: {
+              name: { required: true, type: () => String },
+              value: { required: true, type: () => String },
+            },
+            JobSourceDto: {
+              source: { required: true, type: () => String },
+              externalId: { required: false, type: () => String },
+              rawUrl: { required: false, type: () => String, format: 'uri' },
+              data: { required: false, type: () => Object },
+            },
+            CreateJobDto: {
+              title: { required: true, type: () => String, minLength: 1, maxLength: 255 },
+              companyId: { required: false, type: () => Number },
+              companyName: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              author: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              location: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              url: { required: true, type: () => String, format: 'uri' },
+              postedAt: { required: false, type: () => String },
+              description: { required: false, type: () => String },
+              isRemote: { required: false, type: () => Boolean },
+              tags: { required: false, type: () => [String] },
+              metadata: { required: false, type: () => [t['./jobs/dto/create-job.dto'].JobMetadataDto] },
+              sources: { required: false, type: () => [t['./jobs/dto/create-job.dto'].JobSourceDto] },
+            },
+          },
+        ],
+        [
+          import('./jobs/dto/update-job.dto'),
+          {
+            UpdateJobDto: {
+              title: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              companyId: { required: false, type: () => Number },
+              companyName: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              author: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              location: { required: false, type: () => String, minLength: 1, maxLength: 255 },
+              url: { required: false, type: () => String, format: 'uri' },
+              postedAt: { required: false, type: () => String },
+              description: { required: false, type: () => String },
+              isRemote: { required: false, type: () => Boolean },
+              tags: { required: false, type: () => [String] },
+              metadata: { required: false, type: () => [t['./jobs/dto/create-job.dto'].JobMetadataDto] },
+            },
+          },
+        ],
+        [
+          import('./jobs/dto/job-order-by.dto'),
+          {
+            JobOrderByDto: {
+              createdAt: { required: false, enum: t['./jobs/dto/job-order-by.dto'].SortOrder },
+              updatedAt: { required: false, enum: t['./jobs/dto/job-order-by.dto'].SortOrder },
+              postedAt: { required: false, enum: t['./jobs/dto/job-order-by.dto'].SortOrder },
+              title: { required: false, enum: t['./jobs/dto/job-order-by.dto'].SortOrder },
+              company: { required: false, enum: t['./jobs/dto/job-order-by.dto'].SortOrder },
+            },
+          },
+        ],
+        [
+          import('./jobs/dto/job-path-params.dto'),
+          {
+            CompanyPathParamsDto: { companyId: { required: true, type: () => Number } },
+            TagPathParamsDto: { tagName: { required: true, type: () => String } },
+            JobIdPathParamsDto: { id: { required: true, type: () => Number } },
+          },
+        ],
+        [
+          import('./jobs/dto/job-filter-query.dto'),
+          {
+            JobFilterQueryDto: {
+              search: { required: false, type: () => String },
+              companyId: { required: false, type: () => Number },
+              location: { required: false, type: () => String },
+              isRemote: { required: false, type: () => Boolean },
+              tags: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./notifications/dto/create-subscription.dto'),
+          {
+            CreateSubscriptionDto: {
+              type: { required: true, type: () => Object },
+              endpoint: { required: true, type: () => String },
+              keys: { required: true, type: () => Object },
+            },
+          },
+        ],
+        [
+          import('./notifications/dto/mass-notification.dto'),
+          {
+            MassNotificationDto: {
+              title: { required: true, type: () => String },
+              body: { required: true, type: () => String },
+              url: { required: true, type: () => String, format: 'uri' },
+              icon: { required: false, type: () => String },
+              badge: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/company.entity'),
+          {
+            Company: {
+              id: { required: true, type: () => Number },
+              name: { required: true, type: () => String },
+              jobs: { required: false, type: () => [t['./generated/nestjs-dto/job.entity'].Job] },
+              createdAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/taggable.entity'),
+          {
+            Taggable: {
+              id: { required: true, type: () => Number },
+              tagId: { required: true, type: () => Number },
+              tagType: { required: true, type: () => String },
+              taggableId: { required: true, type: () => Number },
+              tag: { required: false, type: () => t['./generated/nestjs-dto/tag.entity'].Tag },
+              createdAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/tag.entity'),
+          {
+            Tag: {
+              id: { required: true, type: () => Number },
+              name: { required: true, type: () => String },
+              jobTags: { required: false, type: () => [t['./generated/nestjs-dto/jobTag.entity'].JobTag] },
+              taggables: { required: false, type: () => [t['./generated/nestjs-dto/taggable.entity'].Taggable] },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/jobTag.entity'),
+          {
+            JobTag: {
+              id: { required: true, type: () => Number },
+              jobId: { required: true, type: () => Number },
+              tagId: { required: true, type: () => Number },
+              job: { required: false, type: () => t['./generated/nestjs-dto/job.entity'].Job },
+              tag: { required: false, type: () => t['./generated/nestjs-dto/tag.entity'].Tag },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/jobMetadata.entity'),
+          {
+            JobMetadata: {
+              id: { required: true, type: () => Number },
+              jobId: { required: true, type: () => Number },
+              name: { required: true, type: () => String },
+              value: { required: true, type: () => String },
+              createdAt: { required: true, type: () => Date },
+              updatedAt: { required: true, type: () => Date },
+              job: { required: false, type: () => t['./generated/nestjs-dto/job.entity'].Job },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/jobSource.entity'),
+          {
+            JobSource: {
+              id: { required: true, type: () => Number },
+              jobId: { required: true, type: () => Number },
+              source: { required: true, type: () => String },
+              externalId: { required: true, type: () => String, nullable: true },
+              rawUrl: { required: true, type: () => String, nullable: true },
+              data: { required: true, type: () => Object, nullable: true },
+              createdAt: { required: true, type: () => Date },
+              job: { required: false, type: () => t['./generated/nestjs-dto/job.entity'].Job },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/job.entity'),
+          {
+            Job: {
+              id: { required: true, type: () => Number },
+              title: { required: true, type: () => String },
+              companyId: { required: true, type: () => Number, nullable: true },
+              company: {
+                required: false,
+                type: () => t['./generated/nestjs-dto/company.entity'].Company,
+                nullable: true,
+              },
+              author: { required: true, type: () => String, nullable: true },
+              location: { required: true, type: () => String, nullable: true },
+              url: { required: true, type: () => String },
+              postedAt: { required: true, type: () => Date, nullable: true },
+              description: { required: true, type: () => String, nullable: true },
+              isRemote: { required: true, type: () => Boolean, nullable: true },
+              createdAt: { required: true, type: () => Date },
+              updatedAt: { required: true, type: () => Date },
+              tags: { required: false, type: () => [t['./generated/nestjs-dto/jobTag.entity'].JobTag] },
+              metadata: { required: false, type: () => [t['./generated/nestjs-dto/jobMetadata.entity'].JobMetadata] },
+              sources: { required: false, type: () => [t['./generated/nestjs-dto/jobSource.entity'].JobSource] },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/subscription.entity'),
+          {
+            Subscription: {
+              id: { required: true, type: () => Number },
+              ipAddress: { required: true, type: () => String },
+              type: { required: true, type: () => Object },
+              endpoint: { required: true, type: () => String },
+              keys: { required: true, type: () => Object, nullable: true },
+              createdAt: { required: true, type: () => Date },
+              locations: { required: false, type: () => [t['./generated/nestjs-dto/location.entity'].Location] },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/location.entity'),
+          {
+            Location: {
+              id: { required: true, type: () => Number },
+              ipAddress: { required: true, type: () => String },
+              accuracy: { required: true, type: () => Number, nullable: true },
+              altitude: { required: true, type: () => Number, nullable: true },
+              altitudeAccuracy: { required: true, type: () => Number, nullable: true },
+              heading: { required: true, type: () => Number, nullable: true },
+              latitude: { required: true, type: () => Number, nullable: true },
+              longitude: { required: true, type: () => Number, nullable: true },
+              speed: { required: true, type: () => Number, nullable: true },
+              mocked: { required: true, type: () => Boolean },
+              timestamp: { required: true, type: () => BigInt, nullable: true },
+              city: { required: true, type: () => String, nullable: true },
+              country: { required: true, type: () => String, nullable: true },
+              district: { required: true, type: () => String, nullable: true },
+              formattedAddress: { required: true, type: () => String, nullable: true },
+              isoCountryCode: { required: true, type: () => String, nullable: true },
+              name: { required: true, type: () => String, nullable: true },
+              postalCode: { required: true, type: () => String, nullable: true },
+              region: { required: true, type: () => String, nullable: true },
+              street: { required: true, type: () => String, nullable: true },
+              streetNumber: { required: true, type: () => String, nullable: true },
+              subregion: { required: true, type: () => String, nullable: true },
+              timezone: { required: true, type: () => String, nullable: true },
+              createdAt: { required: true, type: () => Date },
+              subscriptionId: { required: true, type: () => Number },
+              subscription: {
+                required: false,
+                type: () => t['./generated/nestjs-dto/subscription.entity'].Subscription,
+              },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-company.dto'),
+          {
+            ConnectCompanyDto: {
+              id: { required: false, type: () => Number },
+              name: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-errorReport.dto'),
+          { ConnectErrorReportDto: { id: { required: true, type: () => String } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-job.dto'),
+          {
+            ConnectJobDto: {
+              id: { required: false, type: () => Number },
+              url: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-jobMetadata.dto'),
+          { ConnectJobMetadataDto: { id: { required: true, type: () => Number } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-jobSource.dto'),
+          { ConnectJobSourceDto: { id: { required: true, type: () => Number } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-jobTag.dto'),
+          { ConnectJobTagDto: { id: { required: true, type: () => Number } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-location.dto'),
+          { ConnectLocationDto: { id: { required: true, type: () => Number } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-redditMessage.dto'),
+          {
+            ConnectRedditMessageDto: {
+              id: { required: false, type: () => Number },
+              redditId: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-redditPost.dto'),
+          {
+            ConnectRedditPostDto: {
+              id: { required: false, type: () => Number },
+              url: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-subscription.dto'),
+          {
+            ConnectSubscriptionDto: {
+              id: { required: false, type: () => Number },
+              endpoint: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-tag.dto'),
+          {
+            ConnectTagDto: {
+              id: { required: false, type: () => Number },
+              name: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-taggable.dto'),
+          { ConnectTaggableDto: { id: { required: true, type: () => Number } } },
+        ],
+        [
+          import('./generated/nestjs-dto/connect-user.dto'),
+          {
+            ConnectUserDto: {
+              id: { required: false, type: () => Number },
+              email: { required: false, type: () => String },
+              googleId: { required: false, type: () => String },
+              wallet: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-company.dto'),
+          { CreateCompanyDto: { name: { required: true, type: () => String } } },
+        ],
+        [
+          import('./generated/nestjs-dto/create-errorReport.dto'),
+          {
+            CreateErrorReportDto: {
+              message: { required: true, type: () => String },
+              stack: { required: false, type: () => String },
+              platform: { required: false, type: () => String },
+              isFatal: { required: false, type: () => Boolean },
+              errorInfo: { required: false, type: () => Object },
+              payload: { required: true, type: () => Object },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-job.dto'),
+          {
+            CreateJobDto: {
+              title: { required: true, type: () => String },
+              author: { required: false, type: () => String },
+              location: { required: false, type: () => String },
+              url: { required: true, type: () => String },
+              postedAt: { required: false, type: () => Date },
+              description: { required: false, type: () => String },
+              isRemote: { required: false, type: () => Boolean },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-jobMetadata.dto'),
+          {
+            CreateJobMetadataDto: {
+              name: { required: true, type: () => String },
+              value: { required: true, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-jobSource.dto'),
+          {
+            CreateJobSourceDto: {
+              source: { required: true, type: () => String },
+              externalId: { required: false, type: () => String },
+              rawUrl: { required: false, type: () => String },
+              data: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [import('./generated/nestjs-dto/create-jobTag.dto'), { CreateJobTagDto: {} }],
+        [
+          import('./generated/nestjs-dto/create-location.dto'),
+          {
+            CreateLocationDto: {
+              ipAddress: { required: true, type: () => String },
+              accuracy: { required: false, type: () => Number },
+              altitude: { required: false, type: () => Number },
+              altitudeAccuracy: { required: false, type: () => Number },
+              heading: { required: false, type: () => Number },
+              latitude: { required: false, type: () => Number },
+              longitude: { required: false, type: () => Number },
+              speed: { required: false, type: () => Number },
+              mocked: { required: true, type: () => Boolean },
+              timestamp: { required: false, type: () => BigInt },
+              city: { required: false, type: () => String },
+              country: { required: false, type: () => String },
+              district: { required: false, type: () => String },
+              formattedAddress: { required: false, type: () => String },
+              isoCountryCode: { required: false, type: () => String },
+              name: { required: false, type: () => String },
+              postalCode: { required: false, type: () => String },
+              region: { required: false, type: () => String },
+              street: { required: false, type: () => String },
+              streetNumber: { required: false, type: () => String },
+              subregion: { required: false, type: () => String },
+              timezone: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-redditMessage.dto'),
+          {
+            CreateRedditMessageDto: {
+              redditId: { required: true, type: () => String },
+              type: { required: true, type: () => String },
+              author: { required: true, type: () => String },
+              content: { required: true, type: () => String },
+              bodyHtml: { required: false, type: () => String },
+              subreddit: { required: false, type: () => String },
+              contextUrl: { required: false, type: () => String },
+              parentId: { required: false, type: () => String },
+              messageType: { required: false, type: () => String },
+              rawData: { required: false, type: () => Object },
+              createdAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-redditPost.dto'),
+          {
+            CreateRedditPostDto: {
+              title: { required: true, type: () => String },
+              author: { required: true, type: () => String },
+              subreddit: { required: true, type: () => String },
+              url: { required: true, type: () => String },
+              body: { required: false, type: () => String },
+              bodyHtml: { required: false, type: () => String },
+              postedAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-subscription.dto'),
+          {
+            CreateSubscriptionDto: {
+              ipAddress: { required: true, type: () => String },
+              endpoint: { required: true, type: () => String },
+              keys: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-tag.dto'),
+          { CreateTagDto: { name: { required: true, type: () => String } } },
+        ],
+        [
+          import('./generated/nestjs-dto/create-taggable.dto'),
+          {
+            CreateTaggableDto: {
+              tagType: { required: true, type: () => String },
+              taggableId: { required: true, type: () => Number },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/create-user.dto'),
+          {
+            CreateUserDto: {
+              email: { required: true, type: () => String },
+              password: { required: true, type: () => String },
+              firstname: { required: false, type: () => String },
+              lastname: { required: false, type: () => String },
+              username: { required: false, type: () => String },
+              profilePicture: { required: false, type: () => String },
+              googleId: { required: false, type: () => String },
+              wallet: { required: false, type: () => String },
+              is_active: { required: false, type: () => Boolean },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/errorReport.entity'),
+          {
+            ErrorReport: {
+              id: { required: true, type: () => String },
+              message: { required: true, type: () => String },
+              stack: { required: true, type: () => String, nullable: true },
+              platform: { required: true, type: () => String, nullable: true },
+              isFatal: { required: true, type: () => Boolean, nullable: true },
+              errorInfo: { required: true, type: () => Object, nullable: true },
+              payload: { required: true, type: () => Object },
+              createdAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/redditMessage.entity'),
+          {
+            RedditMessage: {
+              id: { required: true, type: () => Number },
+              redditId: { required: true, type: () => String },
+              type: { required: true, type: () => String },
+              author: { required: true, type: () => String },
+              content: { required: true, type: () => String },
+              bodyHtml: { required: true, type: () => String, nullable: true },
+              subreddit: { required: true, type: () => String, nullable: true },
+              contextUrl: { required: true, type: () => String, nullable: true },
+              parentId: { required: true, type: () => String, nullable: true },
+              messageType: { required: true, type: () => String, nullable: true },
+              isRead: { required: true, type: () => Boolean },
+              isSubredditModMail: { required: true, type: () => Boolean },
+              isInternal: { required: true, type: () => Boolean },
+              rawData: { required: true, type: () => Object, nullable: true },
+              createdAt: { required: true, type: () => Date },
+              receivedAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/redditPost.entity'),
+          {
+            RedditPost: {
+              id: { required: true, type: () => Number },
+              title: { required: true, type: () => String },
+              author: { required: true, type: () => String },
+              subreddit: { required: true, type: () => String },
+              url: { required: true, type: () => String },
+              type: { required: true, type: () => String },
+              body: { required: true, type: () => String, nullable: true },
+              bodyHtml: { required: true, type: () => String, nullable: true },
+              upvotes: { required: true, type: () => Number },
+              downvotes: { required: true, type: () => Number },
+              createdAt: { required: true, type: () => Date },
+              postedAt: { required: true, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-company.dto'),
+          { UpdateCompanyDto: { name: { required: false, type: () => String } } },
+        ],
+        [
+          import('./generated/nestjs-dto/update-errorReport.dto'),
+          {
+            UpdateErrorReportDto: {
+              message: { required: false, type: () => String },
+              stack: { required: false, type: () => String },
+              platform: { required: false, type: () => String },
+              isFatal: { required: false, type: () => Boolean },
+              errorInfo: { required: false, type: () => Object },
+              payload: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-job.dto'),
+          {
+            UpdateJobDto: {
+              title: { required: false, type: () => String },
+              author: { required: false, type: () => String },
+              location: { required: false, type: () => String },
+              url: { required: false, type: () => String },
+              postedAt: { required: false, type: () => Date },
+              description: { required: false, type: () => String },
+              isRemote: { required: false, type: () => Boolean },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-jobMetadata.dto'),
+          {
+            UpdateJobMetadataDto: {
+              name: { required: false, type: () => String },
+              value: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-jobSource.dto'),
+          {
+            UpdateJobSourceDto: {
+              source: { required: false, type: () => String },
+              externalId: { required: false, type: () => String },
+              rawUrl: { required: false, type: () => String },
+              data: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [import('./generated/nestjs-dto/update-jobTag.dto'), { UpdateJobTagDto: {} }],
+        [
+          import('./generated/nestjs-dto/update-location.dto'),
+          {
+            UpdateLocationDto: {
+              ipAddress: { required: false, type: () => String },
+              accuracy: { required: false, type: () => Number },
+              altitude: { required: false, type: () => Number },
+              altitudeAccuracy: { required: false, type: () => Number },
+              heading: { required: false, type: () => Number },
+              latitude: { required: false, type: () => Number },
+              longitude: { required: false, type: () => Number },
+              speed: { required: false, type: () => Number },
+              mocked: { required: false, type: () => Boolean },
+              timestamp: { required: false, type: () => BigInt },
+              city: { required: false, type: () => String },
+              country: { required: false, type: () => String },
+              district: { required: false, type: () => String },
+              formattedAddress: { required: false, type: () => String },
+              isoCountryCode: { required: false, type: () => String },
+              name: { required: false, type: () => String },
+              postalCode: { required: false, type: () => String },
+              region: { required: false, type: () => String },
+              street: { required: false, type: () => String },
+              streetNumber: { required: false, type: () => String },
+              subregion: { required: false, type: () => String },
+              timezone: { required: false, type: () => String },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-redditMessage.dto'),
+          {
+            UpdateRedditMessageDto: {
+              redditId: { required: false, type: () => String },
+              type: { required: false, type: () => String },
+              author: { required: false, type: () => String },
+              content: { required: false, type: () => String },
+              bodyHtml: { required: false, type: () => String },
+              subreddit: { required: false, type: () => String },
+              contextUrl: { required: false, type: () => String },
+              parentId: { required: false, type: () => String },
+              messageType: { required: false, type: () => String },
+              rawData: { required: false, type: () => Object },
+              createdAt: { required: false, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-redditPost.dto'),
+          {
+            UpdateRedditPostDto: {
+              title: { required: false, type: () => String },
+              author: { required: false, type: () => String },
+              subreddit: { required: false, type: () => String },
+              url: { required: false, type: () => String },
+              body: { required: false, type: () => String },
+              bodyHtml: { required: false, type: () => String },
+              postedAt: { required: false, type: () => Date },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-subscription.dto'),
+          {
+            UpdateSubscriptionDto: {
+              ipAddress: { required: false, type: () => String },
+              endpoint: { required: false, type: () => String },
+              keys: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-tag.dto'),
+          { UpdateTagDto: { name: { required: false, type: () => String } } },
+        ],
+        [
+          import('./generated/nestjs-dto/update-taggable.dto'),
+          {
+            UpdateTaggableDto: {
+              tagType: { required: false, type: () => String },
+              taggableId: { required: false, type: () => Number },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/update-user.dto'),
+          {
+            UpdateUserDto: {
+              email: { required: false, type: () => String },
+              password: { required: false, type: () => String },
+              firstname: { required: false, type: () => String },
+              lastname: { required: false, type: () => String },
+              username: { required: false, type: () => String },
+              profilePicture: { required: false, type: () => String },
+              googleId: { required: false, type: () => String },
+              wallet: { required: false, type: () => String },
+              is_active: { required: false, type: () => Boolean },
+            },
+          },
+        ],
+        [
+          import('./generated/nestjs-dto/user.entity'),
+          {
+            User: {
+              id: { required: true, type: () => Number },
+              createdAt: { required: true, type: () => Date },
+              updatedAt: { required: true, type: () => Date },
+              email: { required: true, type: () => String },
+              password: { required: true, type: () => String },
+              firstname: { required: true, type: () => String, nullable: true },
+              lastname: { required: true, type: () => String, nullable: true },
+              username: { required: true, type: () => String, nullable: true },
+              profilePicture: { required: true, type: () => String, nullable: true },
+              googleId: { required: true, type: () => String, nullable: true },
+              role: { required: true, type: () => Object },
+              wallet: { required: true, type: () => String, nullable: true },
+              is_active: { required: true, type: () => Boolean, nullable: true },
+            },
+          },
+        ],
+        [
+          import('./users/dto/user.dto'),
+          {
+            UserDTO: {
+              name: { required: true, type: () => String, minLength: 1 },
+              image: { required: true, type: () => String, format: 'uri' },
+            },
+            UpdateUserDTO: {
+              description: { required: true, type: () => String, minLength: 3, maxLength: 255 },
+              profileImageUrl: {
+                required: true,
+                type: () => String,
+                format: 'uri',
+                pattern: 'nyc3.digitaloceanspaces.com',
+              },
+              bannerImageUrl: {
+                required: true,
+                type: () => String,
+                format: 'uri',
+                pattern: 'nyc3.digitaloceanspaces.com',
+              },
+              twitter: { required: true, type: () => String, minLength: 1, maxLength: 50 },
+            },
+            RegisterUserDTO: {
+              email: { required: true, type: () => String, format: 'email' },
+              username: { required: true, type: () => String },
+              password: { required: true, type: () => String },
+              passwordConfirmation: { required: true, type: () => String },
+            },
+            LoginUserDTO: {
+              username: { required: true, type: () => String },
+              password: { required: true, type: () => String },
+            },
+            RefreshTokenDTO: {
+              accessToken: { required: true, type: () => String },
+              refreshToken: { required: true, type: () => String },
+            },
+            RefreshTokenUpdateDTO: { isValid: { required: true, type: () => Boolean } },
+            CheckUsernameDTO: { username: { required: true, type: () => String } },
+            RegisterWalletDTO: {
+              walletAddress: { required: true, type: () => String },
+              networkId: { required: true, type: () => String },
+              signature: { required: true, type: () => String },
+            },
+          },
+        ],
+      ],
+      controllers: [
+        [
+          import('./jobs/job.controller'),
+          {
+            JobController: {
+              fetchJobs: {},
+              findByCompany: {},
+              findByTag: {},
+              create: {},
+              findAll: {},
+              findOne: {},
+              update: {},
+              remove: {},
+            },
+          },
+        ],
+        [
+          import('./auth/auth.controller'),
+          { AuthController: { googleAuth: { type: t['./auth/models/token.model'].Token } } },
+        ],
+        [import('./app.controller'), { AppController: { getHello: { type: String } } }],
+        [
+          import('./notifications/notifications.controller'),
+          { NotificationsController: { getPublicKey: {}, subscribe: {}, mass: {} } },
+        ],
+        [import('./users/user.controller'), { UserController: { walletTokenSell: { type: String } } }],
+      ],
+    },
+    '@nestjs/graphql/plugin': {
+      models: [
+        [
+          import('./common/pagination/pagination.args'),
+          {
+            PaginationArgs: {
+              skip: { nullable: true },
+              after: { nullable: true },
+              before: { nullable: true },
+              first: { nullable: true },
+              last: { nullable: true },
+            },
+          },
+        ],
+        [import('./common/models/base.model'), { BaseModel: { id: {}, createdAt: {}, updatedAt: {} } }],
+        [import('./users/models/user.model'), { User: { role: {} } }],
+        [
+          import('./auth/dto/signup.input'),
+          { SignupInput: { email: {}, password: {}, firstname: { nullable: true }, lastname: { nullable: true } } },
+        ],
+        [import('./auth/models/token.model'), { Token: { accessToken: {}, refreshToken: {} } }],
+        [import('./auth/models/auth.model'), { Auth: { user: { type: () => t['./users/models/user.model'].User } } }],
+        [import('./auth/dto/login.input'), { LoginInput: { email: {}, password: {} } }],
+        [import('./auth/dto/refresh-token.input'), { RefreshTokenInput: { token: {} } }],
+        [import('./auth/dto/google-auth.input'), { GoogleAuthInput: { idToken: {}, buildType: { nullable: true } } }],
+        [import('./users/dto/change-password.input'), { ChangePasswordInput: { oldPassword: {}, newPassword: {} } }],
+        [
+          import('./users/dto/update-user.input'),
+          { UpdateUserInput: { firstname: { nullable: true }, lastname: { nullable: true } } },
+        ],
+        [
+          import('./common/pagination/page-info.model'),
+          {
+            PageInfo: {
+              endCursor: { nullable: true },
+              hasNextPage: {},
+              hasPreviousPage: {},
+              startCursor: { nullable: true },
+            },
+          },
+        ],
+        [
+          import('./jobs/args/job.args'),
+          {
+            JobArgs: {
+              orderBy: { nullable: true },
+              search: { nullable: true },
+              companyId: { nullable: true },
+              location: { nullable: true },
+              isRemote: { nullable: true },
+              tags: { nullable: true },
+            },
+          },
+        ],
+      ],
+    },
+  };
 };

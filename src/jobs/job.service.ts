@@ -332,7 +332,7 @@ export class JobService {
       console.log(`First job ID: ${jobs[0].id}, Last job ID: ${jobs[jobs.length - 1].id}`);
     }
 
-  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: null });
+    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: null });
   }
 
   /**
@@ -517,7 +517,7 @@ export class JobService {
       this.prisma.job.count({ where }),
     ]);
 
-  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { company } });
+    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { company } });
   }
 
   /**
@@ -569,7 +569,7 @@ export class JobService {
       this.prisma.job.count({ where }),
     ]);
 
-  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { tag } });
+    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { tag } });
   }
 
   /**
