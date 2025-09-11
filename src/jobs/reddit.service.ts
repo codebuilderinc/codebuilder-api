@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JobService } from './job.service';
-import { NotificationsService, NotificationPayload } from './notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationPayload } from '../notifications/interfaces/notification-payload.interface';
 import { DatabaseService } from '../common/database/database.service';
 
 @Injectable()
@@ -71,6 +72,13 @@ export class RedditService {
             data: post,
           },
         };
+        // EARLY STOP: if this job already exists we assume all subsequent
+        // posts are older (API returns newest first) and can stop processing.
+        const exists = await this.jobService.jobExists(post.url);
+        if (exists) {
+          this.logger.log(`Encountered existing Reddit job ${post.url}; stopping further processing.`);
+          break;
+        }
         const upsertedJob = await this.jobService.upsertJob(jobInput);
         // Send notifications for new jobs
         const notificationPayload: NotificationPayload = {
