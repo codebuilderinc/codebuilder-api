@@ -15,6 +15,9 @@ import { EventsModule } from './events/events.module';
 import { OpenTelemetryModule } from 'nestjs-otel';
 import { LoggerModule } from './logger/logger.module';
 import { RedisModule } from './common/redis/redis.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { LocationModule } from './location/location.module';
+import { ErrorsModule } from './errors/errors.module';
 
 //import { ConfigModule } from '@nestjs/config';
 //import { AppResolver } from './app.resolver';
@@ -74,6 +77,9 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
     //RedisModule,
 
     WssModule,
+    NotificationsModule,
+    LocationModule,
+    ErrorsModule,
   ],
   providers: [],
 })
