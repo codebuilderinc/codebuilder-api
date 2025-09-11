@@ -5,7 +5,7 @@ import { JobController } from './job.controller';
 import { CommonModule } from '../common/common.module';
 import { Web3CareerService } from './web3career.service';
 import { RedditService } from './reddit.service';
-import { NotificationsService } from './notifications.service';
+// Notifications are now provided globally by NotificationsModule
 
 /**
  * Job Module
@@ -25,7 +25,7 @@ import { NotificationsService } from './notifications.service';
     CommonModule, // Provides database, authentication, and other shared services
   ],
   controllers: [JobController], // REST API endpoints
-  providers: [JobService, Web3CareerService, RedditService, NotificationsService], // Business logic and GraphQL resolvers //JobResolver
-  exports: [JobService, Web3CareerService, RedditService, NotificationsService], // Allow other modules to use these services
+  providers: [JobService, Web3CareerService, RedditService], // Business logic and GraphQL resolvers //JobResolver
+  exports: [JobService, Web3CareerService, RedditService], // Allow other modules to use these services
 })
 export class JobModule {}

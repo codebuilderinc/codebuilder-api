@@ -6,6 +6,7 @@ import { UpdateJobDto } from './dto/update-job.dto';
 import { JobOrderByDto } from './dto/job-order-by.dto';
 import { PaginationArgs } from '../common/pagination/pagination.args';
 import { Company, Job, Tag } from '@prisma/client';
+import { buildPaginatedResult } from '../common/pagination/pagination.util';
 // Remove Company import and use type inference or define Company type inline if needed
 
 /**
@@ -331,16 +332,7 @@ export class JobService {
       console.log(`First job ID: ${jobs[0].id}, Last job ID: ${jobs[jobs.length - 1].id}`);
     }
 
-    return {
-      jobs,
-      totalCount,
-      pageInfo: {
-        hasNextPage: skip + take < totalCount,
-        hasPreviousPage: skip > 0,
-        startCursor: skip,
-        endCursor: skip + jobs.length,
-      },
-    };
+  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: null });
   }
 
   /**
@@ -525,17 +517,7 @@ export class JobService {
       this.prisma.job.count({ where }),
     ]);
 
-    return {
-      jobs,
-      company,
-      totalCount,
-      pageInfo: {
-        hasNextPage: skip + take < totalCount,
-        hasPreviousPage: skip > 0,
-        startCursor: skip,
-        endCursor: skip + jobs.length,
-      },
-    };
+  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { company } });
   }
 
   /**
@@ -587,17 +569,7 @@ export class JobService {
       this.prisma.job.count({ where }),
     ]);
 
-    return {
-      jobs,
-      tag,
-      totalCount,
-      pageInfo: {
-        hasNextPage: skip + take < totalCount,
-        hasPreviousPage: skip > 0,
-        startCursor: skip,
-        endCursor: skip + jobs.length,
-      },
-    };
+  return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { tag } });
   }
 
   /**
