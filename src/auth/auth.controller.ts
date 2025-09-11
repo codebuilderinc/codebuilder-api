@@ -1,8 +1,8 @@
 import { Body, Controller, Post, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GoogleAuthInput } from './dto/google-auth.input';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { ApiPaginationQuery } from '../common/decorators/api-nested-query.decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { Api } from '../common/decorators/api.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -13,12 +13,16 @@ export class AuthController {
    * Fetch new jobs from Reddit and Web3Career, store them, and send notifications
    */
   @Post('google')
-  @ApiOperation({
-    summary: 'Fetch new jobs from Reddit and Web3Career',
-    description: 'Fetches new jobs from both sources, stores them, and sends notifications.',
+  @Api({
+    summary: 'Google authentication',
+    description: 'Authenticate a user using a Google ID token and optional buildType.',
+    bodyType: GoogleAuthInput,
+    envelope: true,
+    responses: [
+      { status: 200, description: 'Authenticated successfully.' },
+      { status: 400, description: 'ID token missing or invalid.' },
+    ],
   })
-  @ApiParam({ name: 'idToken', description: 'Google ID Token', type: String })
-  @ApiResponse({ status: 200, description: 'Jobs fetched and notifications sent.' })
   @HttpCode(HttpStatus.OK)
   async googleAuth(@Body() googleAuthInput: GoogleAuthInput) {
     const { idToken, buildType } = googleAuthInput;

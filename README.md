@@ -99,3 +99,61 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## API Conventions
+
+### Response Envelope
+
+Endpoints using the custom `@Api({ envelope: true })` decorator option return:
+
+```
+{ "success": true, "data": <payload> }
+```
+
+Errors are normalized by the global `HttpExceptionFilter` into:
+
+```
+{
+  "success": false,
+  "error": {
+    "statusCode": 400,
+    "message": "Validation failed",
+    "details": {},
+    "path": "/endpoint",
+    "timestamp": "2025-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### Pagination Shape
+
+Paginated endpoints (with `paginatedResponseType`) return (inside the envelope when enabled):
+
+```
+{
+  "items": [ ... ],
+  "pageInfo": {
+    "hasNextPage": true,
+    "hasPreviousPage": false,
+    "startCursor": "0",
+    "endCursor": "25"
+  },
+  "totalCount": 1234,
+  "meta": { "company": { ... } }
+}
+```
+
+Use `buildPaginatedResult({ items, skip, take, totalCount, meta })` in services.
+
+### Automatic Swagger Params
+
+Annotate DTO properties with `@Field({ inQuery: true })` or `@Field({ inPath: true })`. Add those DTOs to `queriesFrom` / `pathParamsFrom` in `@Api()` and Swagger params are generated automatically.
+
+### Adding a New Paginated Endpoint
+1. Create / reuse DTOs + annotate filters & pagination args with `@Field`.
+2. Controller: `@Api({ paginatedResponseType: MyDto, envelope: true, queriesFrom: [PaginationArgs, FilterDto] })`.
+3. Service: return `buildPaginatedResult`.
+
+### Error Handling
+Throw standard Nest `HttpException` subclasses. The filter wraps them in the envelope. Custom non-Http errors can be mapped by extending the filter if needed.
+

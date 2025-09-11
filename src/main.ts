@@ -49,6 +49,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { HttpExceptionFilter } from './common/filters/exception.filter'; // Assuming path to your filter
+import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -133,6 +134,8 @@ async function bootstrap(): Promise<void> {
   // Global filters for exception handling.
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new HttpExceptionFilter(), new PrismaClientExceptionFilter(httpAdapter));
+  // Global interceptor for standardized response envelopes (only wraps endpoints marked with envelope flag)
+  app.useGlobalInterceptors(new ResponseEnvelopeInterceptor());
 
   // ===================================
   // WebSocket Adapter (Optional)
