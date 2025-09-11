@@ -52,6 +52,12 @@ export class Web3CareerService {
             data: job,
           },
         };
+        // EARLY STOP: if job already exists assume remaining are older.
+        const exists = await this.jobService.jobExists(job.apply_url);
+        if (exists) {
+          this.logger.log(`Encountered existing Web3Career job ${job.apply_url}; stopping further processing.`);
+          break;
+        }
         const upserted = await this.jobService.upsertJob(jobInput);
         newJobs.push(upserted);
       } catch (error: any) {
