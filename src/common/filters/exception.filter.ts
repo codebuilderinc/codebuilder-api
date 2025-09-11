@@ -25,11 +25,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
       // no-op: never block response on logging failures
     }
 
+    const payload = exception.getResponse?.();
     response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.path,
-      exception: exception.getResponse(),
+      success: false,
+      error: {
+        statusCode: status,
+        message: (payload as any)?.message || exception.message,
+        details: payload,
+        path: request.path,
+        timestamp: new Date().toISOString(),
+      },
     });
   }
 }
