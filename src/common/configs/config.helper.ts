@@ -5,17 +5,50 @@ import { ApplicationConfig, Config } from './config.interface';
 import config from './config';
 
 export function loadConfig() {
-  const filePath = `.env`; //${process.env.NODE_ENV || 'local'}
+  // Determine which env file to load. Precedence:
+  // 1. Explicit ENV_FILE var
+  // 2. NODE_ENV=local|development -> .env.local (if exists)
+  // 3. Fallback to .env
+  const explicit = process.env.ENV_FILE;
+  const nodeEnv = (process.env.NODE_ENV || '').toLowerCase();
+  const candidates: string[] = [];
+  if (explicit) {
+    candidates.push(explicit);
+  } else if (['local', 'development', 'dev'].includes(nodeEnv)) {
+    candidates.push('.env.local');
+  }
+  candidates.push('.env');
 
-  // Try to read and parse the file
+  let pickedPath = '.env';
+  for (const c of candidates) {
+    if (fs.existsSync(c)) {
+      pickedPath = c;
+      break;
+    }
+  }
+
   let file = Buffer.from('');
   try {
-    file = fs.readFileSync(filePath);
+    file = fs.readFileSync(pickedPath);
   } catch {
-    /* empty */
+    // If nothing found we proceed with empty buffer relying on process.env
   }
 
   const dotenvConfig = dotenv.parse(file);
+
+  // Inject parsed values into process.env if not already present so the rest of the
+  // application (e.g. main.ts reading process.env.PORT) sees them.
+  for (const [k, v] of Object.entries(dotenvConfig)) {
+    if (process.env[k] === undefined) {
+      process.env[k] = v;
+    }
+  }
+
+  if (!process.env.ENV_FILE_LOGGED) {
+    // Single log guard to avoid spamming on hot-reload
+    console.log(`[config] Loaded environment file: ${pickedPath}`);
+    process.env.ENV_FILE_LOGGED = 'true';
+  }
 
   // Parse nested JSON in file and merge with process.env
   const parsedConfig = parseNestedJson({
