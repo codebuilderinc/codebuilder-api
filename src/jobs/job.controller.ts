@@ -94,8 +94,8 @@ export class JobController {
     summary: 'Get jobs by company',
     description: 'Retrieves all job listings for a specific company',
     pathParamsFrom: CompanyPathParamsDto,
-  paginatedResponseType: JobDto,
-  envelope: true,
+    paginatedResponseType: JobDto,
+    envelope: true,
     queriesFrom: [PaginationArgs],
   })
   async findByCompany(
@@ -125,8 +125,8 @@ export class JobController {
     summary: 'Get jobs by tag',
     description: 'Retrieves all job listings that have a specific tag',
     pathParamsFrom: TagPathParamsDto,
-  paginatedResponseType: JobDto,
-  envelope: true,
+    paginatedResponseType: JobDto,
+    envelope: true,
     queriesFrom: [PaginationArgs],
   })
   async findByTag(
@@ -176,8 +176,8 @@ export class JobController {
   @Api({
     summary: 'Get all job listings',
     description: 'Retrieves a paginated list of job listings with optional filtering',
-  paginatedResponseType: JobDto,
-  envelope: true,
+    paginatedResponseType: JobDto,
+    envelope: true,
     queriesFrom: [PaginationArgs, JobFilterQueryDto],
   })
   async findAll(

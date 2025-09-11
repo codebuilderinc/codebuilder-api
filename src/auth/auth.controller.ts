@@ -17,7 +17,7 @@ export class AuthController {
     summary: 'Google authentication',
     description: 'Authenticate a user using a Google ID token and optional buildType.',
     bodyType: GoogleAuthInput,
-  envelope: true,
+    envelope: true,
     responses: [
       { status: 200, description: 'Authenticated successfully.' },
       { status: 400, description: 'ID token missing or invalid.' },
