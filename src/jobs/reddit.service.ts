@@ -72,12 +72,11 @@ export class RedditService {
             data: post,
           },
         };
-        // EARLY STOP: if this job already exists we assume all subsequent
-        // posts are older (API returns newest first) and can stop processing.
+        // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(post.url);
         if (exists) {
-          this.logger.log(`Encountered existing Reddit job ${post.url}; stopping further processing.`);
-          break;
+          this.logger.log(`Skipping existing Reddit job ${post.url}`);
+          continue;
         }
         const upsertedJob = await this.jobService.upsertJob(jobInput);
         // Send notifications for new jobs
