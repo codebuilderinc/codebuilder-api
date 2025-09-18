@@ -52,11 +52,11 @@ export class Web3CareerService {
             data: job,
           },
         };
-        // EARLY STOP: if job already exists assume remaining are older.
+        // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(job.apply_url);
         if (exists) {
-          this.logger.log(`Encountered existing Web3Career job ${job.apply_url}; stopping further processing.`);
-          break;
+          this.logger.log(`Skipping existing Web3Career job ${job.apply_url}`);
+          continue;
         }
         const upserted = await this.jobService.upsertJob(jobInput);
         newJobs.push(upserted);
