@@ -1,8 +1,10 @@
 import { ArgsType } from '@nestjs/graphql';
+import { Type } from 'class-transformer';
 import { Field } from '../decorators/field.decorator';
 
 @ArgsType()
 export class PaginationArgs {
+  @Type(() => Number)
   @Field({
     name: 'skip',
     description: 'Number of records to skip (offset based pagination).',
@@ -36,6 +38,7 @@ export class PaginationArgs {
   })
   before?: string;
 
+  @Type(() => Number)
   @Field({
     name: 'first',
     description: 'Max number of items to return going forward from the cursor.',
@@ -47,6 +50,7 @@ export class PaginationArgs {
   })
   first?: number;
 
+  @Type(() => Number)
   @Field({
     name: 'last',
     description: 'Max number of items to return going backward from the cursor.',
