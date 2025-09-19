@@ -41,7 +41,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   public handleConnection(client: Socket) {
     const { user_id } = this.getClientQuery(client);
-    
+
     console.log('WssGateway: handleConnection', { user_id });
 
     return this.broadcastAll('event', { connected: user_id });

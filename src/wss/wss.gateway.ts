@@ -42,7 +42,8 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit(event_name, message);
   }
 
-  handleConnection(client: io.Socket) {        client.join('msgRoom');
+  handleConnection(client: io.Socket) {
+    client.join('msgRoom');
     const { user_id } = this.getClientQuery(client);
 
     this.logService.info(`WssGateway: handleConnection ${user_id}`);
