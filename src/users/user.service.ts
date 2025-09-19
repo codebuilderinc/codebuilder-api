@@ -30,7 +30,7 @@ export class UserService {
     const hashedPassword = await this.passwordService.hashPassword(changePassword.newPassword);
 
     return this.prisma.user.update({
-      data: {},
+      data: { password: hashedPassword },
       where: { id: userId },
     });
   }
