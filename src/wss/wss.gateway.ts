@@ -43,7 +43,7 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleConnection(client: io.Socket) {
-    console.log('wtf');
+    
     client.join('msgRoom');
     const { user_id } = this.getClientQuery(client);
 
