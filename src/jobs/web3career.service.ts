@@ -28,6 +28,7 @@ export class Web3CareerService {
 
   async storeWeb3CareerJobs(jobs: any[]) {
     const newJobs = [];
+    let skippedCount = 0;
     for (const job of jobs) {
       try {
         const jobInput = {
@@ -55,7 +56,7 @@ export class Web3CareerService {
         // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(job.apply_url);
         if (exists) {
-          this.logger.log(`Skipping existing Web3Career job ${job.apply_url}`);
+          skippedCount++;
           continue;
         }
         const upserted = await this.jobService.upsertJob(jobInput);
@@ -64,6 +65,11 @@ export class Web3CareerService {
         this.logger.error(`Error storing Web3Career job: ${error.message}`);
       }
     }
+
+    this.logger.log(
+      `Web3Career jobs processed: ${jobs.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
+    );
+
     return newJobs;
   }
 
