@@ -45,6 +45,7 @@ export class RedditService {
 
   async storeRedditJobPosts(posts: any[]): Promise<any[]> {
     const newJobs = [];
+    let skippedCount = 0;
     this.logger.log(`Processing ${posts.length} Reddit post(s) for jobs table`);
     const subscriptions = await this.db.subscription.findMany();
     for (const post of posts) {
@@ -75,7 +76,7 @@ export class RedditService {
         // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(post.url);
         if (exists) {
-          this.logger.log(`Skipping existing Reddit job ${post.url}`);
+          skippedCount++;
           continue;
         }
         const upsertedJob = await this.jobService.upsertJob(jobInput);
@@ -97,6 +98,11 @@ export class RedditService {
         this.logger.error(`Error processing Reddit post ${post.url}:`, error);
       }
     }
+
+    this.logger.log(
+      `Reddit jobs processed: ${posts.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
+    );
+
     return newJobs;
   }
 }
