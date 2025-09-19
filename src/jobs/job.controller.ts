@@ -101,18 +101,8 @@ export class JobController {
   async findByCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
     @Query() paginationArgs: PaginationArgs,
-    @Query() orderBy: JobOrderByDto,
-    @Query('skip') skipParam?: string,
-    @Query('first') firstParam?: string
+    @Query() orderBy: JobOrderByDto
   ) {
-    // Ensure pagination parameters are properly converted to numbers
-    if (skipParam) {
-      paginationArgs.skip = parseInt(skipParam, 10);
-    }
-    if (firstParam) {
-      paginationArgs.first = parseInt(firstParam, 10);
-    }
-
     return this.jobService.findByCompany(companyId, paginationArgs, orderBy);
   }
 
@@ -132,18 +122,8 @@ export class JobController {
   async findByTag(
     @Param('tagName') tagName: string,
     @Query() paginationArgs: PaginationArgs,
-    @Query() orderBy: JobOrderByDto,
-    @Query('skip') skipParam?: string,
-    @Query('first') firstParam?: string
+    @Query() orderBy: JobOrderByDto
   ) {
-    // Ensure pagination parameters are properly converted to numbers
-    if (skipParam) {
-      paginationArgs.skip = parseInt(skipParam, 10);
-    }
-    if (firstParam) {
-      paginationArgs.first = parseInt(firstParam, 10);
-    }
-
     return this.jobService.findByTag(tagName, paginationArgs, orderBy);
   }
 
@@ -187,18 +167,8 @@ export class JobController {
     @Query('companyId', new ParseIntPipe({ optional: true })) companyId?: number,
     @Query('location') location?: string,
     @Query('isRemote') isRemote?: boolean,
-    @Query('tags') tags?: string,
-    @Query('skip') skipParam?: string,
-    @Query('first') firstParam?: string
+    @Query('tags') tags?: string
   ) {
-    // Ensure pagination parameters are properly converted to numbers
-    if (skipParam) {
-      paginationArgs.skip = parseInt(skipParam, 10);
-    }
-    if (firstParam) {
-      paginationArgs.first = parseInt(firstParam, 10);
-    }
-
     console.log('Pagination params:', { skip: paginationArgs.skip, first: paginationArgs.first });
 
     return this.jobService.findAll({

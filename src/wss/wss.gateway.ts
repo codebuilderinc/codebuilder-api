@@ -35,18 +35,14 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly logService: LogService) {}
 
   private getClientQuery(client: io.Socket): { [key: string]: string } {
-    console.log('ASDASDASD');
     return client.handshake.query as { [key: string]: string };
   }
 
   public broadcastAll(event_name: string, message: Record<string, unknown>) {
-    console.log('sadadsdasdasd');
     this.server.emit(event_name, message);
   }
 
-  handleConnection(client: io.Socket) {
-    console.log('wtf');
-    client.join('msgRoom');
+  handleConnection(client: io.Socket) {        client.join('msgRoom');
     const { user_id } = this.getClientQuery(client);
 
     this.logService.info(`WssGateway: handleConnection ${user_id}`);
