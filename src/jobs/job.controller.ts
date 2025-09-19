@@ -11,6 +11,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags, ApiQuery, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Api } from '../common/decorators/api.decorator';
@@ -45,6 +46,8 @@ class PaginatedJobResponse extends PaginatedResponse(JobDto) {}
 @ApiTags('jobs')
 @Controller('jobs')
 export class JobController {
+  private readonly logger = new Logger(JobController.name);
+
   constructor(
     private readonly jobService: JobService,
     private readonly web3CareerService: Web3CareerService,
@@ -61,7 +64,7 @@ export class JobController {
     description: 'Fetches new jobs from both sources, stores them, and sends notifications.',
     responses: [{ status: 200, description: 'Jobs fetched and notifications sent.' }],
   })
-  async fetchJobs(): Promise<{ redditJobs: any[]; web3CareerJobs: any[] }> {
+  async fetchJobs(): Promise<{ redditJobs: any[]; web3CareerJobs: any[]; summary: any }> {
     // Fetch Reddit jobs
     const redditSubreddits = [
       'remotejs',
@@ -82,7 +85,28 @@ export class JobController {
     const web3CareerRawJobs = await this.web3CareerService.fetchWeb3CareerJobs();
     const web3CareerJobs = await this.web3CareerService.storeWeb3CareerJobs(web3CareerRawJobs);
 
-    return { redditJobs, web3CareerJobs };
+    // Create summary
+    const summary = {
+      totalFetched: redditPosts.length + web3CareerRawJobs.length,
+      totalAdded: redditJobs.length + web3CareerJobs.length,
+      totalSkipped: redditPosts.length - redditJobs.length + (web3CareerRawJobs.length - web3CareerJobs.length),
+      reddit: {
+        fetched: redditPosts.length,
+        added: redditJobs.length,
+        skipped: redditPosts.length - redditJobs.length,
+      },
+      web3career: {
+        fetched: web3CareerRawJobs.length,
+        added: web3CareerJobs.length,
+        skipped: web3CareerRawJobs.length - web3CareerJobs.length,
+      },
+    };
+
+    this.logger.log(
+      `Job fetch summary: ${summary.totalFetched} total fetched (${summary.reddit.fetched} Reddit, ${summary.web3career.fetched} Web3Career), ${summary.totalAdded} added, ${summary.totalSkipped} skipped (existing)`
+    );
+
+    return { redditJobs, web3CareerJobs, summary };
   }
 
   /**
