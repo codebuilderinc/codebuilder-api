@@ -24,7 +24,6 @@ export class CustomRedisIoAdapter extends IoAdapter {
   }
 
   public createIOServer(port: number, options?: ServerOptions): Server {
-    //console.log('wut the fuck');
     const server = super.createIOServer(port, {
       ...options,
       cors: cors_options_delegate,
