@@ -66,18 +66,7 @@ export class JobController {
   })
   async fetchJobs(): Promise<{ redditJobs: any[]; web3CareerJobs: any[]; summary: any }> {
     // Fetch Reddit jobs
-    const redditSubreddits = [
-      'remotejs',
-      'remotejobs',
-      'forhire',
-      'jobs',
-      'webdevjobs',
-      'frontend',
-      'javascript',
-      'reactjs',
-      'node',
-      'typescript',
-    ];
+    const redditSubreddits = ['remotejs', 'remotejobs', 'forhire', 'jobs', 'webdevjobs'];
     const redditPosts = await this.redditService.fetchRedditPosts(redditSubreddits);
     const redditJobs = await this.redditService.storeRedditJobPosts(redditPosts);
 
