@@ -41,7 +41,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   public handleConnection(client: Socket) {
     const { user_id } = this.getClientQuery(client);
-
+    
+    console.log('WssGateway: handleConnection', { user_id });
 
     return this.broadcastAll('event', { connected: user_id });
   }
@@ -49,6 +50,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   public handleDisconnect(client: Socket) {
     const { user_id } = this.getClientQuery(client);
 
+    console.log('WssGateway: handleDisconnect', { user_id });
 
     return this.broadcastAll('event', { disconnected: user_id });
   }
@@ -66,7 +68,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('identity')
   identity(@MessageBody() data: number): number {
-
     return data;
   }
 }
