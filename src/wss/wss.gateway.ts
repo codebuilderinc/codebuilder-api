@@ -39,7 +39,6 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   public broadcastAll(event_name: string, message: Record<string, unknown>) {
-    console.log('sadadsdasdasd');
     this.server.emit(event_name, message);
   }
 
