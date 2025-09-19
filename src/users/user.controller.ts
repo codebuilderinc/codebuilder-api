@@ -12,7 +12,7 @@ export class UserController {
   @UseGuards(RedisAuthGuard)
   @Get('/wallet/:token/sell')
   @Api({ summary: 'Example secured endpoint', description: 'Placeholder user wallet endpoint.', envelope: true })
-  walletTokenSell(@Param('username') _username: string) {
+  walletTokenSell(@Param('token') token: string) {
     return { message: 'Not yet implemented' };
   }
 }
