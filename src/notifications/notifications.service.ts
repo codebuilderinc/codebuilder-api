@@ -60,11 +60,17 @@ export class NotificationsService {
   }
 
   async sendNotification(subscription: SubscriptionRecord, notificationPayload: NotificationPayload): Promise<void> {
+    this.logger.log(`Sending notification to subscription ${subscription.id} (type: ${subscription.type})`);
+    this.logger.log(`Subscription endpoint: ${subscription.endpoint}`);
+    this.logger.log(`Notification payload: ${JSON.stringify(notificationPayload)}`);
+
     try {
       if (subscription.type === 'web') {
+        this.logger.log(`Processing web push notification for subscription ${subscription.id}`);
         if (!isWebKeys(subscription.keys)) {
           throw new Error(`Invalid keys for web subscription: ${JSON.stringify(subscription.keys)}`);
         }
+        this.logger.log(`Web push keys are valid for subscription ${subscription.id}`);
         await this.webPush.sendNotification(
           {
             endpoint: subscription.endpoint,
@@ -75,10 +81,16 @@ export class NotificationsService {
           },
           JSON.stringify(notificationPayload)
         );
+        this.logger.log(`Web push notification sent successfully for subscription ${subscription.id}`);
       } else if (subscription.type === 'fcm') {
+        this.logger.log(`Processing FCM notification for subscription ${subscription.id}`);
         if (!isFcmKeys(subscription.keys)) {
           throw new Error(`Invalid keys for FCM subscription: ${JSON.stringify(subscription.keys)}`);
         }
+        this.logger.log(
+          `FCM keys are valid for subscription ${subscription.id}. Token: ${(subscription.keys as any).token}`
+        );
+
         const message = {
           notification: {
             title: notificationPayload.title,
@@ -101,10 +113,19 @@ export class NotificationsService {
             },
           },
         };
+        this.logger.log(`FCM message payload: ${JSON.stringify(message)}`);
+
         const response = await this.firebase.messaging().send(message);
-        this.logger.log(`FCM response: ${response}`);
+        this.logger.log(
+          `FCM notification sent successfully for subscription ${subscription.id}. Response: ${response}`
+        );
+      } else {
+        this.logger.warn(
+          `Unknown subscription type: ${(subscription as any).type} for subscription ${(subscription as any).id}`
+        );
       }
     } catch (error: any) {
+      this.logger.error(`Error sending notification to subscription ${subscription.id}:`, error);
       await this.handleSendError(subscription, error);
     }
   }
@@ -135,8 +156,20 @@ export class NotificationsService {
   }
 
   async sendMassNotification(dto: MassNotificationDto) {
+    this.logger.log(`Starting mass notification process`);
+    this.logger.log(`Mass notification DTO: ${JSON.stringify(dto)}`);
+
     const subscriptions = await this.listSubscriptions();
-    this.logger.log(`Subscriptions`, subscriptions);
+    this.logger.log(`Found ${subscriptions.length} subscriptions in database`);
+    this.logger.log(
+      `Subscriptions details:`,
+      subscriptions.map((sub) => ({
+        id: sub.id,
+        type: sub.type,
+        endpoint: sub.endpoint,
+        hasValidKeys: sub.type === 'fcm' ? isFcmKeys(sub.keys) : isWebKeys(sub.keys),
+      }))
+    );
 
     const payload: NotificationPayload = {
       title: dto.title,
@@ -145,7 +178,29 @@ export class NotificationsService {
       icon: dto.icon || 'https://new.codebuilder.org/images/logo2.png',
       badge: dto.badge || 'https://new.codebuilder.org/images/logo2.png',
     };
-    await Promise.all(subscriptions.map((sub) => this.sendNotification(sub, payload)));
-    return { success: true, count: subscriptions.length };
+
+    this.logger.log(`Prepared notification payload: ${JSON.stringify(payload)}`);
+
+    try {
+      const results = await Promise.allSettled(subscriptions.map((sub) => this.sendNotification(sub, payload)));
+      const successful = results.filter((r) => r.status === 'fulfilled').length;
+      const failed = results.filter((r) => r.status === 'rejected').length;
+
+      this.logger.log(
+        `Mass notification completed: ${successful} successful, ${failed} failed out of ${subscriptions.length} total`
+      );
+
+      if (failed > 0) {
+        const failures = results
+          .map((result, index) => (result.status === 'rejected' ? { index, reason: result.reason } : null))
+          .filter(Boolean);
+        this.logger.warn(`Failed notifications:`, failures);
+      }
+
+      return { success: true, count: subscriptions.length, successful, failed };
+    } catch (error) {
+      this.logger.error(`Error in mass notification process:`, error);
+      throw error;
+    }
   }
 }
