@@ -14,7 +14,9 @@ export const FIREBASE_ADMIN = 'FIREBASE_ADMIN';
 export const FirebaseProvider: Provider = {
   provide: FIREBASE_ADMIN,
   useFactory: () => {
-    const serviceAccountPath = path.resolve(process.cwd(), 'google-services.json');
+  // Use process.cwd() and append '/../../google-services.json' to find project root file
+  const serviceAccountPath = path.resolve(process.cwd(), '../../google-services.json');
+  console.log('[FirebaseProvider] Looking for service account at:', serviceAccountPath);
     if (!fs.existsSync(serviceAccountPath)) {
       console.error('[FirebaseProvider] google-services.json not found in project root.');
       throw new Error('google-services.json not found in project root');
