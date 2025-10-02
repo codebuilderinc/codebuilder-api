@@ -33,22 +33,66 @@ export const FirebaseProvider: Provider = {
     }
 
     if (!admin.apps.length) {
-      let credentialObj: any = null;
+        let credentialObj: any = null;
 
-      if (envKey) {
-        try {
-          credentialObj = JSON.parse(envKey);
-        } catch (err) {
-          console.error('[FirebaseProvider] FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON', err);
+        const tryParse = (raw: string | undefined): any | null => {
+          if (!raw) return null;
+          let s = raw.trim();
+          // Strip surrounding single/double quotes
+          if ((s.startsWith("'") && s.endsWith("'")) || (s.startsWith('"') && s.endsWith('"'))) {
+            s = s.slice(1, -1);
+          }
+          // Unescape newline sequences often present when JSON is stored in env vars
+          s = s.replace(/\\n/g, '\n');
+
+          // If it looks like JSON, try parsing directly
+          if (s.startsWith('{') || s.startsWith('[')) {
+            try {
+              return JSON.parse(s);
+            } catch (err) {
+              // continue to other attempts
+            }
+          }
+
+          // Try base64 decode (common when storing secrets in environment variables)
+          try {
+            const decoded = Buffer.from(s, 'base64').toString('utf8');
+            if (decoded && (decoded.trim().startsWith('{') || decoded.trim().startsWith('['))) {
+              try {
+                return JSON.parse(decoded);
+              } catch (err) {
+                // fallthrough
+              }
+            }
+          } catch (_) {
+            // not base64 or failed decode
+          }
+
+          return null;
+        };
+
+        if (envKey) {
+          const parsed = tryParse(envKey);
+          if (parsed) {
+            credentialObj = parsed;
+          } else {
+            console.error('[FirebaseProvider] FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON or base64-encoded JSON. Sample (truncated):',
+              String(envKey).slice(0, 200) + (String(envKey).length > 200 ? '...[truncated]' : '')
+            );
+          }
+        } else if (envPath) {
+          try {
+            const file = fs.readFileSync(String(envPath), 'utf8');
+            const parsed = tryParse(file) ?? tryParse(file.replace(/\\n/g, '\n'));
+            if (parsed) {
+              credentialObj = parsed;
+            } else {
+              console.error('[FirebaseProvider] Service account file content is not valid JSON:', String(envPath));
+            }
+          } catch (err) {
+            console.error('[FirebaseProvider] Failed to read/parse service account at path:', String(envPath), err);
+          }
         }
-      } else if (envPath) {
-        try {
-          const file = fs.readFileSync(String(envPath), 'utf8');
-          credentialObj = JSON.parse(file);
-        } catch (err) {
-          console.error('[FirebaseProvider] Failed to read/parse service account at path:', String(envPath), err);
-        }
-      }
 
       if (credentialObj) {
         try {
