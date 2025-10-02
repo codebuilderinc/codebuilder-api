@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { NotificationPayload } from './interfaces/notification-payload.interface';
 import { SubscriptionRecord, isWebKeys, isFcmKeys } from './interfaces/subscription-record.interface';
 import { WEB_PUSH } from './webpush.provider';
-import { FIREBASE_ADMIN } from './firebase-admin.provider';
+import { FIREBASE_ADMIN } from './firebase.provider';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { MassNotificationDto } from './dto/mass-notification.dto';
 import webpush, { WebPushError } from 'web-push';

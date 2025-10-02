@@ -1,7 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
-import { FirebaseAdminProvider } from './firebase-admin.provider';
+import { FirebaseProvider } from './firebase.provider';
 import { WebPushProvider } from './webpush.provider';
 import { CommonModule } from '../common/common.module';
 
@@ -9,7 +9,7 @@ import { CommonModule } from '../common/common.module';
 @Module({
   imports: [CommonModule],
   controllers: [NotificationsController],
-  providers: [NotificationsService, FirebaseAdminProvider, WebPushProvider],
+  providers: [NotificationsService, FirebaseProvider, WebPushProvider],
   exports: [NotificationsService],
 })
 export class NotificationsModule {}
