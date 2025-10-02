@@ -53,6 +53,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/google-services.json ./google-services.json
 COPY docker-entrypoint.sh .
 
 # Ensure the entrypoint is executable
