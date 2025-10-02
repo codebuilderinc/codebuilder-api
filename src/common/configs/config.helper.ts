@@ -64,15 +64,27 @@ export function loadConfig() {
  * Parses environment variable JSON strings into JS objects
  */
 function parseNestedJson(config: any): ApplicationConfig {
-  return Object.keys(config).reduce((accumulator, configKey) => {
+  // Only parse values that are JSON objects or arrays. We avoid
+  // coercing simple primitives like numbers or booleans that happen
+  // to be valid JSON (e.g. "1.0") because env vars are expected to
+  // remain strings unless explicitly JSON objects/arrays.
+  const initial = { ...config };
+  return Object.keys(initial).reduce((accumulator, configKey) => {
+    const raw = initial[configKey];
+    if (typeof raw !== 'string') return accumulator;
+
     try {
-      accumulator[configKey] = JSON.parse(config[configKey]);
+      const parsed = JSON.parse(raw);
+      // Only replace when parsing yields an object or array
+      if (parsed !== null && (typeof parsed === 'object' || Array.isArray(parsed))) {
+        accumulator[configKey] = parsed;
+      }
     } catch {
-      /* empty */
+      // leave original string value
     }
 
-    return config;
-  }, config);
+    return accumulator;
+  }, initial) as ApplicationConfig;
 }
 
 /**
