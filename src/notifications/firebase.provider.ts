@@ -14,16 +14,16 @@ export const FIREBASE_ADMIN = 'FIREBASE_ADMIN';
 export const FirebaseProvider: Provider = {
   provide: FIREBASE_ADMIN,
   useFactory: () => {
-  // Use process.cwd() and append '/../../google-services.json' to find project root file
-  const serviceAccountPath = path.resolve(process.cwd(), '../../google-services.json');
-  console.log('[FirebaseProvider] Looking for service account at:', serviceAccountPath);
-  const parentDir = path.dirname(serviceAccountPath);
-  try {
-    const files = fs.readdirSync(parentDir);
-    console.log(`[FirebaseProvider] Files in ${parentDir}:`, files);
-  } catch (err) {
-    console.error(`[FirebaseProvider] Failed to list files in ${parentDir}:`, err);
-  }
+    // Use process.cwd() and append '/../../google-services.json' to find project root file
+    const serviceAccountPath = path.resolve(process.cwd(), 'google-services.json');
+    console.log('[FirebaseProvider] Looking for service account at:', serviceAccountPath);
+    const parentDir = path.dirname(serviceAccountPath);
+    try {
+      const files = fs.readdirSync(parentDir);
+      console.log(`[FirebaseProvider] Files in ${parentDir}:`, files);
+    } catch (err) {
+      console.error(`[FirebaseProvider] Failed to list files in ${parentDir}:`, err);
+    }
     if (!fs.existsSync(serviceAccountPath)) {
       console.error('[FirebaseProvider] google-services.json not found in project root.');
       throw new Error('google-services.json not found in project root');
