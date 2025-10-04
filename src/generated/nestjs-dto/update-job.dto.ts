@@ -1,5 +1,5 @@
 
-
+import {Prisma} from '@prisma/client'
 
 
 
@@ -12,4 +12,7 @@ url?: string;
 postedAt?: Date;
 description?: string;
 isRemote?: boolean;
+source?: string;
+externalId?: string;
+data?: Prisma.InputJsonValue;
 }
