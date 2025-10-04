@@ -66,13 +66,11 @@ export class RedditService {
             upvotes: post.upvotes ? String(post.upvotes) : '0',
             downvotes: post.downvotes ? String(post.downvotes) : '0',
           },
-          source: {
-            name: 'reddit',
-            externalId: post.url,
-            rawUrl: post.url,
-            data: post,
-          },
-        };
+          // flattened source fields
+          source: 'reddit',
+          externalId: post.url,
+          data: post,
+        } as any;
         // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(post.url);
         if (exists) {

@@ -40,12 +40,10 @@ export class JobService {
     isRemote?: boolean;
     tags?: string[];
     metadata?: Record<string, string>;
-    source!: {
-      name: string;
-      externalId?: string;
-      rawUrl?: string;
-      data?: any;
-    };
+    // Flattened source fields
+    source?: string;
+    externalId?: string;
+    data?: any;
   };
 
   /**
@@ -63,12 +61,10 @@ export class JobService {
     isRemote?: boolean;
     tags?: string[];
     metadata?: Record<string, string>;
-    source: {
-      name: string;
-      externalId?: string;
-      rawUrl?: string;
-      data?: any;
-    };
+    // Flattened source fields
+    source?: string;
+    externalId?: string;
+    data?: any;
   }): Promise<Job> {
     let companyRecord = null;
     if (input.company) {
@@ -90,7 +86,11 @@ export class JobService {
         isRemote: input.isRemote,
         company: companyRecord ? { connect: { id: companyRecord.id } } : undefined,
         updatedAt: new Date(),
-      },
+        // write source fields directly on Job
+        source: input.source,
+        externalId: input.externalId,
+        data: input.data,
+      } as any,
       create: {
         title: input.title,
         author: input.author,
@@ -100,7 +100,11 @@ export class JobService {
         isRemote: input.isRemote,
         url: input.url,
         company: companyRecord ? { connect: { id: companyRecord.id } } : undefined,
-      },
+        // write source fields directly on Job
+        source: input.source,
+        externalId: input.externalId,
+        data: input.data,
+      } as any,
     });
 
     // Upsert tags (many-to-many via JobTag)
@@ -130,28 +134,6 @@ export class JobService {
       }
     }
 
-    // Upsert job source
-    await this.prisma.jobSource.upsert({
-      where: {
-        source_externalId: {
-          source: input.source.name,
-          externalId: input.source.externalId || '',
-        },
-      },
-      update: {
-        rawUrl: input.source.rawUrl,
-        data: input.source.data,
-        jobId: job.id,
-      },
-      create: {
-        source: input.source.name,
-        externalId: input.source.externalId,
-        rawUrl: input.source.rawUrl,
-        data: input.source.data,
-        jobId: job.id,
-      },
-    });
-
     return job;
   }
 
@@ -171,8 +153,21 @@ export class JobService {
    * Creates a job with associated company, tags, and metadata
    */
   async create(createJobDto: CreateJobDto, userId?: number): Promise<Job> {
-    const { title, companyName, companyId, author, location, url, description, isRemote, tags, metadata, sources } =
-      createJobDto;
+    const {
+      title,
+      companyName,
+      companyId,
+      author,
+      location,
+      url,
+      description,
+      isRemote,
+      tags,
+      metadata,
+      source,
+      externalId,
+      data,
+    } = createJobDto as any;
 
     let company: any = null;
     if (companyId) {
@@ -202,6 +197,10 @@ export class JobService {
         description,
         isRemote,
         postedAt: createJobDto.postedAt || new Date(),
+        // flattened source fields
+        source,
+        externalId,
+        data,
         // Create associated tags
         tags: tags?.length
           ? {
@@ -224,18 +223,7 @@ export class JobService {
               })),
             }
           : undefined,
-        // Create source entries
-        sources: sources?.length
-          ? {
-              create: sources.map((source) => ({
-                source: source.source,
-                externalId: source.externalId,
-                rawUrl: source.rawUrl,
-                data: source.data,
-              })),
-            }
-          : undefined,
-      },
+      } as any,
       include: {
         company: true,
         tags: {
@@ -244,7 +232,6 @@ export class JobService {
           },
         },
         metadata: true,
-        sources: true,
       },
     });
 
@@ -332,7 +319,6 @@ export class JobService {
             },
           },
           metadata: true,
-          sources: true,
         },
       }),
       this.prisma.job.count({ where }),
@@ -361,7 +347,6 @@ export class JobService {
           },
         },
         metadata: true,
-        sources: true,
       },
     });
 
@@ -477,7 +462,6 @@ export class JobService {
       // Delete related data first
       await prisma.jobTag.deleteMany({ where: { jobId: id } });
       await prisma.jobMetadata.deleteMany({ where: { jobId: id } });
-      await prisma.jobSource.deleteMany({ where: { jobId: id } });
 
       // Delete the job
       await prisma.job.delete({ where: { id } });
@@ -522,7 +506,6 @@ export class JobService {
             },
           },
           metadata: true,
-          sources: true,
         },
       }),
       this.prisma.job.count({ where }),
@@ -574,7 +557,6 @@ export class JobService {
             },
           },
           metadata: true,
-          sources: true,
         },
       }),
       this.prisma.job.count({ where }),

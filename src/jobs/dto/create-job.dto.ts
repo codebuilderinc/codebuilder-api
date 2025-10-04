@@ -40,46 +40,6 @@ export class JobMetadataDto {
 }
 
 /**
- * DTO for job source information
- * Tracks where the job listing came from and stores original data
- */
-export class JobSourceDto {
-  @ApiProperty({
-    description: 'Source system name',
-    example: 'reddit',
-  })
-  @IsString()
-  @IsNotEmpty()
-  source: string;
-
-  @ApiProperty({
-    description: 'External ID from source system',
-    example: 'reddit_post_123',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  externalId?: string;
-
-  @ApiProperty({
-    description: 'Original URL from source system',
-    example: 'https://reddit.com/r/jobs/post/123',
-    required: false,
-  })
-  @IsOptional()
-  @IsUrl()
-  rawUrl?: string;
-
-  @ApiProperty({
-    description: 'Raw source data as JSON',
-    example: '{"upvotes": 45, "comments": 12}',
-    required: false,
-  })
-  @IsOptional()
-  data?: any;
-}
-
-/**
  * Create Job DTO
  *
  * Data Transfer Object for creating new job listings.
@@ -216,15 +176,20 @@ export class CreateJobDto {
   @Type(() => JobMetadataDto)
   metadata?: JobMetadataDto[];
 
-  @ApiProperty({
-    description: 'Job source information',
-    required: false,
-    type: [JobSourceDto],
-  })
-  @GraphQLField(() => [JobSourceDto], { nullable: true })
+  @ApiProperty({ description: 'Source system name', example: 'reddit', required: false })
+  @GraphQLField({ nullable: true })
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => JobSourceDto)
-  sources?: JobSourceDto[];
+  @IsString()
+  source?: string;
+
+  @ApiProperty({ description: 'External ID from source system', example: 't3_abc123', required: false })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  @IsString()
+  externalId?: string;
+
+  @ApiProperty({ description: 'Raw source data as JSON', required: false })
+  @GraphQLField({ nullable: true })
+  @IsOptional()
+  data?: any;
 }

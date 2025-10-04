@@ -46,13 +46,11 @@ export class Web3CareerService {
             city: job.city || '',
             date_epoch: job.date_epoch ? String(job.date_epoch) : '',
           },
-          source: {
-            name: 'web3career',
-            externalId: job.id ? String(job.id) : undefined,
-            rawUrl: job.apply_url,
-            data: job,
-          },
-        };
+          // flattened source fields
+          source: 'web3career',
+          externalId: job.id ? String(job.id) : undefined,
+          data: job,
+        } as any;
         // Check if job already exists - if so, skip it but continue processing others
         const exists = await this.jobService.jobExists(job.apply_url);
         if (exists) {
