@@ -1,7 +1,8 @@
-import { Module, MiddlewareConsumer, RequestMethod, NestModule } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod, NestModule, Global } from '@nestjs/common';
 import { LoggerService } from './logger.service';
 import { requestLoggingMiddleware } from './middleware';
 
+@Global()
 @Module({
   providers: [LoggerService],
   exports: [LoggerService],
