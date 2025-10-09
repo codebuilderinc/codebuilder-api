@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { colors } from './logger';
+import { colors } from './colors';
 
-// Common noise paths that shouldn't produce logs
 const IGNORED_PATHS = new Set<string>([
   '/favicon.ico',
   '/robots.txt',
@@ -17,7 +16,6 @@ function isIgnoredPath(urlOrPath: string): boolean {
   const path = (urlOrPath || '').split('?')[0];
   if (!path) return false;
   if (IGNORED_PATHS.has(path)) return true;
-  // Also ignore well-known browser icon probes
   if (path.startsWith('/favicon')) return true;
   return false;
 }
@@ -73,7 +71,6 @@ export function requestLoggingMiddleware(req: Request, res: Response, next: Next
   const url = req.originalUrl || req.url;
   const clientIP = getClientIP(req);
 
-  // Skip logging for ignored paths
   if (isIgnoredPath(url)) {
     return next();
   }

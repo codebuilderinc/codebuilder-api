@@ -1,12 +1,12 @@
-import { Module, RequestMethod, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod, NestModule } from '@nestjs/common';
+import { LoggerService } from './logger.service';
 import { requestLoggingMiddleware } from './middleware';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
+  providers: [LoggerService],
+  exports: [LoggerService],
 })
-export class LoggerModule implements NestModule {
+export class CommonLoggerModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer
       .apply(requestLoggingMiddleware)
