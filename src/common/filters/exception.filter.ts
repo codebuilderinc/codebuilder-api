@@ -1,40 +1,42 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { logger } from '../../logger/logger';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import { LoggerService } from '../logger/logger.service';
 
-@Catch(HttpException)
-export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+@Catch()
+export class ExceptionsLoggerFilter implements ExceptionFilter {
+  constructor(
+    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly logger: LoggerService
+  ) {}
+
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
+    let httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+      errorMessage = 'Internal Server Error',
+      error = 'Server Error';
 
-    // Log with HTTP status code for observability
-    try {
-      const method = request.method;
-      const url = (request as any).originalUrl || request.url || request.path;
-      logger.error(`HTTP ${status} ${method} ${url}`, {
-        statusCode: status,
-        method,
-        path: request.path,
-        message: exception.message,
-        response: exception.getResponse?.(),
+    if (exception instanceof HttpException) {
+      httpStatus = exception.getStatus();
+      const exceptionResp: any = exception.getResponse();
+      errorMessage = exceptionResp.message;
+      error = exception.message;
+    } else if (!(exception instanceof JsonWebTokenError)) {
+      this.logger.error('Failure in ExceptionsLoggerFilter', {
+        errorMessage: (exception as Error).message,
+        errorStack: (exception as Error).stack,
       });
-    } catch (_) {
-      // no-op: never block response on logging failures
     }
 
-    const payload = exception.getResponse?.();
-    response.status(status).json({
-      success: false,
-      error: {
-        statusCode: status,
-        message: (payload as any)?.message || exception.message,
-        details: payload,
-        path: request.path,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    const responseBody = {
+      error,
+      statusCode: httpStatus,
+      message: errorMessage,
+      timestamp: new Date().toISOString(),
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
+    };
+
+    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
 }
