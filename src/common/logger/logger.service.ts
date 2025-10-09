@@ -1,11 +1,11 @@
-import { Injectable, Scope, Inject, Optional } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { formatLog, colors } from './colors';
 
 /**
  * Injectable logger service for context-aware logging.
  * Usage: inject LoggerService and call .info(), .warn(), etc.
  */
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class LoggerService {
   private context?: string;
 
