@@ -1,11 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { LoggerService } from '../common/logger/logger.service';
 import { JobService } from './job.service';
 
 @Injectable()
 export class Web3CareerService {
-  private readonly logger = new Logger(Web3CareerService.name);
-
-  constructor(private readonly jobService: JobService) {}
+  constructor(
+    private readonly jobService: JobService,
+    private readonly logger: LoggerService
+  ) {}
 
   private get web3CareerApiUrl(): string {
     const token = process.env.WEB3CAREER_API_TOKEN || 'Rg9PrsGP96Z2GB6T9tNZ1AzHzriQEwxa';
@@ -18,7 +20,7 @@ export class Web3CareerService {
       if (!response.ok) throw new Error(`Web3Career API request failed with status: ${response.status}`);
       const data = await response.json();
       const jobsArray = Array.isArray(data[2]) ? data[2] : [];
-      this.logger.log(`Web3Career jobs fetched: ${jobsArray.length}`);
+      this.logger.info(`Web3Career jobs fetched: ${jobsArray.length}`);
       return jobsArray;
     } catch (error: any) {
       this.logger.error(`Error fetching Web3Career jobs: ${error.message}`);
@@ -64,7 +66,7 @@ export class Web3CareerService {
       }
     }
 
-    this.logger.log(
+    this.logger.info(
       `Web3Career jobs processed: ${jobs.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
     );
 

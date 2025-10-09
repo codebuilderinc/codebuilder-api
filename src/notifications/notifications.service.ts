@@ -60,17 +60,17 @@ export class NotificationsService {
   }
 
   async sendNotification(subscription: SubscriptionRecord, notificationPayload: NotificationPayload): Promise<void> {
-    this.logger.log(`Sending notification to subscription ${subscription.id} (type: ${subscription.type})`);
-    this.logger.log(`Subscription endpoint: ${subscription.endpoint}`);
-    this.logger.log(`Notification payload: ${JSON.stringify(notificationPayload)}`);
+  this.logger.info(`Sending notification to subscription ${subscription.id} (type: ${subscription.type})`);
+  this.logger.info(`Subscription endpoint: ${subscription.endpoint}`);
+  this.logger.info(`Notification payload: ${JSON.stringify(notificationPayload)}`);
 
     try {
       if (subscription.type === 'web') {
-        this.logger.log(`Processing web push notification for subscription ${subscription.id}`);
+  this.logger.info(`Processing web push notification for subscription ${subscription.id}`);
         if (!isWebKeys(subscription.keys)) {
           throw new Error(`Invalid keys for web subscription: ${JSON.stringify(subscription.keys)}`);
         }
-        this.logger.log(`Web push keys are valid for subscription ${subscription.id}`);
+  this.logger.info(`Web push keys are valid for subscription ${subscription.id}`);
         await this.webPush.sendNotification(
           {
             endpoint: subscription.endpoint,
@@ -81,13 +81,13 @@ export class NotificationsService {
           },
           JSON.stringify(notificationPayload)
         );
-        this.logger.log(`Web push notification sent successfully for subscription ${subscription.id}`);
+  this.logger.info(`Web push notification sent successfully for subscription ${subscription.id}`);
       } else if (subscription.type === 'fcm') {
-        this.logger.log(`Processing FCM notification for subscription ${subscription.id}`);
+  this.logger.info(`Processing FCM notification for subscription ${subscription.id}`);
         if (!isFcmKeys(subscription.keys)) {
           throw new Error(`Invalid keys for FCM subscription: ${JSON.stringify(subscription.keys)}`);
         }
-        this.logger.log(
+        this.logger.info(
           `FCM keys are valid for subscription ${subscription.id}. Token: ${(subscription.keys as any).token}`
         );
 
@@ -113,10 +113,10 @@ export class NotificationsService {
             },
           },
         };
-        this.logger.log(`FCM message payload: ${JSON.stringify(message)}`);
+  this.logger.info(`FCM message payload: ${JSON.stringify(message)}`);
 
         const response = await this.firebase.messaging().send(message);
-        this.logger.log(
+        this.logger.info(
           `FCM notification sent successfully for subscription ${subscription.id}. Response: ${response}`
         );
       } else {
@@ -134,7 +134,7 @@ export class NotificationsService {
     if (subscription.type === 'web' && error instanceof WebPushError) {
       if (error.statusCode === 410) {
         await this.db.subscription.delete({ where: { id: subscription.id } });
-        this.logger.log(`Removed expired web subscription id=${subscription.id}`);
+  this.logger.info(`Removed expired web subscription id=${subscription.id}`);
       } else {
         this.logger.warn(`Web push send failed (id=${subscription.id}): ${error.statusCode} ${error.body}`);
       }
@@ -146,7 +146,7 @@ export class NotificationsService {
         error?.code === 'messaging/registration-token-not-registered'
       ) {
         await this.db.subscription.delete({ where: { id: subscription.id } });
-        this.logger.log(`Removed invalid FCM subscription id=${subscription.id}`);
+  this.logger.info(`Removed invalid FCM subscription id=${subscription.id}`);
       } else {
         this.logger.warn(`FCM send failed (id=${subscription.id}): ${error?.code || error}`);
       }
@@ -156,12 +156,12 @@ export class NotificationsService {
   }
 
   async sendMassNotification(dto: MassNotificationDto) {
-    this.logger.log(`Starting mass notification process`);
-    this.logger.log(`Mass notification DTO: ${JSON.stringify(dto)}`);
+  this.logger.info(`Starting mass notification process`);
+  this.logger.info(`Mass notification DTO: ${JSON.stringify(dto)}`);
 
     const subscriptions = await this.listSubscriptions();
-    this.logger.log(`Found ${subscriptions.length} subscriptions in database`);
-    this.logger.log(
+  this.logger.info(`Found ${subscriptions.length} subscriptions in database`);
+    this.logger.info(
       `Subscriptions details:`,
       subscriptions.map((sub) => ({
         id: sub.id,
@@ -179,14 +179,14 @@ export class NotificationsService {
       badge: dto.badge || 'https://new.codebuilder.org/images/logo2.png',
     };
 
-    this.logger.log(`Prepared notification payload: ${JSON.stringify(payload)}`);
+  this.logger.info(`Prepared notification payload: ${JSON.stringify(payload)}`);
 
     try {
       const results = await Promise.allSettled(subscriptions.map((sub) => this.sendNotification(sub, payload)));
       const successful = results.filter((r) => r.status === 'fulfilled').length;
       const failed = results.filter((r) => r.status === 'rejected').length;
 
-      this.logger.log(
+      this.logger.info(
         `Mass notification completed: ${successful} successful, ${failed} failed out of ${subscriptions.length} total`
       );
 

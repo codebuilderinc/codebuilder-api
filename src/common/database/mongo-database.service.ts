@@ -2,7 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { Counter } from '@opentelemetry/api';
 import { ConfigService } from './../configs/config.service';
-import { LogService } from './../log/log.service';
+import { LoggerService } from '../logger/logger.service';
 import { TraceService } from './../trace/trace.service';
 //export { default as DatabaseModel, Prisma as DatabaseClause, Prisma, PrismaClient, PrismaPromise } from '@prisma/client';
 import { PrismaClient as MongoPrismaClient, Prisma, PrismaPromise } from '@prisma/client';
@@ -13,7 +13,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
   //private readonly pendingQueriesCounter: UpDownCounter;
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logger: LoggerService,
     private readonly configService: ConfigService,
     private readonly traceService: TraceService //private readonly meter,
   ) {
@@ -52,7 +52,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
 
     await this.$connect();
 
-    this.logService.info(
+    this.logger.info(
       `Connected to ${prismaEngine.activeProvider} instance using Prisma v${prismaEngine.clientVersion}`
     );
 
@@ -87,6 +87,6 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
 
-    this.logService.debug('Disconnected from Mongo instance');
+    this.logger.debug('Disconnected from Mongo instance');
   }
 }

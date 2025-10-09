@@ -1,25 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger as Logger2 } from '@nestjs/common';
 import { JobService } from './job.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationPayload } from '../notifications/interfaces/notification-payload.interface';
 import { DatabaseService } from '../common/database/database.service';
+import { LoggerService } from '../common/logger/logger.service';
 
 @Injectable()
 export class RedditService {
-  private readonly logger = new Logger(RedditService.name);
+  private readonly logger2 = new Logger2(RedditService.name);
 
   constructor(
     private readonly jobService: JobService,
     private readonly notificationsService: NotificationsService,
+    private readonly logger: LoggerService,
     private readonly db: DatabaseService
   ) {}
   async fetchRedditPosts(subreddits: string[]): Promise<any[]> {
     const axios = await import('axios');
     const allPosts = [];
-    this.logger.log(`Fetching posts from ${subreddits.length} subreddit(s)`);
+    this.logger.info(`Fetching posts from ${subreddits.length} subreddit(s)`);
     for (const subreddit of subreddits) {
       try {
-        this.logger.log(`Fetching /r/${subreddit}...`);
+        this.logger.info(`Fetching /r/${subreddit}...`);
         const response = await axios.default.get(`https://www.reddit.com/r/${subreddit}/new.json?limit=10`, {
           timeout: 5000,
         });
@@ -34,7 +36,7 @@ export class RedditService {
           upvotes: child.data.ups,
           downvotes: child.data.downs,
         }));
-        this.logger.log(`Found ${subredditPosts.length} post(s) in /r/${subreddit}`);
+        this.logger.info(`Found ${subredditPosts.length} post(s) in /r/${subreddit}`);
         allPosts.push(...subredditPosts);
       } catch (error: any) {
         this.logger.error(`Error fetching /r/${subreddit}:`, error.message);
@@ -46,7 +48,7 @@ export class RedditService {
   async storeRedditJobPosts(posts: any[]): Promise<any[]> {
     const newJobs = [];
     let skippedCount = 0;
-    this.logger.log(`Processing ${posts.length} Reddit post(s) for jobs table`);
+    this.logger.info(`Processing ${posts.length} Reddit post(s) for jobs table`);
     const subscriptions = await this.db.subscription.findMany();
     for (const post of posts) {
       try {
@@ -90,14 +92,14 @@ export class RedditService {
           this.notificationsService.sendNotification(sub, notificationPayload)
         );
         await Promise.all(notificationPromises);
-        this.logger.log(`Stored new job [${post.url}] from /u/${post.author}`);
+        this.logger.info(`Stored new job [${post.url}] from /u/${post.author}`);
         newJobs.push(upsertedJob);
       } catch (error: any) {
         this.logger.error(`Error processing Reddit post ${post.url}:`, error);
       }
     }
 
-    this.logger.log(
+    this.logger.info(
       `Reddit jobs processed: ${posts.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
     );
 

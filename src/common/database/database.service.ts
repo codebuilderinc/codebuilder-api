@@ -1,11 +1,11 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { MeterProvider } from '@opentelemetry/sdk-metrics';
-import { Counter } from '@opentelemetry/api-metrics';
+//import { MeterProvider } from '@opentelemetry/sdk-metrics';
+//import { Counter } from '@opentelemetry/api-metrics';
 import { Prisma, PrismaClient, PrismaPromise } from '@prisma/client';
 import { ConfigService } from '../configs/config.service';
-import { LogService } from '../log/log.service';
+import { LoggerService } from '../logger/logger.service';
 import { TraceService } from '../trace/trace.service';
-import { logger } from '../../logger/logger';
+//import { logger } from '../../logger/logger';
 // Alternatively, if the above does not work
 // import { PrismaClient } from '../../node_modules/@prisma/client/dist/index';
 // No replacement needed, just remove this line
@@ -18,7 +18,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   //private readonly pendingQueriesCounter: UpDownCounter;
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logger: LoggerService,
     private readonly configService: ConfigService,
     private readonly traceService: TraceService //private readonly meter,
   ) {
@@ -35,7 +35,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
       //   },
       // ]
     });
-    logger.info(`Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL')}`);
+    this.logger.info(`Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL')}`);
 
     /* this.meter = meterProvider.getMeter('example-exporter-collector');
 
@@ -68,7 +68,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
 
     await (this as any).$connect();
 
-    this.logService.info(
+    this.logger.info(
       `Connected to ${prismaEngine.activeProvider} instance using Prisma v${prismaEngine.clientVersion} ${this.configService.get('DATABASE_URL')}`
     );
 
@@ -92,6 +92,6 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   async onModuleDestroy(): Promise<void> {
     await super.$disconnect();
 
-    this.logService.debug('Disconnected from Postgres instance');
+    this.logger.debug('Disconnected from Postgres instance');
   }
 }

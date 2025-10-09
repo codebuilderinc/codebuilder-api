@@ -26,7 +26,7 @@ function redisFactory(redis: RedisService, prefix: string, cfg: ConfigService): 
       throw new Error(`[REDIS] No server definition for prefix "${prefix}" in REDIS_SERVERS`);
     }
 
-    console.log(`[REDIS] Connecting to ${server.host}:${server.port}`);
+    //console.log(`[REDIS] Connecting to ${server.host}:${server.port}`);
 
     const redisOptions = {
       keepAlive: 30000,
@@ -155,4 +155,4 @@ export const redisProviders: Provider[] = [
 ];
 
 /* For visibility while booting */
-console.log('redisProviders', redisProviders);
+//console.log('redisProviders', redisProviders);

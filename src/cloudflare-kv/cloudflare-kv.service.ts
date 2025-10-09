@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from './../common/configs/config.service';
-import { LogService } from './../common/log/log.service';
+import { LoggerService } from '../common/logger/logger.service';
 import { KvNamespaces } from './models/kv-namespaces.enum';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class CloudflareKvService implements OnModuleInit {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly logService: LogService
+    private readonly logger: LoggerService
   ) {}
 
   onModuleInit() {
@@ -31,7 +31,7 @@ export class CloudflareKvService implements OnModuleInit {
 
       return response;
     } catch (e) {
-      this.logService.error('Failed to update workers KV', {
+      this.logger.error('Failed to update workers KV', {
         errorMessage: e.message,
       });
     }
@@ -50,7 +50,7 @@ export class CloudflareKvService implements OnModuleInit {
 
       return response.json();
     } catch (e) {
-      this.logService.error('Failed to update workers KV', {
+      this.logger.error('Failed to update workers KV', {
         errorMessage: e.message,
       });
     }

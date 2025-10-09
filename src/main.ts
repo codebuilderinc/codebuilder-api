@@ -1,44 +1,9 @@
-//
-// ===================================
-// OpenTelemetry Initialization
-// ===================================
-//
-// The OpenTelemetry SDK must be initialized BEFORE any other modules are imported.
-// This ensures that instrumentation can correctly patch the necessary libraries
-// and capture telemetry from the very beginning of the application's lifecycle.
-//
-import { NodeSDK } from '@opentelemetry/sdk-node';
-
-// DEBUG: Print REDIS_SERVERS and all env vars at startup
-console.log('DEBUG: REDIS_SERVERS env:', process.env.REDIS_SERVERS);
-console.log('DEBUG: All environment variables:', JSON.stringify(process.env, null, 2));
-//import openTelemetryConfig from './open-telemetry.config.json'; // Assuming this config file exists in your new project
-
-// const openTelemetry = new NodeSDK(openTelemetryConfig);
-
-// try {
-//     openTelemetry.start();
-//     console.log('✅ OpenTelemetry SDK started successfully.');
-// } catch (error) {
-//     console.error('❌ Could not start OpenTelemetry SDK:', error);
-//     process.exit(1);
-// }
-
-// // Gracefully shut down the OpenTelemetry SDK on process exit.
-// process.on('SIGTERM', () => {
-//     openTelemetry
-//         .shutdown()
-//         .then(() => console.log('➡️ OpenTelemetry tracing terminated.'))
-//         .catch((error) => console.error('Error terminating OpenTelemetry tracing:', error))
-//         .finally(() => process.exit(0));
-// });
+import './instrument';
 
 //
 // ===================================
 // NestJS Application Bootstrap
 // ===================================
-//
-// All other imports are placed here, after the OpenTelemetry SDK has been started.
 //
 import 'reflect-metadata';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
@@ -48,7 +13,9 @@ import { ConfigService } from './common/configs/config.service'; // Assuming pat
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { HttpExceptionFilter } from './common/filters/exception.filter'; // Assuming path to your filter
+import { HttpExceptionFilter } from './common/filters/http.exception.filter';
+import { ExceptionsLoggerFilter } from './common/filters/exception.filter';
+import { LoggerService } from './common/logger/logger.service';
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 
 import helmet from 'helmet';
@@ -133,7 +100,12 @@ async function bootstrap(): Promise<void> {
 
   // Global filters for exception handling.
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new HttpExceptionFilter(), new PrismaClientExceptionFilter(httpAdapter));
+  const logger = app.get(LoggerService);
+  app.useGlobalFilters(
+    new ExceptionsLoggerFilter(app.get(HttpAdapterHost), logger),
+    new HttpExceptionFilter(logger),
+    new PrismaClientExceptionFilter(httpAdapter)
+  );
   // Global interceptor for standardized response envelopes (only wraps endpoints marked with envelope flag)
   app.useGlobalInterceptors(new ResponseEnvelopeInterceptor());
 

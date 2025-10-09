@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, CanActivate, ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { LogService } from '../common/log/log.service';
+import { LoggerService } from '../common/logger/logger.service';
 import { RedisService } from '../common/redis/redis.service';
 import { RedisServer } from '../common/redis/redis.decorator';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { DatabaseService } from '../common/database/database.service';
 export class RedisAuthGuard implements CanActivate {
   constructor(
     @RedisServer('AUTH') private redis: RedisService,
-    private readonly logService: LogService,
+    private readonly logger: LoggerService,
     private readonly databaseService: DatabaseService
   ) {}
 
@@ -42,7 +42,7 @@ export class RedisAuthGuard implements CanActivate {
       if (!user) throw new UnauthorizedException();
       request.user = user;
     } catch (e) {
-      console.log('error', e);
+      this.logger.error('error', e);
       throw new UnauthorizedException();
     }
 

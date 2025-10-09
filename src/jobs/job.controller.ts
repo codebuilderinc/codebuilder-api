@@ -30,6 +30,7 @@ import { RedditService } from './reddit.service';
 import { NotificationsService } from './notifications.service';
 import { PaginatedResponse } from '../common/models/paginated-response';
 import { CreateJobDto as JobDto } from './dto/create-job.dto';
+import { LoggerService } from '../common/logger/logger.service';
 
 class PaginatedJobResponse extends PaginatedResponse(JobDto) {}
 
@@ -46,13 +47,12 @@ class PaginatedJobResponse extends PaginatedResponse(JobDto) {}
 @ApiTags('jobs')
 @Controller('jobs')
 export class JobController {
-  private readonly logger = new Logger(JobController.name);
-
   constructor(
     private readonly jobService: JobService,
     private readonly web3CareerService: Web3CareerService,
     private readonly redditService: RedditService,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly logger: LoggerService
   ) {}
 
   /**
@@ -91,7 +91,7 @@ export class JobController {
       },
     };
 
-    this.logger.log(
+    this.logger.info(
       `Job fetch summary: ${summary.totalFetched} total fetched (${summary.reddit.fetched} Reddit, ${summary.web3career.fetched} Web3Career), ${summary.totalAdded} added, ${summary.totalSkipped} skipped (existing)`
     );
 

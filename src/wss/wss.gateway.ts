@@ -12,7 +12,7 @@ import io from 'socket.io';
 import { NextFunction } from 'express';
 import Redis from 'ioredis';
 import { Server, ServerOptions, Socket } from 'socket.io';
-import { LogService } from '../common/log/log.service';
+import { LoggerService } from '../common/logger/logger.service';
 
 //const wss_settings = config.get<IWssSettings>('WSS_SETTINGS');
 /*
@@ -32,7 +32,7 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   wss;
   public server: io.Server;
 
-  constructor(private readonly logService: LogService) {}
+  constructor(private readonly logger: LoggerService) {}
 
   private getClientQuery(client: io.Socket): { [key: string]: string } {
     return client.handshake.query as { [key: string]: string };
@@ -46,7 +46,7 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join('msgRoom');
     const { user_id } = this.getClientQuery(client);
 
-    this.logService.info(`WssGateway: handleConnection ${user_id}`);
+  this.logger.info(`WssGateway: handleConnection ${user_id}`);
 
     return this.broadcastAll('event', { connected: user_id });
   }
@@ -54,7 +54,7 @@ export class WssGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: io.Socket) {
     const { user_id } = this.getClientQuery(client);
 
-    this.logService.info(`WssGateway: handleDisconnect ${user_id}`);
+  this.logger.info(`WssGateway: handleDisconnect ${user_id}`);
 
     return this.broadcastAll('event', { disconnected: user_id });
   }

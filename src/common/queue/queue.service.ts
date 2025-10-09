@@ -3,7 +3,7 @@ import { Counter } from '@opentelemetry/api';
 //import { Meter } from '@opentelemetry/sdk-metrics-base';
 import { ConnectionOptions, Job as BullJob, JobsOptions, Queue, RedisClient } from 'bullmq';
 import { ConfigService } from '../configs/config.service';
-import { LogService } from '../log/log.service';
+import { LoggerService } from '../logger/logger.service';
 import { TraceService } from '../trace/trace.service';
 import { JobNames } from './models/job-names.enum';
 import { QueueNames } from './models/queue-names.enum';
@@ -20,7 +20,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly logService: LogService,
+    private readonly logger: LoggerService,
     private readonly traceService: TraceService //private readonly meter: Meter,
   ) {
     /*this.queuedJobsCounter = this.meter.createCounter(
@@ -74,7 +74,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         })
       );
 
-      this.logService.info('Connected to Redis');
+      this.logger.info('Connected to Redis');
     } catch (error) {
       this.onConnectionError(error);
     }
@@ -95,7 +95,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       await this.bullQueues[queue].disconnect();
     }
 
-    this.logService.debug('Disconnected from Redis instance');
+    this.logger.debug('Disconnected from Redis instance');
   }
 
   /**
@@ -106,7 +106,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
    * @memberof QueueService
    */
   private onConnectionError(error: Error): void {
-    this.logService.error('Connection error', {
+    this.logger.error('Connection error', {
       errorMessage: error.message,
       errorStack: error.stack,
     });
@@ -124,7 +124,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     span.setAttributes({ id: job.id, name: job.name });
-    this.logService.info('Queued job', { id: job.id, name: job.name });
+    this.logger.info('Queued job', { id: job.id, name: job.name });
     span.end();
 
     return job;
@@ -154,7 +154,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     const jobs = await this.bullQueues[queueName].addBulk(jobsPayload);
 
     const logJobs = jobs.map((job) => ({ id: job.id, name: job.name }));
-    this.logService.info('Queued jobs', {
+    this.logger.info('Queued jobs', {
       jobs: logJobs.length,
       jobsSamples: JSON.stringify(logJobs.slice(0, 100)),
     });
