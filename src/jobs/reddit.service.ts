@@ -25,18 +25,21 @@ export class RedditService {
         const response = await axios.default.get(`https://www.reddit.com/r/${subreddit}/new.json?limit=10`, {
           timeout: 5000,
         });
-        const subredditPosts = response.data.data.children.map((child: any) => ({
-          title: child.data.title,
-          author: child.data.author,
-          subreddit: child.data.subreddit,
-          url: child.data.url,
-          postedAt: new Date(child.data.created_utc * 1000),
-          body: child.data.selftext,
-          bodyHtml: child.data.selftext_html,
-          upvotes: child.data.ups,
-          downvotes: child.data.downs,
-        }));
-        this.logger.info(`Found ${subredditPosts.length} post(s) in /r/${subreddit}`);
+        // Only include posts with [HIRING] in the title (case-insensitive)
+        const subredditPosts = response.data.data.children
+          .map((child: any) => ({
+            title: child.data.title,
+            author: child.data.author,
+            subreddit: child.data.subreddit,
+            url: child.data.url,
+            postedAt: new Date(child.data.created_utc * 1000),
+            body: child.data.selftext,
+            bodyHtml: child.data.selftext_html,
+            upvotes: child.data.ups,
+            downvotes: child.data.downs,
+          }))
+          .filter((post: any) => /\[hiring\]/i.test(post.title));
+        this.logger.info(`Found ${subredditPosts.length} [HIRING] post(s) in /r/${subreddit}`);
         allPosts.push(...subredditPosts);
       } catch (error: any) {
         this.logger.error(`Error fetching /r/${subreddit}:`, error.message);
