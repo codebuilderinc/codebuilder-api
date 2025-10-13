@@ -25,7 +25,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: "🧩 Install semver for version bump"
-        run: npm install semver
+        run: npm install semver --legacy-peer-deps
 
       - name: "🔄 Auto-bump version (main only)"
         if: github.ref == 'refs/heads/main'
