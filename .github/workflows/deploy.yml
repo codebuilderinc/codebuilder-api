@@ -21,6 +21,10 @@ jobs:
           node-version: 20.x
           cache: 'npm'
 
+
+      - name: "🧩 Generate ephemeral package-lock.json"
+        run: npm install --package-lock-only
+
       - name: "🧩 Install dependencies (ci)"
         run: npm ci --legacy-peer-deps
 
@@ -30,6 +34,9 @@ jobs:
       - name: "🔄 Auto-bump version (main only)"
         if: github.ref == 'refs/heads/main'
         run: node scripts/bumpVersion.js
+
+      - name: "🧹 Remove ephemeral package-lock.json"
+        run: rm -f package-lock.json
 
       - name: '🔧 Configure Git for Automation'
         if: github.ref == 'refs/heads/main'
