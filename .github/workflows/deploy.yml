@@ -15,18 +15,21 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: '� Setup Node.js for Version Bump'
+      - name: "📦 Setup Node.js"
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - name: '🧩 Install semver dependency'
-        run: npm install semver
+      - name: "🧩 Install pnpm"
+        run: npm install -g pnpm
 
-      - name: '🔄 Auto-bump version (main only)'
+      - name: "🧩 Install dependencies"
+        run: pnpm install
+
+      - name: "🔄 Auto-bump version (main only)"
         if: github.ref == 'refs/heads/main'
-        run: node scripts/bumpVersion.js
+        run: pnpm exec node scripts/bumpVersion.js
 
       - name: '🔧 Configure Git for Automation'
         if: github.ref == 'refs/heads/main'
