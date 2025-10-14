@@ -16,24 +16,56 @@ import {
 } from '@nestjs/swagger';
 import { RedisAuthGuard } from '../../auth/redis-auth.guard';
 
+/**
+ * API Decorator Response Type
+ * Alias for Swagger's ApiResponseOptions to simplify type usage
+ */
 export type ApiDecoratorResponse = ApiResponseOptions;
 
+/**
+ * API Decorator Options Interface
+ *
+ * This interface defines all available options for the @Api() decorator,
+ * which provides a unified way to configure Swagger documentation for NestJS endpoints.
+ *
+ * @example
+ * ```typescript
+ * @Api({
+ *   summary: 'Get all users',
+ *   description: 'Returns a paginated list of users',
+ *   paginatedResponseType: UserDto,
+ *   queriesFrom: [PaginationArgs, UserFilterDto],
+ *   authenticationRequired: true,
+ *   envelope: true
+ * })
+ * ```
+ */
 export interface ApiOptions {
   /** Shorthand for ApiOperation -> summary */
   summary?: string;
+
   /** Shorthand for ApiOperation -> description */
   description?: string;
+
   /** Full ApiOperation options (overrides summary/description if provided) */
   apiOperationOptions?: Partial<ApiOperationOptions>;
+
   /** Explicit list of responses. If provided, default Created/Unauthorized/Forbidden set is suppressed (except Unauthorized when auth required). */
   responses?: ApiDecoratorResponse[];
-  /** Backwards compat (deprecated) */
+
+  /** @deprecated Backwards compatibility - use 'responses' instead */
   apiResponses?: Partial<ApiResponseOptions>[];
-  /** When true attaches RedisAuthGuard + bearer auth + 401 response (if not explicitly supplied). */
+
+  /** When true, attaches RedisAuthGuard + bearer auth + 401 response (if not explicitly supplied). */
   authenticationRequired?: boolean;
-  /** DTO / class for request body */
+
+  /** DTO / class for request body - will be automatically inferred from method signature if not provided */
   bodyType?: NestType<any> | (new (...args: any[]) => any);
-  /** Path params */
+
+  /**
+   * Manually defined path parameters
+   * For automatic path param extraction, use 'pathParamsFrom' instead
+   */
   params?: Array<{
     name: string;
     description?: string;
@@ -41,7 +73,11 @@ export interface ApiOptions {
     required?: boolean;
     enum?: any[];
   }>;
-  /** Query params */
+
+  /**
+   * Manually defined query parameters
+   * For automatic query param extraction, use 'queriesFrom' instead
+   */
   queries?: Array<{
     name: string;
     description?: string;
@@ -50,25 +86,88 @@ export interface ApiOptions {
     enum?: any[];
     example?: any;
   }>;
-  /** Derive query params from one or more DTO / classes with Field decorators */
+
+  /**
+   * Automatically derive query params from one or more DTOs with @Field decorators
+   * The decorator will read metadata stored by @Field decorators (where inQuery: true)
+   * and generate @ApiQuery decorators for Swagger documentation
+   *
+   * @example
+   * queriesFrom: [PaginationArgs, JobFilterDto]
+   */
   queriesFrom?: (new (...args: any[]) => any) | Array<new (...args: any[]) => any>;
-  /** Derive path params from one or more DTO / classes with Field decorators */
+
+  /**
+   * Automatically derive path params from one or more DTOs with @Field decorators
+   * The decorator will read metadata stored by @Field decorators (where inPath: true)
+   * and generate @ApiParam decorators for Swagger documentation
+   *
+   * @example
+   * pathParamsFrom: JobIdPathParamsDto
+   */
   pathParamsFrom?: (new (...args: any[]) => any) | Array<new (...args: any[]) => any>;
-  /** Mark operation deprecated */
+
+  /** Mark operation deprecated in Swagger UI */
   deprecated?: boolean;
+
   /** Shorthand to specify a single 200 response type */
   responseType?: NestType<any>;
+
   /** Shorthand to specify an array 200 response type */
   responseArrayType?: NestType<any>;
-  /** Shorthand to specify a paginated 200 response type (items + pageInfo) */
+
+  /**
+   * Shorthand to specify a paginated 200 response type
+   * Generates a schema with { items: [], pageInfo: {}, totalCount: number, meta?: {} }
+   */
   paginatedResponseType?: NestType<any>;
-  /** Wrap successful 2xx response in a standard envelope { success, data, error? } */
+
+  /**
+   * When true, wraps successful 2xx response in a standard envelope: { success, data, error? }
+   * This metadata is also stored for use by interceptors
+   */
   envelope?: boolean;
 }
 
+/**
+ * @Api Decorator
+ *
+ * A powerful unified decorator for configuring Swagger/OpenAPI documentation in NestJS.
+ * Combines multiple Swagger decorators into a single, declarative interface.
+ *
+ * Key Features:
+ * - Automatic request body type inference from method signatures
+ * - Auto-generation of query/path params from DTOs with @Field decorators
+ * - Support for paginated, array, and enveloped responses
+ * - Built-in authentication guard integration
+ * - Flexible response configuration
+ *
+ * @param options - Configuration options for the API endpoint
+ * @returns A method decorator that applies all necessary Swagger decorators
+ *
+ * @example
+ * ```typescript
+ * @Get()
+ * @Api({
+ *   summary: 'Get all jobs',
+ *   description: 'Returns a paginated list of jobs with optional filters',
+ *   paginatedResponseType: JobDto,
+ *   queriesFrom: [PaginationArgs, JobFilterDto],
+ *   envelope: true
+ * })
+ * async findAll(@Query() pagination: PaginationArgs, @Query() filters: JobFilterDto) {
+ *   // ...
+ * }
+ * ```
+ */
 export function Api(options: ApiOptions): MethodDecorator {
   return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
-    // Attempt body type inference if not supplied
+    // ============================================================================
+    // STEP 1: Automatic Body Type Inference
+    // ============================================================================
+    // Attempt to infer the request body type from the method's parameter types
+    // if it hasn't been explicitly provided in the options.
+    // This looks for DTO or Input classes in the method signature.
     if (!options.bodyType) {
       try {
         const paramTypes: any[] = Reflect.getMetadata('design:paramtypes', target, propertyKey) || [];
@@ -85,6 +184,10 @@ export function Api(options: ApiOptions): MethodDecorator {
       }
     }
 
+    // ============================================================================
+    // STEP 2: Build API Operation Metadata
+    // ============================================================================
+    // Construct the ApiOperation options with summary, description, and deprecation info
     const op: ApiOperationOptions = {
       summary: options.summary,
       description: options.description,
@@ -92,22 +195,38 @@ export function Api(options: ApiOptions): MethodDecorator {
       ...(options.apiOperationOptions || {}),
     } as ApiOperationOptions;
 
+    // ============================================================================
+    // STEP 3: Determine Response Strategy
+    // ============================================================================
+    // Check if the user has provided custom responses.
+    // If they have, we skip adding default responses (Created, Unauthorized, Forbidden)
     const userProvidedResponses = (options.responses || options.apiResponses || []).filter((v) =>
       Boolean(v)
     ) as ApiResponseOptions[];
     const addDefaultSet = userProvidedResponses.length === 0; // Only add defaults when no custom responses passed
 
+    // ============================================================================
+    // STEP 4: Build Decorator Chain
+    // ============================================================================
+    // Start building the array of decorators that will be applied to the method
     const decorators: any[] = [];
+
+    // Add authentication guards if required
     if (options.authenticationRequired) {
       decorators.push(UseGuards(RedisAuthGuard), ApiBearerAuth());
     }
+
     decorators.push(ApiOperation(op));
 
+    // Add request body documentation if bodyType is specified
     if (options.bodyType) {
       decorators.push(ApiBody({ type: options.bodyType }));
     }
 
-    // Params
+    // ============================================================================
+    // STEP 5: Path Parameters
+    // ============================================================================
+    // Add manually defined path parameters
     (options.params || []).forEach((p) =>
       decorators.push(
         ApiParam({
@@ -120,7 +239,8 @@ export function Api(options: ApiOptions): MethodDecorator {
       )
     );
 
-    // Auto path params from metadata
+    // Auto-generate path parameters from DTOs with @Field decorators
+    // Reads metadata set by @Field(... inPath: true) decorators
     if (options.pathParamsFrom) {
       const sources = Array.isArray(options.pathParamsFrom) ? options.pathParamsFrom : [options.pathParamsFrom];
       sources.forEach((src) => {
@@ -142,7 +262,11 @@ export function Api(options: ApiOptions): MethodDecorator {
       });
     }
 
-    // Queries
+    // ============================================================================
+    // STEP 6: Query Parameters
+    // ============================================================================
+    // Add manually defined query parameters
+    // Note: For manual queries, required defaults to false (must be explicitly true)
     (options.queries || []).forEach((q) =>
       decorators.push(
         ApiQuery({
@@ -156,10 +280,15 @@ export function Api(options: ApiOptions): MethodDecorator {
       )
     );
 
+    // Auto-generate query parameters from DTOs with @Field decorators
+    // Reads metadata set by @Field(... inQuery: true) decorators
+    // IMPORTANT: We explicitly set required to true or false (not undefined)
+    // to ensure Swagger correctly displays optional fields
     if (options.queriesFrom) {
       const sources = Array.isArray(options.queriesFrom) ? options.queriesFrom : [options.queriesFrom];
       sources.forEach((src) => {
         if (!src) return;
+        // Retrieve metadata stored by @Field decorator
         const qMeta = Reflect.getMetadata('cb:fieldMeta', src.prototype) || [];
         qMeta
           .filter((m: any) => m.inQuery)
@@ -168,7 +297,9 @@ export function Api(options: ApiOptions): MethodDecorator {
               ApiQuery({
                 name: m.name,
                 description: m.description,
-                required: m.required === true,
+                // Explicitly set required to true or false (never undefined)
+                // This ensures Swagger properly marks optional fields as not required
+                required: m.required === true ? true : false,
                 enum: m.enum,
                 type: m.type,
               })
@@ -177,11 +308,17 @@ export function Api(options: ApiOptions): MethodDecorator {
       });
     }
 
+    // ============================================================================
+    // STEP 7: Response Documentation
+    // ============================================================================
+    // Generate response schemas based on the provided options
     // Shorthand 200 response helpers (only if user didn't explicitly define 200)
     const hasExplicit200 = userProvidedResponses.some((r) => r.status === 200);
     if (!hasExplicit200) {
+      // Single object response
       if (options.responseType) {
         if (options.envelope) {
+          // Wrapped in envelope: { success: true, data: {...} }
           decorators.push(
             ApiResponse({
               status: 200,
@@ -196,14 +333,18 @@ export function Api(options: ApiOptions): MethodDecorator {
             })
           );
         } else {
+          // Direct response without envelope
           decorators.push(ApiResponse({ status: 200, description: 'Successful response', type: options.responseType }));
         }
-      } else if (options.responseArrayType) {
+      }
+      // Array response
+      else if (options.responseArrayType) {
         const arraySchema = {
           type: 'array',
           items: { $ref: getSchemaPath(options.responseArrayType) },
         };
         if (options.envelope) {
+          // Wrapped in envelope: { success: true, data: [...] }
           decorators.push(
             ApiResponse({
               status: 200,
@@ -218,6 +359,7 @@ export function Api(options: ApiOptions): MethodDecorator {
             })
           );
         } else {
+          // Direct array response
           decorators.push(
             ApiResponse({
               status: 200,
@@ -226,7 +368,9 @@ export function Api(options: ApiOptions): MethodDecorator {
             })
           );
         }
-      } else if (options.paginatedResponseType) {
+      }
+      // Paginated response with items, pageInfo, totalCount, and optional meta
+      else if (options.paginatedResponseType) {
         const basePaginated = {
           type: 'object',
           properties: {
@@ -253,6 +397,7 @@ export function Api(options: ApiOptions): MethodDecorator {
           },
         };
         if (options.envelope) {
+          // Wrapped in envelope: { success: true, data: { items, pageInfo, totalCount, meta } }
           decorators.push(
             ApiResponse({
               status: 200,
@@ -267,6 +412,7 @@ export function Api(options: ApiOptions): MethodDecorator {
             })
           );
         } else {
+          // Direct paginated response
           decorators.push(
             ApiResponse({
               status: 200,
@@ -278,11 +424,16 @@ export function Api(options: ApiOptions): MethodDecorator {
       }
     }
 
+    // ============================================================================
+    // STEP 8: Default Error Responses
+    // ============================================================================
+    // Add default error responses (401, 201, 403) if user hasn't provided custom responses
     if (addDefaultSet) {
       decorators.push(ApiUnauthorizedResponse({ description: 'Unauthorized' }));
       decorators.push(ApiCreatedResponse({ description: 'The record has been successfully created.' }));
       decorators.push(ApiForbiddenResponse({ description: 'Forbidden.' }));
     } else {
+      // If user provided custom responses, ensure 401 is still added for authenticated endpoints
       let has401 = userProvidedResponses.some((r) => r.status === 401);
       if (options.authenticationRequired && !has401) {
         decorators.push(ApiUnauthorizedResponse({ description: 'Unauthorized' }));
@@ -290,11 +441,18 @@ export function Api(options: ApiOptions): MethodDecorator {
       }
     }
 
+    // ============================================================================
+    // STEP 9: Add User-Provided Responses
+    // ============================================================================
+    // Add any custom responses provided by the user
     if (userProvidedResponses.length > 0) {
       userProvidedResponses.forEach((r) => decorators.push(ApiResponse(r)));
     }
 
-    // Store envelope intention for interceptor usage
+    // ============================================================================
+    // STEP 10: Store Metadata for Interceptors
+    // ============================================================================
+    // Store envelope metadata so interceptors can wrap responses appropriately
     if (options.envelope) {
       try {
         Reflect.defineMetadata('cb:envelope', true, descriptor.value);
@@ -303,6 +461,10 @@ export function Api(options: ApiOptions): MethodDecorator {
       }
     }
 
+    // ============================================================================
+    // STEP 11: Apply All Decorators
+    // ============================================================================
+    // Apply all collected decorators to the target method
     applyDecorators(...decorators)(target, propertyKey, descriptor);
   };
 }
