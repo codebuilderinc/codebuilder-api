@@ -66,10 +66,15 @@ export function Field(options: FieldOptions) {
   decorators.push(GraphQLField(pick({ ...options, nullable: !required }, ['nullable', 'name', 'description', 'type'])));
 
   // Swagger property decorator
-  if (required) {
-    decorators.push(ApiProperty(swaggerMeta));
-  } else {
-    decorators.push(ApiPropertyOptional(swaggerMeta));
+  // IMPORTANT: Only apply ApiProperty/ApiPropertyOptional if this field is NOT a query or path parameter
+  // Query and path parameters are documented via @ApiQuery and @ApiParam in the @Api decorator
+  // Applying ApiProperty here would treat them as body properties, causing Swagger UI issues
+  if (!options.inQuery && !options.inPath) {
+    if (required) {
+      decorators.push(ApiProperty(swaggerMeta));
+    } else {
+      decorators.push(ApiPropertyOptional(swaggerMeta));
+    }
   }
 
   if (!required) {
