@@ -35,7 +35,9 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
       //   },
       // ]
     });
-    this.logger.info(`Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL')}`);
+    this.logger.info(
+      `Using Prisma v${Prisma.prismaVersion.client} ${configService.get('DATABASE_URL').replace(/:[^:]*@/, ':***@')}`
+    );
 
     /* this.meter = meterProvider.getMeter('example-exporter-collector');
 
