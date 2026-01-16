@@ -1,6 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
+
+        "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+
+
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -19,5 +26,5 @@
     "noFallthroughCasesInSwitch": false
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "**/*.cjs"]
 }
