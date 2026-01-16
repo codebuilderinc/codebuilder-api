@@ -10,7 +10,7 @@ export class Web3CareerService {
   ) {}
 
   private get web3CareerApiUrl(): string {
-    const token = process.env.WEB3CAREER_API_TOKEN || 'Rg9PrsGP96Z2GB6T9tNZ1AzHzriQEwxa';
+    const token = process.env.WEB3CAREER_API_TOKEN || '';
     return `https://web3.career/api/v1?token=${token}`;
   }
 
