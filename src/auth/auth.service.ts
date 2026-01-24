@@ -33,6 +33,7 @@ export class AuthService {
       const user = await this.prisma.user.create({
         data: {
           ...payload,
+          password: hashedPassword,
           role: 'USER',
         },
       });
@@ -40,11 +41,42 @@ export class AuthService {
       return this.generateTokens({
         userId: user.id,
       });
-    } catch (e) {
+    } catch (e: unknown) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
         throw new ConflictException(`Email ${payload.email} already used.`);
       }
-      throw new Error(e);
+
+      if (e instanceof Error) {
+        throw e;
+      }
+
+      let message = 'Unknown error';
+      if (typeof e === 'string') {
+        message = e;
+      } else if (e && typeof e === 'object') {
+        try {
+          message = JSON.stringify(e);
+        } catch {
+          message = Object.prototype.toString.call(e);
+        }
+      } else if (e === null) {
+        message = 'null';
+      } else {
+        switch (typeof e) {
+          case 'number':
+          case 'boolean':
+          case 'bigint':
+          case 'symbol':
+          case 'undefined':
+          case 'function':
+            message = e.toString();
+            break;
+          default:
+            message = 'Unknown error';
+        }
+      }
+
+      throw new Error(message);
     }
   }
 
@@ -84,14 +116,17 @@ export class AuthService {
   }
 
   private generateAccessToken(payload: { userId: number }): string {
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload as any);
   }
 
   private generateRefreshToken(payload: { userId: number }): string {
-    return this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_TOKEN_SECRET || 'nestjsPrismaRefreshSecret',
-      expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME || '60m',
-    });
+    return this.jwtService.sign(
+      payload as any,
+      {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET || 'nestjsPrismaRefreshSecret',
+        expiresIn: (process.env.JWT_REFRESH_EXPIRATION_TIME || '60m') as any,
+      } as any
+    );
   }
 
   refreshToken(token: string) {
@@ -184,11 +219,11 @@ export class AuthService {
       return this.generateTokens({
         userId: user.id,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Google auth error:', error);
 
       // More specific error handling
-      if (error.message?.includes('audience')) {
+      if (error?.message?.includes('audience')) {
         throw new UnauthorizedException('OAuth client ID mismatch - check your build configuration');
       }
 

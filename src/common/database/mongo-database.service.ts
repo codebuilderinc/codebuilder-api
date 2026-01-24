@@ -17,7 +17,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
     private readonly configService: ConfigService,
     private readonly traceService: TraceService //private readonly meter,
   ) {
-    super({
+    super(<any>{
       datasources: {
         db: {
           url: configService.get('MONGO_DATABASE_URL'),
@@ -50,7 +50,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
   async onModuleInit(): Promise<void> {
     const prismaEngine = (this as any)._engineConfig;
 
-    await this.$connect();
+    await (this as any).$connect();
 
     this.logger.info(
       `Connected to ${prismaEngine.activeProvider} instance using Prisma v${prismaEngine.clientVersion}`
@@ -61,7 +61,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
     //   console.log(e)
     // })
 
-    this.$use(async (params: Prisma.MiddlewareParams, next) => {
+    (this as any).$use(async (params: any, next) => {
       //this.queriesCounter.add(1);
       // this.pendingQueriesCounter.add(1);
 
@@ -85,7 +85,7 @@ export class MongoDatabaseService extends MongoPrismaClient implements OnModuleI
   }
 
   async onModuleDestroy(): Promise<void> {
-    await this.$disconnect();
+    await (this as any).$disconnect();
 
     this.logger.debug('Disconnected from Mongo instance');
   }

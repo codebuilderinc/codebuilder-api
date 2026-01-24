@@ -54,16 +54,10 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   }
 
   async onModuleInit(): Promise<void> {
-    this.$use(async (params: any, next) => {
-      const span = this.traceService.startSpan(`prisma: ${params.model}.${params.action}`);
-      //this.queriesCounter.add(1);
-      // this.pendingQueriesCounter.add(1);
-      const result = await next(params);
+    // Prisma middleware ($use) is not available in newer Prisma clients; use query events instead.
+    this.$on('query' as any, (e: any) => {
+      const span = this.traceService.startSpan(`prisma: ${e.model ?? 'unknown'}.${e.action ?? 'query'}`);
       span.end();
-
-      // this.pendingQueriesCounter.add(-1);
-
-      return result;
     });
 
     const prismaEngine = (this as any)._engineConfig;

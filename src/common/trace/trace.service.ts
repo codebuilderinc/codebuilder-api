@@ -2,7 +2,7 @@ import { TraceService as NestTraceService } from '@metinseylan/nestjs-openteleme
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { INQUIRER } from '@nestjs/core';
 import { Span } from '@opentelemetry/api';
-import { ClassDeclaration } from 'typescript';
+import type { ClassDeclaration } from 'typescript';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class TraceService extends NestTraceService {

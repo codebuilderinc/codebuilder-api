@@ -21,10 +21,11 @@ import { ConfigService } from '../common/configs/config.service';
       useFactory: (configService: ConfigService) => {
         return {
           secret: process.env.JWT_ACCESS_SECRET || 'nestjsPrismaAccessSecret',
+          // jsonwebtoken types may require a specific StringValue type; cast to any to satisfy types
           signOptions: {
-            expiresIn: process.env.JWT_EXPIRATION_TIME || '60m',
+            expiresIn: (process.env.JWT_EXPIRATION_TIME || '60m') as any,
           },
-        };
+        } as any;
       },
       inject: [ConfigService],
     }),

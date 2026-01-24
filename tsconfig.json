@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-
-        "moduleResolution": "bundler",
+    "baseUrl": ".",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+
+        "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
+    //"strict": true,
+    //"esModuleInterop": true,
 
 
     "declaration": true,
@@ -13,10 +17,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

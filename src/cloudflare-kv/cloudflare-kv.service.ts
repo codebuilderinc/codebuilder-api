@@ -18,6 +18,16 @@ export class CloudflareKvService implements OnModuleInit {
     this.authorizationToken = this.configService.get('EDGE_KV_AUTHORIZATION_TOKEN');
   }
 
+  private getErrorMessage(e: unknown): string {
+    if (e instanceof Error) return e.message;
+    if (typeof e === 'string') return e;
+    try {
+      return JSON.stringify(e);
+    } catch {
+      return 'Unknown error';
+    }
+  }
+
   async createKeyValueForNamespace(namespace: KvNamespaces, key: string, value?: string | object) {
     try {
       const requestOptions = {
@@ -30,9 +40,9 @@ export class CloudflareKvService implements OnModuleInit {
       const response = await fetch(`${this.edgeKvUrl}/${namespace}/${key}`, requestOptions);
 
       return response;
-    } catch (e) {
+    } catch (e: unknown) {
       this.logger.error('Failed to update workers KV', {
-        errorMessage: e.message,
+        errorMessage: this.getErrorMessage(e),
       });
     }
   }
@@ -49,9 +59,9 @@ export class CloudflareKvService implements OnModuleInit {
       const response = await fetch(`${this.edgeKvUrl}/${namespace}/${key}`, requestOptions);
 
       return response.json();
-    } catch (e) {
+    } catch (e: unknown) {
       this.logger.error('Failed to update workers KV', {
-        errorMessage: e.message,
+        errorMessage: this.getErrorMessage(e),
       });
     }
   }

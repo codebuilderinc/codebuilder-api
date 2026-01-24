@@ -3,14 +3,15 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   ConnectedSocket,
+  type WsResponse,
+  type OnGatewayConnection,
+  type OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
+import { from } from 'rxjs';
+import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 
 /*
 @WebSocketGateway({

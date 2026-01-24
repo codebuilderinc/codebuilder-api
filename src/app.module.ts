@@ -1,7 +1,7 @@
 //import { GraphQLModule } from '@nestjs/graphql';
 import { Logger, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from './common/configs/config.module';
-import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { PrismaModule } from 'nestjs-prisma';
 import { AppService } from './app.service';
 //import config from './common/configs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -52,17 +52,23 @@ import { SentryModule } from '@sentry/nestjs/setup';
     //LoggerModule,
     //OpenTelemetryModuleConfig,
     RedisModule.forRoot(),
+    // Configure Prisma v7: prefer installed adapter, then accelerateUrl env.
     PrismaModule.forRoot({
       isGlobal: true,
       prismaServiceOptions: {
         middlewares: [
-          // configure your prisma middleware
-          loggingMiddleware({
-            logger: new Logger('PrismaMiddleware'),
-            logLevel: 'log',
-          }),
+          // configure your prisma middleware (inline implementation)
+          (params, next) => {
+            const logger = new Logger('PrismaMiddleware');
+            const start = Date.now();
+            return next(params).then((result) => {
+              const duration = Date.now() - start;
+              logger.log(`${params?.model ?? 'Unknown'}.${params?.action} took ${duration}ms`);
+              return result;
+            });
+          },
         ],
-      },
+      } as any,
     }),
 
     // GraphQLModule.forRootAsync<ApolloDriverConfig>({

@@ -23,6 +23,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private readonly logger: LoggerService,
     private readonly traceService: TraceService //private readonly meter: Meter,
   ) {
+    // Default no-op counter to prevent runtime errors when metrics are not configured.
+    this.queuedJobsCounter = { add: () => undefined } as unknown as Counter;
+
     /*this.queuedJobsCounter = this.meter.createCounter(
       'queueservice_queued_jobs',
       {
@@ -102,14 +105,53 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
    * If a connection failure occurs, SIGTERM the container
    *
    * @private
-   * @param {Error} error
+   * @param {unknown} error
    * @memberof QueueService
    */
-  private onConnectionError(error: Error): void {
+  private onConnectionError(error: unknown): void {
+    const err = error instanceof Error ? error : new Error(this.stringifyUnknownError(error));
+
     this.logger.error('Connection error', {
-      errorMessage: error.message,
-      errorStack: error.stack,
+      errorMessage: err.message,
+      errorStack: err.stack,
     });
+  }
+
+  private stringifyUnknownError(error: unknown): string {
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error === null) {
+      return 'null';
+    }
+
+    if (error && typeof error === 'object') {
+      if ('message' in error && typeof (error as { message?: unknown }).message === 'string') {
+        return (error as { message: string }).message;
+      }
+
+      try {
+        return JSON.stringify(error);
+      } catch {
+        return Object.prototype.toString.call(error);
+      }
+    }
+
+    switch (typeof error) {
+      case 'undefined':
+        return 'undefined';
+      case 'number':
+      case 'boolean':
+      case 'bigint':
+        return String(error);
+      case 'symbol':
+        return error.toString();
+      case 'function':
+        return error.name ? `[Function: ${error.name}]` : '[Function]';
+      default:
+        return 'Unknown error';
+    }
   }
 
   async queue<T>(queueName: string, jobName: JobNames, data?: T, options?: JobsOptions): Promise<Job<T>> {
@@ -133,7 +175,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   async bulkQueue<T extends { jobId?: string }>(
     queueName: string,
     jobName: JobNames,
-    data?: T[],
+    data: T[] = [],
     options?: JobsOptions
   ): Promise<Job<T>[]> {
     this.queuedJobsCounter.add(data.length);
