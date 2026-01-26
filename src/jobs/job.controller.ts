@@ -27,7 +27,7 @@ import { ApiPaginationQuery } from './../common/decorators/api-nested-query.deco
 import { PaginationArgs } from '../common/pagination/pagination.args';
 import { Web3CareerService } from './web3career.service';
 import { RedditService } from './reddit.service';
-import { NotificationsService } from './notifications.service';
+import { NotificationsService } from '@/notifications/notifications.service';
 import { PaginatedResponse } from '../common/models/paginated-response';
 import { CreateJobDto as JobDto } from './dto/create-job.dto';
 import { LoggerService } from '../common/logger/logger.service';
