@@ -1,8 +1,13 @@
-import { ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../users/models/user.model';
-import { Token } from './token.model';
 
-@ObjectType()
-export class Auth extends Token {
+export class Auth {
+  @ApiProperty({ type: User })
   user: User;
+
+  @ApiProperty({ description: 'JWT access token' })
+  accessToken: string;
+
+  @ApiProperty({ description: 'JWT refresh token' })
+  refreshToken: string;
 }

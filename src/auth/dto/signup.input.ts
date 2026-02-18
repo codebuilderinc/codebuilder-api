@@ -1,20 +1,21 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail, IsNotEmpty, MinLength, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-@InputType()
 export class SignupInput {
-  @Field()
+  @ApiProperty({ description: 'User email address' })
   @IsEmail()
   email: string;
 
-  @Field()
+  @ApiProperty({ description: 'User password', minLength: 8 })
   @IsNotEmpty()
   @MinLength(8)
   password: string;
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ description: 'User first name' })
+  @IsOptional()
   firstname?: string;
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ description: 'User last name' })
+  @IsOptional()
   lastname?: string;
 }

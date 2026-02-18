@@ -1,8 +1,6 @@
-import { ArgsType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { Field } from '../decorators/field.decorator';
 
-@ArgsType()
 export class PaginationArgs {
   @Type(() => Number)
   @Field({

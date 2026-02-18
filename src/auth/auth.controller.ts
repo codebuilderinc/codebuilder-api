@@ -1,6 +1,6 @@
 import { Body, Controller, Post, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { GoogleAuthInput } from './dto/google-auth.input';
+import { GoogleAuthInput } from './dto/oauth-google.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Api } from '../common/decorators/api.decorator';
 

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsEnum } from 'class-validator';
-import { InputType, Field as GraphQLField, registerEnumType } from '@nestjs/graphql';
 
 /**
  * Sort order enum for job queries
@@ -9,12 +8,6 @@ export enum SortOrder {
   ASC = 'asc',
   DESC = 'desc',
 }
-
-// Register enum for GraphQL
-registerEnumType(SortOrder, {
-  name: 'SortOrder',
-  description: 'Sort order for queries',
-});
 
 /**
  * Job Order By DTO
@@ -29,14 +22,12 @@ registerEnumType(SortOrder, {
  * - title: Job title (alphabetical)
  * - company: Company name (alphabetical)
  */
-@InputType()
 export class JobOrderByDto {
   @ApiProperty({
     description: 'Sort by creation date',
     enum: SortOrder,
     required: false,
   })
-  @GraphQLField(() => SortOrder, { nullable: true })
   @IsOptional()
   @IsEnum(SortOrder)
   createdAt?: SortOrder;
@@ -46,7 +37,6 @@ export class JobOrderByDto {
     enum: SortOrder,
     required: false,
   })
-  @GraphQLField(() => SortOrder, { nullable: true })
   @IsOptional()
   @IsEnum(SortOrder)
   updatedAt?: SortOrder;
@@ -56,7 +46,6 @@ export class JobOrderByDto {
     enum: SortOrder,
     required: false,
   })
-  @GraphQLField(() => SortOrder, { nullable: true })
   @IsOptional()
   @IsEnum(SortOrder)
   postedAt?: SortOrder;
@@ -66,7 +55,6 @@ export class JobOrderByDto {
     enum: SortOrder,
     required: false,
   })
-  @GraphQLField(() => SortOrder, { nullable: true })
   @IsOptional()
   @IsEnum(SortOrder)
   title?: SortOrder;
@@ -76,7 +64,6 @@ export class JobOrderByDto {
     enum: SortOrder,
     required: false,
   })
-  @GraphQLField(() => SortOrder, { nullable: true })
   @IsOptional()
   @IsEnum(SortOrder)
   company?: SortOrder;

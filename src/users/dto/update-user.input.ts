@@ -1,9 +1,14 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-@InputType()
 export class UpdateUserInput {
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ description: 'User first name' })
+  @IsOptional()
+  @IsString()
   firstname?: string;
-  @Field({ nullable: true })
+
+  @ApiPropertyOptional({ description: 'User last name' })
+  @IsOptional()
+  @IsString()
   lastname?: string;
 }

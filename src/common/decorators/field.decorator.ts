@@ -13,27 +13,19 @@ import {
   MinLength,
   IsDecimal,
   MaxLength,
+  ValidationOptions,
 } from 'class-validator';
-import { Type, plainToClass } from 'class-transformer';
 import { pick } from './../../common/helpers/array.helper';
-import { EndsWithValidator } from '../../common/validation/ends-with.decorator';
 import { applyDecorators } from '@nestjs/common';
-import { UseGuards, SetMetadata } from '@nestjs/common';
-import { Field as GraphQLField } from '@nestjs/graphql';
-import { validate, ValidationOptions } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import ValidatorJS from 'validator';
-import { IsType } from '../../common/validation/is-type.decorator';
-
-//declare class RELATED_ENTITY_FIND_MANY_ARGS {}
-//plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
 
 type FieldOptions = {
   name: string; // explicit name override (optional for consistency)
   description: string;
   example?: unknown;
   enum?: unknown;
-  type?: unknown; // override GraphQL/Swagger type
+  type?: unknown; // override Swagger type
   optional?: boolean; // marks field optional
   nullable?: boolean; // kept for backwards compat; implies optional
   minLength?: number;
@@ -61,9 +53,6 @@ export function Field(options: FieldOptions) {
   if (!required) swaggerMeta.required = false;
 
   const decorators: any[] = [];
-
-  // GraphQL field
-  decorators.push(GraphQLField(pick({ ...options, nullable: !required }, ['nullable', 'name', 'description', 'type'])));
 
   // Swagger property decorator
   // IMPORTANT: Only apply ApiProperty/ApiPropertyOptional if this field is NOT a query or path parameter

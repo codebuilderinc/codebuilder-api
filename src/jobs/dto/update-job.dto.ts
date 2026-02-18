@@ -11,8 +11,6 @@ import {
   IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { InputType, Field as GraphQLField } from '@nestjs/graphql';
-import { pick } from './../../common/helpers/array.helper';
 import { JobMetadataDto } from './create-job.dto';
 
 /**
@@ -27,14 +25,12 @@ import { JobMetadataDto } from './create-job.dto';
  * - Job status (remote, posted date)
  * - Tags and metadata
  */
-@InputType()
 export class UpdateJobDto {
   @ApiProperty({
     description: 'Job title',
     example: 'Senior Software Engineer',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -45,7 +41,6 @@ export class UpdateJobDto {
     example: 1,
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsInt()
   companyId?: number;
@@ -55,7 +50,6 @@ export class UpdateJobDto {
     example: 'Tech Corp Inc',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -66,7 +60,6 @@ export class UpdateJobDto {
     example: 'john_doe',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -77,7 +70,6 @@ export class UpdateJobDto {
     example: 'San Francisco, CA',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -88,7 +80,6 @@ export class UpdateJobDto {
     example: 'https://company.com/jobs/senior-engineer',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsUrl()
   url?: string;
@@ -98,7 +89,6 @@ export class UpdateJobDto {
     example: '2024-01-15T10:30:00Z',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsDateString()
   postedAt?: string;
@@ -108,7 +98,6 @@ export class UpdateJobDto {
     example: 'We are looking for a skilled software engineer...',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   description?: string;
@@ -118,7 +107,6 @@ export class UpdateJobDto {
     example: true,
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsBoolean()
   isRemote?: boolean;
@@ -129,7 +117,6 @@ export class UpdateJobDto {
     required: false,
     type: [String],
   })
-  @GraphQLField(() => [String], { nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -140,7 +127,6 @@ export class UpdateJobDto {
     required: false,
     type: [JobMetadataDto],
   })
-  @GraphQLField(() => [JobMetadataDto], { nullable: true })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
