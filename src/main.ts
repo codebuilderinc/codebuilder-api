@@ -80,6 +80,33 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
+  // Support requests without the `/api` prefix by adding it automatically.
+  // Routes are registered under /api/* via RouterModule, so this lets both
+  // `/jobs` and `/api/jobs` work without changing controllers.
+  // NOTE: We exclude Swagger paths from rewriting.
+  const swaggerPath = swaggerConfig.path || 'api';
+  app.use((req: any, _res, next) => {
+    if (typeof req.url === 'string') {
+      const urlPath = req.url.split('?')[0];
+
+      // Skip if already has /api prefix
+      if (req.url.startsWith('/api')) {
+        return next();
+      }
+
+      // Skip root path, health checks, and other special paths
+      if (urlPath === '/' || urlPath === '/health') {
+        return next();
+      }
+
+      // Add /api prefix to the request
+      const newUrl = `/api${req.url}`;
+      req.url = newUrl;
+      req.originalUrl = newUrl;
+    }
+    next();
+  });
+
   // ===================================
   // Global Setup
   // ===================================

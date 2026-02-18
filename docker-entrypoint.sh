@@ -16,6 +16,18 @@ export NODE_ENV=${NODE_ENV:-production}
 DB_HOST=${DATABASE_HOST:-db}
 DB_PORT=${DATABASE_PORT:-5432}
 
+# If DATABASE_URL isn't set (some deploys set DB_* vars only), build it here
+if [ -z "$DATABASE_URL" ]; then
+  export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}?schema=${DB_SCHEMA:-public}"
+  echo "[ENTRYPOINT] Built DATABASE_URL from components"
+fi
+
+# If SHADOW_DATABASE_URL isn't set, build a shadow DB url next to the main DB
+if [ -z "$SHADOW_DATABASE_URL" ]; then
+  export SHADOW_DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}_shadow?schema=${DB_SCHEMA:-public}"
+  echo "[ENTRYPOINT] Built SHADOW_DATABASE_URL from components"
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -38,7 +50,13 @@ echo -e "${GREEN}✅ Database is ready.${NC}"
 # 'prisma migrate deploy' is the command intended for production/CI/CD environments.
 # It applies pending migrations without generating new ones.
 echo -e "${YELLOW}🔄 Running database migrations...${NC}"
-npx prisma migrate deploy
+echo "[ENTRYPOINT] Working dir: $(pwd)"
+echo "[ENTRYPOINT] Prisma schema file: ./prisma/schema.prisma"
+echo "[ENTRYPOINT] Environment:"
+env | grep -E "(DATABASE|POSTGRES|DB)" || true
+
+# Explicitly pass the schema path to avoid ambiguity and help debugging
+npx prisma migrate deploy --schema=./prisma/schema.prisma
 
 echo -e "${GREEN}✅ Migrations complete.${NC}"
 

@@ -36,12 +36,11 @@ export function loadConfig() {
 
   const dotenvConfig = dotenv.parse(file);
 
-  // Inject parsed values into process.env if not already present so the rest of the
-  // application (e.g. main.ts reading process.env.PORT) sees them.
+  // Inject parsed values into process.env. Values from the selected env file
+  // OVERRIDE existing process.env values to ensure .env.local takes precedence
+  // over .env (which Prisma/dotenv may have auto-loaded).
   for (const [k, v] of Object.entries(dotenvConfig)) {
-    if (process.env[k] === undefined) {
-      process.env[k] = v;
-    }
+    process.env[k] = v;
   }
 
   if (!process.env.ENV_FILE_LOGGED) {

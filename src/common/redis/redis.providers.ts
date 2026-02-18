@@ -42,7 +42,6 @@ function redisFactory(redis: RedisService, prefix: string, cfg: ConfigService): 
       }),
     } as const;
 
-    console.log(server.port, server.host, redisOptions);
     redis.client = new IORedis(server.port, server.host, redisOptions);
 
     redis.client.on('connect', () => {
@@ -126,7 +125,7 @@ export const redisProviders: Provider[] = [
       const options: any = {
         host,
         port,
-        ...(password ? { password } : {}),
+        ...(password && password.length > 0 ? { password } : {}),
         ...(useTls ? { tls: { servername: host } } : {}),
       };
       return new IORedis(options);
@@ -143,7 +142,7 @@ export const redisProviders: Provider[] = [
       const options: any = {
         host,
         port,
-        ...(password ? { password } : {}),
+        ...(password && password.length > 0 ? { password } : {}),
         ...(useTls ? { tls: { servername: host } } : {}),
       };
       return new IORedis(options);

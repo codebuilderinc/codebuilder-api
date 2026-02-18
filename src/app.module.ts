@@ -1,6 +1,5 @@
-//import { GraphQLModule } from '@nestjs/graphql';
 import { Logger, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from './common/configs/config.module';
+import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
 import { AppService } from './app.service';
 //import config from './common/configs/config';
@@ -23,9 +22,6 @@ import { SentryModule } from '@sentry/nestjs/setup';
 //import { ConfigModule } from '@nestjs/config';
 // import { UserModule } from './users/user.module';
 
-//import { AppResolver } from './app.resolver';
-//import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-//import { GqlConfigService } from './gql-config.service';
 // import { AllowedBlockchainsGuard } from './blockchains/allowed-blockchains.guard';
 //import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 //import { RedisModule } from './redis/redis.module';
@@ -40,6 +36,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
 //     },
 //   },
 // });
+console.log('DEBUG ENVIRONMENT:', process.env.NODE_ENV);
 
 @Module({
   imports: [
@@ -47,7 +44,10 @@ import { SentryModule } from '@sentry/nestjs/setup';
     // Setup NestJS open telemetry auto instrumentation. This requires the configuration
     // to be passed in again for some features (e.g. metrics) to work correctly.
     //OpenTelemetryModule.forRoot(openTelemetryConfig),
-    ConfigModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'local' ? '.env.local' : '.env',
+    }),
     //ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     //LoggerModule,
     //OpenTelemetryModuleConfig,
@@ -70,11 +70,6 @@ import { SentryModule } from '@sentry/nestjs/setup';
         ],
       } as any,
     }),
-
-    // GraphQLModule.forRootAsync<ApolloDriverConfig>({
-    //     driver: ApolloDriver,
-    //     useClass: GqlConfigService,
-    // }),
 
     AppRouterModule,
     CloudflareKvModule,
