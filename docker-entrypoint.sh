@@ -52,8 +52,11 @@ echo -e "${GREEN}✅ Database is ready.${NC}"
 echo -e "${YELLOW}🔄 Running database migrations...${NC}"
 echo "[ENTRYPOINT] Working dir: $(pwd)"
 echo "[ENTRYPOINT] Prisma schema file: ./prisma/schema.prisma"
-echo "[ENTRYPOINT] Environment:"
-env | grep -E "(DATABASE|POSTGRES|DB)" || true
+echo "[ENTRYPOINT] Database connection (redacted):"
+echo "  DB_HOST=$DB_HOST"
+echo "  DB_PORT=$DB_PORT"
+echo "  POSTGRES_DB=${POSTGRES_DB:-<not set>}"
+echo "  DB_SCHEMA=${DB_SCHEMA:-public}"
 
 # Explicitly pass the schema path to avoid ambiguity and help debugging
 npx prisma migrate deploy --schema=./prisma/schema.prisma
