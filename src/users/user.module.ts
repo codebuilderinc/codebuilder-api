@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { PasswordService } from '../auth/password.service';
 import { UserController } from './user.controller';
@@ -10,7 +9,7 @@ import { RedisModule } from '../common/redis/redis.module';
 @Module({
   imports: [AuthModule, RedisModule.forRoot()],
   controllers: [UserController],
-  providers: [UserResolver, UserService, PasswordService],
+  providers: [UserService, PasswordService],
   exports: [UserService],
 })
 export class UserModule {}

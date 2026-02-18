@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { PasswordService } from './password.service';
-import { GqlAuthGuard } from './gql-auth.guard';
 import { AuthService } from './auth.service';
-import { AuthResolver } from './auth.resolver';
 import { AuthController } from './auth.controller';
 //import { JwtStrategy } from './jwt.strategy';
 import { SecurityConfig } from '../common/configs/config.interface';
@@ -30,8 +28,8 @@ import { ConfigService } from '../common/configs/config.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, AuthResolver, GqlAuthGuard, PasswordService], //JwtStrategy
+  providers: [AuthService, PasswordService], //JwtStrategy
   controllers: [AuthController],
-  exports: [GqlAuthGuard],
+  exports: [],
 })
 export class AuthModule {}
