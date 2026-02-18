@@ -12,19 +12,19 @@ import { AuthModule } from './auth/auth.module';
         path: 'ws',
         module: WssModule,
       },
-      {
-        path: 'api',
-        children: [
-          {
-            path: '', // Empty path here - the controller already has 'jobs' path
-            module: JobModule,
-          },
-          {
-            path: '', // Empty path here - the controller already has 'auth' path
-            module: AuthModule,
-          },
-        ],
-      },
+      // {
+      //   path: 'api',
+      //   children: [
+      //     {
+      //       path: '', // Empty path here - the controller already has 'jobs' path
+      //       module: JobModule,
+      //     },
+      //     {
+      //       path: '', // Empty path here - the controller already has 'auth' path
+      //       module: AuthModule,
+      //     },
+      //   ],
+      // },
     ]),
     CloudflareKvModule,
     JobModule,
