@@ -36,7 +36,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
 //     },
 //   },
 // });
-console.log('DEBUG ENVIRONMENT:', process.env.NODE_ENV);
+Logger.log(`DEBUG ENVIRONMENT: ${process.env.NODE_ENV}`);
 
 @Module({
   imports: [
