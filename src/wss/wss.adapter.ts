@@ -8,7 +8,7 @@ import Redis from 'ioredis';
 import { Server, ServerOptions, Socket } from 'socket.io';
 import { verify } from 'jsonwebtoken';
 
-import { access_denied, account_blocked, access_token_expired_signature, authorization_failed } from '../common/errors';
+//import { access_denied, account_blocked, access_token_expired_signature, authorization_failed } from '../common/errors';
 import { cors_options_delegate } from '../cors.options';
 //import { IAccessToken } from '../oauth/oauth.service';
 

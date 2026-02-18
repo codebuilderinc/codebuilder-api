@@ -82,19 +82,5 @@
     "port": 5672,
     "username": "admin",
     "password": "password"
-  },
-  "GRAPHQL_SETTINGS": {
-    "playground": true,
-    "debug": true,
-    "introspection": true,
-    "installSubscriptionHandlers": true
-  },
-  "GRAPHQL_APIS": {
-    "api_1": "http://localhost:8090/graphql",
-    "api_2": "http://localhost:8091/graphql"
-  },
-  "GRAPHQL_GUARD": {
-    "username": "admin",
-    "password": "password"
   }
 }

@@ -1,5 +1,4 @@
 import { applyDecorators, Type as NestType } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
 import {
   ApiOperation,
   ApiUnauthorizedResponse,
@@ -14,7 +13,7 @@ import {
   ApiQuery,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { RedisAuthGuard } from '../../auth/redis-auth.guard';
+//import { RedisAuthGuard } from '../../auth/redis-auth.guard';
 
 /**
  * API Decorator Response Type
@@ -213,7 +212,7 @@ export function Api(options: ApiOptions): MethodDecorator {
 
     // Add authentication guards if required
     if (options.authenticationRequired) {
-      decorators.push(UseGuards(RedisAuthGuard), ApiBearerAuth());
+      decorators.push(ApiBearerAuth());
     }
 
     decorators.push(ApiOperation(op));

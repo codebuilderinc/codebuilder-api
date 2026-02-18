@@ -1,14 +1,13 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-@InputType()
 export class GoogleAuthInput {
-  @Field()
+  @ApiProperty({ description: 'Google ID token' })
   @IsString()
   @IsNotEmpty()
   idToken: string;
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ description: 'Build type', enum: ['development', 'production'] })
   @IsString()
   @IsOptional()
   @IsIn(['development', 'production'])

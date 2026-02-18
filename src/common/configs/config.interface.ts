@@ -2,7 +2,6 @@ export interface Config {
   nest: NestConfig;
   cors: CorsConfig;
   swagger: SwaggerConfig;
-  graphql: GraphqlConfig;
   security: SecurityConfig;
 }
 
@@ -22,13 +21,6 @@ export interface SwaggerConfig {
   path: string;
 }
 
-export interface GraphqlConfig {
-  playgroundEnabled: boolean;
-  debug: boolean;
-  schemaDestination: string;
-  sortSchema: boolean;
-}
-
 export interface SecurityConfig {
   expiresIn: string;
   refreshIn: string;
@@ -39,7 +31,6 @@ export interface ApplicationConfig {
   nest: NestConfig;
   cors: CorsConfig;
   swagger: SwaggerConfig;
-  graphql: GraphqlConfig;
   security: SecurityConfig;
 
   SERVICE_NAME: string;
@@ -89,4 +80,9 @@ export interface ApplicationConfig {
 
   EDGE_KV_URL: string;
   EDGE_KV_AUTHORIZATION_TOKEN: string;
+}
+
+export interface UnflattenApplicationConfig {
+  name: string;
+  children: string[];
 }

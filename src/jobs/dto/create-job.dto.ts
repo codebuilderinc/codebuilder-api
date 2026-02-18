@@ -3,19 +3,15 @@ import {
   IsInt,
   IsArray,
   IsBoolean,
-  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUrl,
   Length,
-  MinLength,
   ValidateNested,
   IsDateString,
-  IsJSON,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { InputType, Field as GraphQLField } from '@nestjs/graphql';
 
 /**
  * DTO for job metadata key-value pairs
@@ -56,7 +52,6 @@ export class JobMetadataDto {
  * - Metadata for additional information
  * - Source information for tracking provenance
  */
-@InputType()
 export class CreateJobDto {
   @ApiProperty({
     description: 'Job title',
@@ -64,7 +59,6 @@ export class CreateJobDto {
     minLength: 1,
     maxLength: 255,
   })
-  @GraphQLField()
   @IsString()
   @IsNotEmpty()
   @Length(1, 255)
@@ -75,7 +69,6 @@ export class CreateJobDto {
     example: 1,
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsInt()
   companyId?: number;
@@ -85,7 +78,6 @@ export class CreateJobDto {
     example: 'Tech Corp Inc',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -96,7 +88,6 @@ export class CreateJobDto {
     example: 'john_doe',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -107,7 +98,6 @@ export class CreateJobDto {
     example: 'San Francisco, CA',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   @Length(1, 255)
@@ -117,7 +107,6 @@ export class CreateJobDto {
     description: 'Unique job URL',
     example: 'https://company.com/jobs/senior-engineer',
   })
-  @GraphQLField()
   @IsUrl()
   @IsNotEmpty()
   url: string;
@@ -127,7 +116,6 @@ export class CreateJobDto {
     example: '2024-01-15T10:30:00Z',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsDateString()
   postedAt?: string;
@@ -137,7 +125,6 @@ export class CreateJobDto {
     example: 'We are looking for a skilled software engineer...',
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   description?: string;
@@ -147,7 +134,6 @@ export class CreateJobDto {
     example: true,
     required: false,
   })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsBoolean()
   isRemote?: boolean;
@@ -158,7 +144,6 @@ export class CreateJobDto {
     required: false,
     type: [String],
   })
-  @GraphQLField(() => [String], { nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -169,7 +154,6 @@ export class CreateJobDto {
     required: false,
     type: [JobMetadataDto],
   })
-  @GraphQLField(() => [JobMetadataDto], { nullable: true })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
@@ -177,19 +161,16 @@ export class CreateJobDto {
   metadata?: JobMetadataDto[];
 
   @ApiProperty({ description: 'Source system name', example: 'reddit', required: false })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   source?: string;
 
   @ApiProperty({ description: 'External ID from source system', example: 't3_abc123', required: false })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   @IsString()
   externalId?: string;
 
   @ApiProperty({ description: 'Raw source data as JSON', required: false })
-  @GraphQLField({ nullable: true })
   @IsOptional()
   data?: any;
 }

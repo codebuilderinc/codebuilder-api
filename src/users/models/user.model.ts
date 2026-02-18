@@ -1,29 +1,12 @@
-import { ObjectType, registerEnumType, HideField, Field } from '@nestjs/graphql';
-import { IsEmail } from 'class-validator';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { BaseModel } from '../../common/models/base.model';
 import { Role } from '@prisma/client';
 
-registerEnumType(Role, {
-  name: 'Role',
-  description: 'User role',
-});
-
-@ObjectType()
 export class User extends BaseModel {
-  //@Field()
-  //@IsEmail()
-  //email: string;
-
-  @Field(() => Role)
+  @ApiProperty({ enum: Role, description: 'User role' })
   role: Role;
 
-  // @Field(() => [Position], { nullable: true })
-  // positions?: [Position] | null;
-
-  // @Field(() => [Swap], { nullable: true })
-  // swaps?: [Swap] | null;
-
-  @HideField()
+  @ApiHideProperty()
   password: string;
 }
 

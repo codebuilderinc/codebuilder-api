@@ -1,15 +1,12 @@
-import { Field, ObjectType, ID } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@ObjectType({ isAbstract: true })
 export abstract class BaseModel {
-  @Field(() => ID)
+  @ApiProperty({ description: 'Unique identifier' })
   id: string;
-  @Field({
-    description: 'Identifies the date and time when the object was created.',
-  })
+
+  @ApiProperty({ description: 'Identifies the date and time when the object was created.' })
   createdAt: Date;
-  @Field({
-    description: 'Identifies the date and time when the object was last updated.',
-  })
+
+  @ApiProperty({ description: 'Identifies the date and time when the object was last updated.' })
   updatedAt: Date;
 }

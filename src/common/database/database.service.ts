@@ -65,7 +65,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
     await (this as any).$connect();
 
     this.logger.info(
-      `Connected to ${prismaEngine.activeProvider} instance using Prisma v${prismaEngine.clientVersion} ${this.configService.get('DATABASE_URL')}`
+      `Connected to ${prismaEngine.activeProvider} instance using Prisma v${prismaEngine.clientVersion} ${this.configService.get('DATABASE_URL').replace(/:[^:]*@/, ':***@')}`
     );
 
     // Enable this when you really need to see the SQL / params

@@ -1,4 +1,4 @@
-import { Field } from '../../common/decorators/field.decorator';
+import { Field } from '@/common/decorators/field.decorator';
 
 export class CompanyPathParamsDto {
   @Field({

@@ -8,22 +8,20 @@ import {
   Param,
   Query,
   ParseIntPipe,
-  UseGuards,
   HttpCode,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { Api } from '../common/decorators/api.decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { Api } from '@/common/decorators/api.decorator';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobOrderByDto } from './dto/job-order-by.dto';
 import { CompanyPathParamsDto, TagPathParamsDto, JobIdPathParamsDto } from './dto/job-path-params.dto';
 import { JobFilterQueryDto } from './dto/job-filter-query.dto';
-import { RedisAuthGuard } from '../auth/redis-auth.guard';
+//import { RedisAuthGuard } from '../auth/redis-auth.guard';
 import { UserEntity as User } from '../common/decorators/user.decorator';
-import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
+//import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
 import { PaginationArgs } from '../common/pagination/pagination.args';
 import { Web3CareerService } from './web3career.service';
 import { RedditService } from './reddit.service';
@@ -92,7 +90,12 @@ export class JobController {
     };
 
     this.logger.info(
-      `Job fetch summary: ${summary.totalFetched} total fetched (${summary.reddit.fetched} Reddit, ${summary.web3career.fetched} Web3Career), ${summary.totalAdded} added, ${summary.totalSkipped} skipped (existing)`
+      `Job fetch summary: 
+          Total Fetched: ${summary.totalFetched} 
+          Reddit: ${summary.reddit.fetched}
+          Web3Career: ${summary.web3career.fetched}
+          Total Added: ${summary.totalAdded}
+          Total Skipped: ${summary.totalSkipped}`
     );
 
     return { redditJobs, web3CareerJobs, summary };

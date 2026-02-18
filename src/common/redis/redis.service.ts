@@ -11,10 +11,6 @@ export interface IRedisSubscribeMessage {
   readonly channel: string;
 }
 
-function capitalize(s: string) {
-  return s[0].toUpperCase() + s.slice(1);
-}
-
 @Injectable({ scope: Scope.TRANSIENT })
 export class RedisService /* implements OnModuleInit, OnModuleDestroy */ {
   public prefix?: string;
