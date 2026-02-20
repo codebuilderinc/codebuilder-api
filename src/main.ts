@@ -80,33 +80,6 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
-  // Support requests without the `/api` prefix by adding it automatically.
-  // Routes are registered under /api/* via RouterModule, so this lets both
-  // `/jobs` and `/api/jobs` work without changing controllers.
-  // NOTE: We exclude Swagger paths from rewriting.
-  const swaggerPath = swaggerConfig.path || 'api';
-  app.use((req: any, _res, next) => {
-    if (typeof req.url === 'string') {
-      const urlPath = req.url.split('?')[0];
-
-      // Skip if already has /api prefix
-      if (req.url.startsWith('/api')) {
-        return next();
-      }
-
-      // Skip root path, health checks, and other special paths
-      if (urlPath === '/' || urlPath === '/health') {
-        return next();
-      }
-
-      // Add /api prefix to the request
-      const newUrl = `/api${req.url}`;
-      req.url = newUrl;
-      req.originalUrl = newUrl;
-    }
-    next();
-  });
-
   // ===================================
   // Global Setup
   // ===================================
@@ -158,7 +131,7 @@ async function bootstrap(): Promise<void> {
       .addBearerAuth() // If you use Bearer token authentication
       .build();
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(swaggerConfig.path || 'api/docs', app, document);
+    SwaggerModule.setup(swaggerConfig.path || 'docs', app, document);
   }
 
   // ===================================
@@ -175,7 +148,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 CodeBuilder API is listening on http://localhost:${port}`);
   if (swaggerConfig.enabled) {
-    console.log(`📚 Swagger Docs available at http://localhost:${port}/${swaggerConfig.path || 'api/docs'}`);
+    console.log(`📚 Swagger Docs available at http://localhost:${port}/${swaggerConfig.path || 'docs'}`);
   }
 }
 

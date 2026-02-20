@@ -12,7 +12,7 @@ const config: Config = {
     title: 'CodeBuilder API',
     description: 'CodeBuilder Website & Mobile App API.',
     version: '1.5',
-    path: 'api',
+    path: 'docs',
   },
   security: {
     expiresIn: '2m',
