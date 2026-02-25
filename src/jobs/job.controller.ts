@@ -1,34 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  ParseIntPipe,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Api } from '@/common/decorators/api.decorator';
-import { JobService } from './job.service';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
-import { JobOrderByDto } from './dto/job-order-by.dto';
-import { CompanyPathParamsDto, TagPathParamsDto, JobIdPathParamsDto } from './dto/job-path-params.dto';
-import { JobFilterQueryDto } from './dto/job-filter-query.dto';
+import {Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, HttpCode, HttpStatus} from '@nestjs/common';
+import {ApiTags} from '@nestjs/swagger';
+import {Api} from '@/common/decorators/api.decorator';
+import {JobService} from './job.service';
+import {CreateJobDto} from './dto/create-job.dto';
+import {UpdateJobDto} from './dto/update-job.dto';
+import {JobOrderByDto} from './dto/job-order-by.dto';
+import {CompanyPathParamsDto, TagPathParamsDto, JobIdPathParamsDto} from './dto/job-path-params.dto';
+import {JobFilterQueryDto} from './dto/job-filter-query.dto';
 //import { RedisAuthGuard } from '../auth/redis-auth.guard';
-import { UserEntity as User } from '../common/decorators/user.decorator';
+import {UserEntity as User} from '../common/decorators/user.decorator';
 //import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
-import { PaginationArgs } from '../common/pagination/pagination.args';
-import { Web3CareerService } from './web3career.service';
-import { RedditService } from './reddit.service';
-import { NotificationsService } from '@/notifications/notifications.service';
-import { PaginatedResponse } from '../common/models/paginated-response';
-import { CreateJobDto as JobDto } from './dto/create-job.dto';
-import { LoggerService } from '../common/logger/logger.service';
+import {PaginationArgs} from '../common/pagination/pagination.args';
+import {Web3CareerService} from './web3career.service';
+import {RedditService} from './reddit.service';
+import {NotificationsService} from '@/notifications/notifications.service';
+import {PaginatedResponse} from '../common/models/paginated-response';
+import {CreateJobDto as JobDto} from './dto/create-job.dto';
+import {LoggerService} from '../common/logger/logger.service';
 
 class PaginatedJobResponse extends PaginatedResponse(JobDto) {}
 
@@ -54,51 +42,37 @@ export class JobController {
   ) {}
 
   /**
-   * Fetch new jobs from Reddit and Web3Career, store them, and send notifications
+   * Get all job listings with optional filtering and pagination
+   * Supports filtering by company, location, remote status, and tags
    */
-  @Get('fetch')
+  @Get()
   @Api({
-    summary: 'Fetch new jobs from Reddit and Web3Career',
-    description: 'Fetches new jobs from both sources, stores them, and sends notifications.',
-    responses: [{ status: 200, description: 'Jobs fetched and notifications sent.' }],
+    summary: 'Get all job listings',
+    description: 'Retrieves a paginated list of job listings with optional filtering',
+    paginatedResponseType: JobDto,
+    envelope: true,
+    queriesFrom: [PaginationArgs, JobFilterQueryDto],
   })
-  async fetchJobs(): Promise<{ redditJobs: any[]; web3CareerJobs: any[]; summary: any }> {
-    // Fetch Reddit jobs
-    const redditSubreddits = ['remotejs', 'remotejobs', 'forhire', 'jobs', 'webdevjobs'];
-    const redditPosts = await this.redditService.fetchRedditPosts(redditSubreddits);
-    const redditJobs = await this.redditService.storeRedditJobPosts(redditPosts);
+  async findAll(
+    @Query() paginationArgs: PaginationArgs,
+    @Query() orderBy: JobOrderByDto,
+    @Query('search') search?: string,
+    @Query('companyId', new ParseIntPipe({optional: true})) companyId?: number,
+    @Query('location') location?: string,
+    @Query('isRemote') isRemote?: boolean,
+    @Query('tags') tags?: string
+  ) {
+    console.log('Pagination params:', {skip: paginationArgs.skip, first: paginationArgs.first});
 
-    // Fetch Web3Career jobs
-    const web3CareerRawJobs = await this.web3CareerService.fetchWeb3CareerJobs();
-    const web3CareerJobs = await this.web3CareerService.storeWeb3CareerJobs(web3CareerRawJobs);
-
-    // Create summary
-    const summary = {
-      totalFetched: redditPosts.length + web3CareerRawJobs.length,
-      totalAdded: redditJobs.length + web3CareerJobs.length,
-      totalSkipped: redditPosts.length - redditJobs.length + (web3CareerRawJobs.length - web3CareerJobs.length),
-      reddit: {
-        fetched: redditPosts.length,
-        added: redditJobs.length,
-        skipped: redditPosts.length - redditJobs.length,
-      },
-      web3career: {
-        fetched: web3CareerRawJobs.length,
-        added: web3CareerJobs.length,
-        skipped: web3CareerRawJobs.length - web3CareerJobs.length,
-      },
-    };
-
-    this.logger.info(
-      `Job fetch summary: 
-          Total Fetched: ${summary.totalFetched} 
-          Reddit: ${summary.reddit.fetched}
-          Web3Career: ${summary.web3career.fetched}
-          Total Added: ${summary.totalAdded}
-          Total Skipped: ${summary.totalSkipped}`
-    );
-
-    return { redditJobs, web3CareerJobs, summary };
+    return this.jobService.findAll({
+      paginationArgs,
+      orderBy,
+      search,
+      companyId,
+      location,
+      isRemote,
+      tags: tags?.split(','),
+    });
   }
 
   /**
@@ -135,11 +109,7 @@ export class JobController {
     envelope: true,
     queriesFrom: [PaginationArgs],
   })
-  async findByTag(
-    @Param('tagName') tagName: string,
-    @Query() paginationArgs: PaginationArgs,
-    @Query() orderBy: JobOrderByDto
-  ) {
+  async findByTag(@Param('tagName') tagName: string, @Query() paginationArgs: PaginationArgs, @Query() orderBy: JobOrderByDto) {
     return this.jobService.findByTag(tagName, paginationArgs, orderBy);
   }
 
@@ -154,48 +124,14 @@ export class JobController {
     bodyType: CreateJobDto,
     authenticationRequired: true,
     responses: [
-      { status: 201, description: 'Job successfully created' },
-      { status: 400, description: 'Invalid job data provided' },
-      { status: 401, description: 'Unauthorized - authentication required' },
+      {status: 201, description: 'Job successfully created'},
+      {status: 400, description: 'Invalid job data provided'},
+      {status: 401, description: 'Unauthorized - authentication required'},
     ],
   })
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createJobDto: CreateJobDto, @User() user: any) {
     return this.jobService.create(createJobDto, user.id);
-  }
-
-  /**
-   * Get all job listings with optional filtering and pagination
-   * Supports filtering by company, location, remote status, and tags
-   */
-  @Get()
-  @Api({
-    summary: 'Get all job listings',
-    description: 'Retrieves a paginated list of job listings with optional filtering',
-    paginatedResponseType: JobDto,
-    envelope: true,
-    queriesFrom: [PaginationArgs, JobFilterQueryDto],
-  })
-  async findAll(
-    @Query() paginationArgs: PaginationArgs,
-    @Query() orderBy: JobOrderByDto,
-    @Query('search') search?: string,
-    @Query('companyId', new ParseIntPipe({ optional: true })) companyId?: number,
-    @Query('location') location?: string,
-    @Query('isRemote') isRemote?: boolean,
-    @Query('tags') tags?: string
-  ) {
-    console.log('Pagination params:', { skip: paginationArgs.skip, first: paginationArgs.first });
-
-    return this.jobService.findAll({
-      paginationArgs,
-      orderBy,
-      search,
-      companyId,
-      location,
-      isRemote,
-      tags: tags?.split(','),
-    });
   }
 
   /**
@@ -208,8 +144,8 @@ export class JobController {
     description: 'Retrieves a specific job listing with all related data',
     pathParamsFrom: JobIdPathParamsDto,
     responses: [
-      { status: 200, description: 'Job details retrieved successfully' },
-      { status: 404, description: 'Job not found' },
+      {status: 200, description: 'Job details retrieved successfully'},
+      {status: 404, description: 'Job not found'},
     ],
   })
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -228,9 +164,9 @@ export class JobController {
     bodyType: UpdateJobDto,
     pathParamsFrom: JobIdPathParamsDto,
     responses: [
-      { status: 200, description: 'Job updated successfully' },
-      { status: 404, description: 'Job not found' },
-      { status: 401, description: 'Unauthorized - authentication required' },
+      {status: 200, description: 'Job updated successfully'},
+      {status: 404, description: 'Job not found'},
+      {status: 401, description: 'Unauthorized - authentication required'},
     ],
   })
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateJobDto: UpdateJobDto, @User() user: any) {
@@ -248,13 +184,61 @@ export class JobController {
     authenticationRequired: true,
     pathParamsFrom: JobIdPathParamsDto,
     responses: [
-      { status: 200, description: 'Job deleted successfully' },
-      { status: 404, description: 'Job not found' },
-      { status: 401, description: 'Unauthorized - authentication required' },
+      {status: 200, description: 'Job deleted successfully'},
+      {status: 404, description: 'Job not found'},
+      {status: 401, description: 'Unauthorized - authentication required'},
     ],
   })
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number, @User() user: any) {
     return this.jobService.remove(id, user.id);
+  }
+
+  /**
+   * Fetch new jobs from Reddit and Web3Career, store them, and send notifications
+   */
+  @Get('fetch')
+  @Api({
+    summary: 'Fetch new jobs from Reddit and Web3Career',
+    description: 'Fetches new jobs from both sources, stores them, and sends notifications.',
+    responses: [{status: 200, description: 'Jobs fetched and notifications sent.'}],
+  })
+  async fetchJobs(): Promise<{redditJobs: any[]; web3CareerJobs: any[]; summary: any}> {
+    // Fetch Reddit jobs
+    const redditSubreddits = ['remotejs', 'remotejobs', 'forhire', 'jobs', 'webdevjobs'];
+    const redditPosts = await this.redditService.fetchRedditPosts(redditSubreddits);
+    const redditJobs = await this.redditService.storeRedditJobPosts(redditPosts);
+
+    // Fetch Web3Career jobs
+    const web3CareerRawJobs = await this.web3CareerService.fetchWeb3CareerJobs();
+    const web3CareerJobs = await this.web3CareerService.storeWeb3CareerJobs(web3CareerRawJobs);
+
+    // Create summary
+    const summary = {
+      totalFetched: redditPosts.length + web3CareerRawJobs.length,
+      totalAdded: redditJobs.length + web3CareerJobs.length,
+      totalSkipped: redditPosts.length - redditJobs.length + (web3CareerRawJobs.length - web3CareerJobs.length),
+      reddit: {
+        fetched: redditPosts.length,
+        added: redditJobs.length,
+        skipped: redditPosts.length - redditJobs.length,
+      },
+      web3career: {
+        fetched: web3CareerRawJobs.length,
+        added: web3CareerJobs.length,
+        skipped: web3CareerRawJobs.length - web3CareerJobs.length,
+      },
+    };
+
+    this.logger.info(
+      `Job fetch summary: 
+          Total Fetched: ${summary.totalFetched} 
+          Reddit: ${summary.reddit.fetched}
+          Web3Career: ${summary.web3career.fetched}
+          Total Added: ${summary.totalAdded}
+          Total Skipped: ${summary.totalSkipped}`
+    );
+
+    return {redditJobs, web3CareerJobs, summary};
   }
 }

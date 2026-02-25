@@ -1,4 +1,4 @@
-import { applyDecorators, Type as NestType } from '@nestjs/common';
+import {applyDecorators, Type as NestType} from '@nestjs/common';
 import {
   ApiOperation,
   ApiUnauthorizedResponse,
@@ -199,9 +199,7 @@ export function Api(options: ApiOptions): MethodDecorator {
     // ============================================================================
     // Check if the user has provided custom responses.
     // If they have, we skip adding default responses (Created, Unauthorized, Forbidden)
-    const userProvidedResponses = (options.responses || options.apiResponses || []).filter((v) =>
-      Boolean(v)
-    ) as ApiResponseOptions[];
+    const userProvidedResponses = (options.responses || options.apiResponses || []).filter((v) => Boolean(v)) as ApiResponseOptions[];
     const addDefaultSet = userProvidedResponses.length === 0; // Only add defaults when no custom responses passed
 
     // ============================================================================
@@ -219,7 +217,7 @@ export function Api(options: ApiOptions): MethodDecorator {
 
     // Add request body documentation if bodyType is specified
     if (options.bodyType) {
-      decorators.push(ApiBody({ type: options.bodyType }));
+      decorators.push(ApiBody({type: options.bodyType}));
     }
 
     // ============================================================================
@@ -244,7 +242,8 @@ export function Api(options: ApiOptions): MethodDecorator {
       const sources = Array.isArray(options.pathParamsFrom) ? options.pathParamsFrom : [options.pathParamsFrom];
       sources.forEach((src) => {
         if (!src) return;
-        const meta = Reflect.getMetadata('cb:fieldMeta', src.prototype) || [];
+        // Read metadata from the class constructor (where @Field stores it)
+        const meta = Reflect.getMetadata('cb:fieldMeta', src) || [];
         meta
           .filter((m: any) => m.inPath)
           .forEach((m: any) =>
@@ -287,8 +286,8 @@ export function Api(options: ApiOptions): MethodDecorator {
       const sources = Array.isArray(options.queriesFrom) ? options.queriesFrom : [options.queriesFrom];
       sources.forEach((src) => {
         if (!src) return;
-        // Retrieve metadata stored by @Field decorator
-        const qMeta = Reflect.getMetadata('cb:fieldMeta', src.prototype) || [];
+        // Retrieve metadata stored by @Field decorator on the class constructor
+        const qMeta = Reflect.getMetadata('cb:fieldMeta', src) || [];
         qMeta
           .filter((m: any) => m.inQuery)
           .forEach((m: any) =>
@@ -325,22 +324,22 @@ export function Api(options: ApiOptions): MethodDecorator {
               schema: {
                 type: 'object',
                 properties: {
-                  success: { type: 'boolean', example: true },
-                  data: { $ref: getSchemaPath(options.responseType) },
+                  success: {type: 'boolean', example: true},
+                  data: {$ref: getSchemaPath(options.responseType)},
                 },
               },
             })
           );
         } else {
           // Direct response without envelope
-          decorators.push(ApiResponse({ status: 200, description: 'Successful response', type: options.responseType }));
+          decorators.push(ApiResponse({status: 200, description: 'Successful response', type: options.responseType}));
         }
       }
       // Array response
       else if (options.responseArrayType) {
         const arraySchema = {
           type: 'array',
-          items: { $ref: getSchemaPath(options.responseArrayType) },
+          items: {$ref: getSchemaPath(options.responseArrayType)},
         };
         if (options.envelope) {
           // Wrapped in envelope: { success: true, data: [...] }
@@ -351,7 +350,7 @@ export function Api(options: ApiOptions): MethodDecorator {
               schema: {
                 type: 'object',
                 properties: {
-                  success: { type: 'boolean', example: true },
+                  success: {type: 'boolean', example: true},
                   data: arraySchema,
                 },
               },
@@ -375,18 +374,18 @@ export function Api(options: ApiOptions): MethodDecorator {
           properties: {
             items: {
               type: 'array',
-              items: { $ref: getSchemaPath(options.paginatedResponseType) },
+              items: {$ref: getSchemaPath(options.paginatedResponseType)},
             },
             pageInfo: {
               type: 'object',
               properties: {
-                hasNextPage: { type: 'boolean' },
-                hasPreviousPage: { type: 'boolean' },
-                startCursor: { type: 'string', nullable: true },
-                endCursor: { type: 'string', nullable: true },
+                hasNextPage: {type: 'boolean'},
+                hasPreviousPage: {type: 'boolean'},
+                startCursor: {type: 'string', nullable: true},
+                endCursor: {type: 'string', nullable: true},
               },
             },
-            totalCount: { type: 'number' },
+            totalCount: {type: 'number'},
             meta: {
               type: 'object',
               additionalProperties: true,
@@ -404,7 +403,7 @@ export function Api(options: ApiOptions): MethodDecorator {
               schema: {
                 type: 'object',
                 properties: {
-                  success: { type: 'boolean', example: true },
+                  success: {type: 'boolean', example: true},
                   data: basePaginated,
                 },
               },
@@ -428,14 +427,14 @@ export function Api(options: ApiOptions): MethodDecorator {
     // ============================================================================
     // Add default error responses (401, 201, 403) if user hasn't provided custom responses
     if (addDefaultSet) {
-      decorators.push(ApiUnauthorizedResponse({ description: 'Unauthorized' }));
-      decorators.push(ApiCreatedResponse({ description: 'The record has been successfully created.' }));
-      decorators.push(ApiForbiddenResponse({ description: 'Forbidden.' }));
+      decorators.push(ApiUnauthorizedResponse({description: 'Unauthorized'}));
+      decorators.push(ApiCreatedResponse({description: 'The record has been successfully created.'}));
+      decorators.push(ApiForbiddenResponse({description: 'Forbidden.'}));
     } else {
       // If user provided custom responses, ensure 401 is still added for authenticated endpoints
       let has401 = userProvidedResponses.some((r) => r.status === 401);
       if (options.authenticationRequired && !has401) {
-        decorators.push(ApiUnauthorizedResponse({ description: 'Unauthorized' }));
+        decorators.push(ApiUnauthorizedResponse({description: 'Unauthorized'}));
         has401 = true;
       }
     }
