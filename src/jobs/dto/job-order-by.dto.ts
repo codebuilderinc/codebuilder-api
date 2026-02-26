@@ -1,5 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsEnum } from 'class-validator';
+import {Field} from '@/common/decorators/field.decorator';
 
 /**
  * Sort order enum for job queries
@@ -23,48 +22,53 @@ export enum SortOrder {
  * - company: Company name (alphabetical)
  */
 export class JobOrderByDto {
-  @ApiProperty({
+  @Field({
+    name: 'createdAt',
     description: 'Sort by creation date',
     enum: SortOrder,
-    required: false,
+    optional: true,
+    inQuery: true,
+    isEnum: {entity: SortOrder},
   })
-  @IsOptional()
-  @IsEnum(SortOrder)
   createdAt?: SortOrder;
 
-  @ApiProperty({
+  @Field({
+    name: 'updatedAt',
     description: 'Sort by last update date',
     enum: SortOrder,
-    required: false,
+    optional: true,
+    inQuery: true,
+    isEnum: {entity: SortOrder},
   })
-  @IsOptional()
-  @IsEnum(SortOrder)
   updatedAt?: SortOrder;
 
-  @ApiProperty({
+  @Field({
+    name: 'postedAt',
     description: 'Sort by original posting date',
     enum: SortOrder,
-    required: false,
+    optional: true,
+    inQuery: true,
+    isEnum: {entity: SortOrder},
   })
-  @IsOptional()
-  @IsEnum(SortOrder)
   postedAt?: SortOrder;
 
-  @ApiProperty({
+  @Field({
+    name: 'title',
     description: 'Sort by job title',
     enum: SortOrder,
-    required: false,
+    optional: true,
+    inQuery: true,
+    isEnum: {entity: SortOrder},
   })
-  @IsOptional()
-  @IsEnum(SortOrder)
   title?: SortOrder;
 
-  @ApiProperty({
+  @Field({
+    name: 'company',
     description: 'Sort by company name',
     enum: SortOrder,
-    required: false,
+    optional: true,
+    inQuery: true,
+    isEnum: {entity: SortOrder},
   })
-  @IsOptional()
-  @IsEnum(SortOrder)
   company?: SortOrder;
 }

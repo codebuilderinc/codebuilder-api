@@ -167,12 +167,36 @@ export function Api(options: ApiOptions): MethodDecorator {
     // Attempt to infer the request body type from the method's parameter types
     // if it hasn't been explicitly provided in the options.
     // This looks for DTO or Input classes in the method signature.
+    // IMPORTANT: Skip DTOs that are specified in queriesFrom or pathParamsFrom
     if (!options.bodyType) {
       try {
+        // Build list of DTOs used for queries/path params to exclude from body inference
+        const queryParamTypes = [];
+        if (options.queriesFrom) {
+          if (Array.isArray(options.queriesFrom)) {
+            queryParamTypes.push(...options.queriesFrom);
+          } else {
+            queryParamTypes.push(options.queriesFrom);
+          }
+        }
+
+        const pathParamTypes = [];
+        if (options.pathParamsFrom) {
+          if (Array.isArray(options.pathParamsFrom)) {
+            pathParamTypes.push(...options.pathParamsFrom);
+          } else {
+            pathParamTypes.push(options.pathParamsFrom);
+          }
+        }
+
+        const excludedTypes = [...queryParamTypes, ...pathParamTypes];
+
         const paramTypes: any[] = Reflect.getMetadata('design:paramtypes', target, propertyKey) || [];
         const inferred = paramTypes.find((t) => {
           if (!t) return false;
           const isPrimitive = [String, Number, Boolean, Array, Object].includes(t);
+          // Skip if this type is used for query or path params
+          if (excludedTypes.includes(t)) return false;
           return !isPrimitive && /Dto|Input/i.test(t.name || '');
         });
         if (inferred) {
