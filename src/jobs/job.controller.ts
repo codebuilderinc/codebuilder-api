@@ -51,7 +51,7 @@ export class JobController {
     description: 'Retrieves a paginated list of job listings with optional filtering',
     paginatedResponseType: JobDto,
     envelope: true,
-    queriesFrom: [PaginationArgs, JobFilterQueryDto],
+    queriesFrom: [PaginationArgs, JobFilterQueryDto, JobOrderByDto],
   })
   async findAll(
     @Query() paginationArgs: PaginationArgs,
@@ -86,7 +86,7 @@ export class JobController {
     pathParamsFrom: CompanyPathParamsDto,
     paginatedResponseType: JobDto,
     envelope: true,
-    queriesFrom: [PaginationArgs],
+    queriesFrom: [PaginationArgs, JobOrderByDto],
   })
   async findByCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
@@ -107,7 +107,7 @@ export class JobController {
     pathParamsFrom: TagPathParamsDto,
     paginatedResponseType: JobDto,
     envelope: true,
-    queriesFrom: [PaginationArgs],
+    queriesFrom: [PaginationArgs, JobOrderByDto],
   })
   async findByTag(@Param('tagName') tagName: string, @Query() paginationArgs: PaginationArgs, @Query() orderBy: JobOrderByDto) {
     return this.jobService.findByTag(tagName, paginationArgs, orderBy);
@@ -123,8 +123,6 @@ export class JobController {
     responses: [{status: 200, description: 'Jobs fetched and notifications sent.'}],
   })
   async fetchJobs(): Promise<{redditJobs: any[]; web3CareerJobs: any[]; summary: any}> {
-    6;
-
     // Fetch Reddit jobs
     const redditSubreddits = ['remotejs', 'remotejobs', 'forhire', 'jobs', 'webdevjobs'];
     const redditPosts = await this.redditService.fetchRedditPosts(redditSubreddits);
