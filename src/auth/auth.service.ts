@@ -119,6 +119,20 @@ export class AuthService {
     return this.jwtService.sign(payload as any);
   }
 
+  /**
+   * Generates a JWT refresh token for the specified user.
+   *
+   * @param payload - The payload containing the user identifier
+   * @param payload.userId - The unique identifier of the user
+   * @returns A signed JWT refresh token string
+   *
+   * @remarks
+   * The refresh token is signed using:
+   * - Secret: Environment variable `JWT_REFRESH_TOKEN_SECRET` or fallback to 'nestjsPrismaRefreshSecret'
+   * - Expiration: Environment variable `JWT_REFRESH_EXPIRATION_TIME` or fallback to '60m'
+   *
+   * @private
+   */
   private generateRefreshToken(payload: { userId: number }): string {
     return this.jwtService.sign(
       payload as any,
@@ -129,6 +143,22 @@ export class AuthService {
     );
   }
 
+  /**
+   * Refreshes an access token using a valid refresh token.
+   *
+   * Verifies the provided refresh token and generates a new set of tokens (access and refresh)
+   * for the authenticated user.
+   *
+   * @param token - The JWT refresh token to verify and use for generating new tokens
+   * @returns A new set of authentication tokens (access token and refresh token)
+   * @throws {UnauthorizedException} When the refresh token is invalid, expired, or malformed
+   *
+   * @example
+   * ```typescript
+   * const newTokens = await authService.refreshToken(oldRefreshToken);
+   * // Returns: { accessToken: string, refreshToken: string }
+   * ```
+   */
   refreshToken(token: string) {
     try {
       const { userId } = this.jwtService.verify(token, {
@@ -143,6 +173,32 @@ export class AuthService {
     }
   }
 
+  /**
+   * Authenticates a user using Google OAuth ID token.
+   *
+   * This method verifies the Google ID token using the appropriate OAuth client ID
+   * based on the build type (development or production). If the user doesn't exist,
+   * it creates a new user with the Google profile information. If the user exists,
+   * it updates their profile with the latest Google information.
+   *
+   * @param idToken - The Google OAuth ID token to verify
+   * @param buildType - Optional build type ('development' or undefined for production)
+   *                    that determines which Google OAuth client ID to use
+   *
+   * @returns A Promise that resolves to a Token object containing access and refresh tokens
+   *
+   * @throws {UnauthorizedException} If the OAuth client ID is missing for the specified build type
+   * @throws {UnauthorizedException} If the Google ID token is invalid
+   * @throws {UnauthorizedException} If the email is not provided by Google
+   * @throws {UnauthorizedException} If there's an OAuth client ID mismatch
+   * @throws {UnauthorizedException} If Google authentication fails for any other reason
+   *
+   * @remarks
+   * - Uses different Google OAuth client IDs for development and production builds
+   * - Creates new users with role 'USER' and no password (OAuth-only authentication)
+   * - Updates existing users' profile information (username, profile picture, Google ID, names)
+   * - Logs authentication progress and errors for debugging purposes
+   */
   async googleAuth(idToken: string, buildType?: string): Promise<Token> {
     try {
       // Determine which client ID to use based on build type
