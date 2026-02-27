@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JobService } from './job.service';
 import { JobController } from './job.controller';
 import { CommonModule } from '../common/common.module';
 import { Web3CareerService } from './web3career.service';
-import { RedditService } from './reddit.service';
+import { RedditModule } from '../reddit/reddit.module';
 // Notifications are now provided globally by NotificationsModule
 
 /**
@@ -21,9 +21,10 @@ import { RedditService } from './reddit.service';
 @Module({
   imports: [
     CommonModule, // Provides database, authentication, and other shared services
+    forwardRef(() => RedditModule), // Shared Reddit service (avoids circular dependency)
   ],
   controllers: [JobController], // REST API endpoints
-  providers: [JobService, Web3CareerService, RedditService], // Business logic
-  exports: [JobService, Web3CareerService, RedditService], // Allow other modules to use these services
+  providers: [JobService, Web3CareerService], // Business logic
+  exports: [JobService, Web3CareerService], // Allow other modules to use these services
 })
 export class JobModule {}

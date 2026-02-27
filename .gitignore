@@ -60,3 +60,6 @@ google-service-account-key.json
 google-services.json
 
 bak/
+
+# npm lock file (project uses pnpm)
+package-lock.json

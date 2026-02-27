@@ -4,6 +4,7 @@ import { CloudflareKvModule } from './cloudflare-kv/cloudflare-kv.module';
 import { WssModule } from './wss/wss.module';
 import { JobModule } from './jobs/job.module';
 import { AuthModule } from './auth/auth.module';
+import { RedditModule } from './reddit/reddit.module';
 
 @Module({
   imports: [
@@ -12,23 +13,11 @@ import { AuthModule } from './auth/auth.module';
         path: 'ws',
         module: WssModule,
       },
-      // {
-      //   path: 'api',
-      //   children: [
-      //     {
-      //       path: '', // Empty path here - the controller already has 'jobs' path
-      //       module: JobModule,
-      //     },
-      //     {
-      //       path: '', // Empty path here - the controller already has 'auth' path
-      //       module: AuthModule,
-      //     },
-      //   ],
-      // },
     ]),
     CloudflareKvModule,
     JobModule,
     AuthModule,
+    RedditModule,
   ],
   exports: [RouterModule],
 })

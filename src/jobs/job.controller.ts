@@ -12,7 +12,7 @@ import {UserEntity as User} from '../common/decorators/user.decorator';
 //import { ApiPaginationQuery } from './../common/decorators/api-nested-query.decorator';
 import {PaginationArgs} from '../common/pagination/pagination.args';
 import {Web3CareerService} from './web3career.service';
-import {RedditService} from './reddit.service';
+import {RedditService} from '../reddit/reddit.service';
 import {NotificationsService} from '@/notifications/notifications.service';
 import {PaginatedResponse} from '../common/models/paginated-response';
 import {CreateJobDto as JobDto} from './dto/create-job.dto';
