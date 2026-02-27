@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../common/logger/logger.service';
-import { JobService } from './job.service';
+import {Injectable} from '@nestjs/common';
+import {LoggerService} from '../common/logger/logger.service';
+import {JobService} from './job.service';
 
 @Injectable()
 export class Web3CareerService {
@@ -66,9 +66,7 @@ export class Web3CareerService {
       }
     }
 
-    this.logger.info(
-      `Web3Career jobs processed: ${jobs.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
-    );
+    this.logger.info(`Web3Career jobs processed: ${jobs.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`);
 
     return newJobs;
   }

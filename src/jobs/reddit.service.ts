@@ -91,9 +91,7 @@ export class RedditService {
           icon: 'https://new.codebuilder.org/images/logo2.png',
           badge: 'https://new.codebuilder.org/images/logo2.png',
         };
-        const notificationPromises = subscriptions.map((sub) =>
-          this.notificationsService.sendNotification(sub, notificationPayload)
-        );
+        const notificationPromises = subscriptions.map((sub) => this.notificationsService.sendNotification(sub, notificationPayload));
         await Promise.all(notificationPromises);
         this.logger.info(`Stored new job [${post.url}] from /u/${post.author}`);
         newJobs.push(upsertedJob);
@@ -102,9 +100,7 @@ export class RedditService {
       }
     }
 
-    this.logger.info(
-      `Reddit jobs processed: ${posts.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`
-    );
+    this.logger.info(`Reddit jobs processed: ${posts.length} fetched, ${skippedCount} skipped (existing), ${newJobs.length} added`);
 
     return newJobs;
   }
