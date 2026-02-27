@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { DatabaseService } from '../common/database/database.service';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
-import { JobOrderByDto } from './dto/job-order-by.dto';
-import { PaginationArgs } from '../common/pagination/pagination.args';
-import { Company, Job, Tag } from '@prisma/client';
-import { buildPaginatedResult } from '../common/pagination/pagination.util';
+import {Injectable, NotFoundException, BadRequestException, ForbiddenException} from '@nestjs/common';
+import {PrismaService} from 'nestjs-prisma';
+import {DatabaseService} from '../common/database/database.service';
+import {CreateJobDto} from './dto/create-job.dto';
+import {UpdateJobDto} from './dto/update-job.dto';
+import {JobOrderByDto} from './dto/job-order-by.dto';
+import {PaginationArgs} from '../common/pagination/pagination.args';
+import {Company, Job, Tag} from '@prisma/client';
+import {buildPaginatedResult} from '../common/pagination/pagination.util';
 // Remove Company import and use type inference or define Company type inline if needed
 
 /**
@@ -69,14 +69,14 @@ export class JobService {
     let companyRecord = null;
     if (input.company) {
       companyRecord = await this.prisma.company.upsert({
-        where: { name: input.company },
-        create: { name: input.company },
+        where: {name: input.company},
+        create: {name: input.company},
         update: {},
       });
     }
 
     const job = await this.prisma.job.upsert({
-      where: { url: input.url },
+      where: {url: input.url},
       update: {
         title: input.title,
         author: input.author,
@@ -84,7 +84,7 @@ export class JobService {
         postedAt: input.postedAt ? new Date(input.postedAt) : undefined,
         description: input.description,
         isRemote: input.isRemote,
-        company: companyRecord ? { connect: { id: companyRecord.id } } : undefined,
+        company: companyRecord ? {connect: {id: companyRecord.id}} : undefined,
         updatedAt: new Date(),
         // write source fields directly on Job
         source: input.source,
@@ -99,7 +99,7 @@ export class JobService {
         description: input.description,
         isRemote: input.isRemote,
         url: input.url,
-        company: companyRecord ? { connect: { id: companyRecord.id } } : undefined,
+        company: companyRecord ? {connect: {id: companyRecord.id}} : undefined,
         // write source fields directly on Job
         source: input.source,
         externalId: input.externalId,
@@ -111,14 +111,14 @@ export class JobService {
     if (input.tags && input.tags.length) {
       for (const tagName of input.tags) {
         const tag = await this.prisma.tag.upsert({
-          where: { name: tagName },
+          where: {name: tagName},
           update: {},
-          create: { name: tagName },
+          create: {name: tagName},
         });
         await this.prisma.jobTag.upsert({
-          where: { jobId_tagId: { jobId: job.id, tagId: tag.id } },
+          where: {jobId_tagId: {jobId: job.id, tagId: tag.id}},
           update: {},
-          create: { jobId: job.id, tagId: tag.id },
+          create: {jobId: job.id, tagId: tag.id},
         });
       }
     }
@@ -127,9 +127,9 @@ export class JobService {
     if (input.metadata) {
       for (const [name, value] of Object.entries(input.metadata)) {
         await this.prisma.jobMetadata.upsert({
-          where: { jobId_name: { jobId: job.id, name } },
-          update: { value },
-          create: { jobId: job.id, name, value },
+          where: {jobId_name: {jobId: job.id, name}},
+          update: {value},
+          create: {jobId: job.id, name, value},
         });
       }
     }
@@ -144,7 +144,7 @@ export class JobService {
    * encountering previously ingested (older) records.
    */
   async jobExists(url: string): Promise<boolean> {
-    const existing = await this.prisma.job.findUnique({ where: { url }, select: { id: true } });
+    const existing = await this.prisma.job.findUnique({where: {url}, select: {id: true}});
     return !!existing;
   }
 
@@ -153,26 +153,13 @@ export class JobService {
    * Creates a job with associated company, tags, and metadata
    */
   async create(createJobDto: CreateJobDto, userId?: number): Promise<Job> {
-    const {
-      title,
-      companyName,
-      companyId,
-      author,
-      location,
-      url,
-      description,
-      isRemote,
-      tags,
-      metadata,
-      source,
-      externalId,
-      data,
-    } = createJobDto as any;
+    const {title, companyName, companyId, author, location, url, description, isRemote, tags, metadata, source, externalId, data} =
+      createJobDto as any;
 
     let company: any = null;
     if (companyId) {
       company = await this.prisma.company.findUnique({
-        where: { id: companyId },
+        where: {id: companyId},
       });
       if (!company) {
         throw new BadRequestException('Company not found');
@@ -180,9 +167,9 @@ export class JobService {
     } else if (companyName) {
       // Find or create company
       company = await this.prisma.company.upsert({
-        where: { name: companyName },
+        where: {name: companyName},
         update: {},
-        create: { name: companyName },
+        create: {name: companyName},
       });
     }
 
@@ -207,8 +194,8 @@ export class JobService {
               create: tags.map((tagName) => ({
                 tag: {
                   connectOrCreate: {
-                    where: { name: tagName },
-                    create: { name: tagName },
+                    where: {name: tagName},
+                    create: {name: tagName},
                   },
                 },
               })),
@@ -263,10 +250,7 @@ export class JobService {
 
     // Search filter - searches in title and description
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ];
+      where.OR = [{title: {contains: search, mode: 'insensitive'}}, {description: {contains: search, mode: 'insensitive'}}];
     }
 
     // Company filter
@@ -276,7 +260,7 @@ export class JobService {
 
     // Location filter
     if (location) {
-      where.location = { contains: location, mode: 'insensitive' };
+      where.location = {contains: location, mode: 'insensitive'};
     }
 
     // Remote filter
@@ -289,7 +273,7 @@ export class JobService {
       where.tags = {
         some: {
           tag: {
-            name: { in: tags },
+            name: {in: tags},
           },
         },
       };
@@ -302,7 +286,7 @@ export class JobService {
     const take = paginationArgs.first ? Number(paginationArgs.first) : 10;
     const skip = paginationArgs.skip ? Number(paginationArgs.skip) : 0;
 
-    console.log('Service pagination values:', { skip, take, skipType: typeof skip, takeType: typeof take });
+    console.log('Service pagination values:', {skip, take, skipType: typeof skip, takeType: typeof take});
 
     // Execute query with pagination
     const [jobs, totalCount] = await Promise.all([
@@ -321,7 +305,7 @@ export class JobService {
           metadata: true,
         },
       }),
-      this.prisma.job.count({ where }),
+      this.prisma.job.count({where}),
     ]);
 
     console.log(`Jobs query returned ${jobs.length} items with skip=${skip} and take=${take}`);
@@ -329,7 +313,7 @@ export class JobService {
       console.log(`First job ID: ${jobs[0].id}, Last job ID: ${jobs[jobs.length - 1].id}`);
     }
 
-    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: null });
+    return buildPaginatedResult({items: jobs, skip, take, totalCount, meta: null});
   }
 
   /**
@@ -338,7 +322,7 @@ export class JobService {
    */
   async findOne(id: number): Promise<Job> {
     const job = await this.prisma.job.findUnique({
-      where: { id },
+      where: {id},
       include: {
         company: true,
         tags: {
@@ -364,23 +348,22 @@ export class JobService {
   async update(id: number, updateJobDto: UpdateJobDto, userId?: number): Promise<Job> {
     const existingJob = await this.findOne(id);
 
-    const { title, companyName, companyId, author, location, url, description, isRemote, tags, metadata } =
-      updateJobDto;
+    const {title, companyName, companyId, author, location, url, description, isRemote, tags, metadata} = updateJobDto;
 
     // Handle company update
     let company: any = null;
     if (companyId) {
       company = await this.prisma.company.findUnique({
-        where: { id: companyId },
+        where: {id: companyId},
       });
       if (!company) {
         throw new BadRequestException('Company not found');
       }
     } else if (companyName) {
       company = await this.prisma.company.upsert({
-        where: { name: companyName },
+        where: {name: companyName},
         update: {},
-        create: { name: companyName },
+        create: {name: companyName},
       });
     }
 
@@ -388,15 +371,15 @@ export class JobService {
     const updatedJob = await this.prisma.$transaction(async (prisma) => {
       // Update the main job record
       const job = await prisma.job.update({
-        where: { id },
+        where: {id},
         data: {
-          ...(title && { title }),
-          ...(company && { companyId: company.id }),
-          ...(author !== undefined && { author }),
-          ...(location !== undefined && { location }),
-          ...(url && { url }),
-          ...(description !== undefined && { description }),
-          ...(isRemote !== undefined && { isRemote }),
+          ...(title && {title}),
+          ...(company && {companyId: company.id}),
+          ...(author !== undefined && {author}),
+          ...(location !== undefined && {location}),
+          ...(url && {url}),
+          ...(description !== undefined && {description}),
+          ...(isRemote !== undefined && {isRemote}),
         },
       });
 
@@ -404,16 +387,16 @@ export class JobService {
       if (tags) {
         // Remove existing tags
         await prisma.jobTag.deleteMany({
-          where: { jobId: id },
+          where: {jobId: id},
         });
 
         // Add new tags
         if (tags.length > 0) {
           for (const tagName of tags) {
             const tag = await prisma.tag.upsert({
-              where: { name: tagName },
+              where: {name: tagName},
               update: {},
-              create: { name: tagName },
+              create: {name: tagName},
             });
 
             await prisma.jobTag.create({
@@ -430,7 +413,7 @@ export class JobService {
       if (metadata) {
         // Remove existing metadata
         await prisma.jobMetadata.deleteMany({
-          where: { jobId: id },
+          where: {jobId: id},
         });
 
         // Add new metadata
@@ -455,19 +438,19 @@ export class JobService {
    * Remove a job listing
    * Deletes the job and all associated data
    */
-  async remove(id: number, userId?: number): Promise<{ message: string }> {
+  async remove(id: number, userId?: number): Promise<{message: string}> {
     const job = await this.findOne(id);
 
     await this.prisma.$transaction(async (prisma) => {
       // Delete related data first
-      await prisma.jobTag.deleteMany({ where: { jobId: id } });
-      await prisma.jobMetadata.deleteMany({ where: { jobId: id } });
+      await prisma.jobTag.deleteMany({where: {jobId: id}});
+      await prisma.jobMetadata.deleteMany({where: {jobId: id}});
 
       // Delete the job
-      await prisma.job.delete({ where: { id } });
+      await prisma.job.delete({where: {id}});
     });
 
-    return { message: `Job with ID ${id} has been successfully deleted` };
+    return {message: `Job with ID ${id} has been successfully deleted`};
   }
 
   /**
@@ -476,21 +459,21 @@ export class JobService {
    */
   async findByCompany(companyId: number, paginationArgs: PaginationArgs, orderBy?: JobOrderByDto) {
     const company = await this.prisma.company.findUnique({
-      where: { id: companyId },
+      where: {id: companyId},
     });
 
     if (!company) {
       throw new NotFoundException(`Company with ID ${companyId} not found`);
     }
 
-    const where = { companyId };
+    const where = {companyId};
     const orderByClause = this.buildOrderBy(orderBy);
 
     // Handle pagination
     const take = paginationArgs.first ? Number(paginationArgs.first) : 10;
     const skip = paginationArgs.skip ? Number(paginationArgs.skip) : 0;
 
-    console.log('Company findByCompany pagination:', { skip, take });
+    console.log('Company findByCompany pagination:', {skip, take});
 
     const [jobs, totalCount] = await Promise.all([
       this.prisma.job.findMany({
@@ -508,10 +491,10 @@ export class JobService {
           metadata: true,
         },
       }),
-      this.prisma.job.count({ where }),
+      this.prisma.job.count({where}),
     ]);
 
-    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { company } });
+    return buildPaginatedResult({items: jobs, skip, take, totalCount, meta: {company}});
   }
 
   /**
@@ -520,7 +503,7 @@ export class JobService {
    */
   async findByTag(tagName: string, paginationArgs: PaginationArgs, orderBy?: JobOrderByDto) {
     const tag = await this.prisma.tag.findUnique({
-      where: { name: tagName },
+      where: {name: tagName},
     });
 
     if (!tag) {
@@ -541,7 +524,7 @@ export class JobService {
     const take = paginationArgs.first ? Number(paginationArgs.first) : 10;
     const skip = paginationArgs.skip ? Number(paginationArgs.skip) : 0;
 
-    console.log('Tag findByTag pagination:', { skip, take });
+    console.log('Tag findByTag pagination:', {skip, take});
 
     const [jobs, totalCount] = await Promise.all([
       this.prisma.job.findMany({
@@ -559,10 +542,10 @@ export class JobService {
           metadata: true,
         },
       }),
-      this.prisma.job.count({ where }),
+      this.prisma.job.count({where}),
     ]);
 
-    return buildPaginatedResult({ items: jobs, skip, take, totalCount, meta: { tag } });
+    return buildPaginatedResult({items: jobs, skip, take, totalCount, meta: {tag}});
   }
 
   /**
@@ -571,7 +554,7 @@ export class JobService {
    */
   private buildOrderBy(orderBy?: JobOrderByDto) {
     if (!orderBy) {
-      return { createdAt: 'desc' as const };
+      return {createdAt: 'desc' as const};
     }
 
     const orderByClause: any = {};
@@ -594,6 +577,6 @@ export class JobService {
       };
     }
 
-    return Object.keys(orderByClause).length > 0 ? orderByClause : { createdAt: 'desc' as const };
+    return Object.keys(orderByClause).length > 0 ? orderByClause : {createdAt: 'desc' as const};
   }
 }
