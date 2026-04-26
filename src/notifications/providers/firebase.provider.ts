@@ -26,13 +26,9 @@ export const FirebaseProvider: Provider = {
       const parsed = JSON.parse(file);
       // Basic validation: service account JSON should contain a "type": "service_account"
       // or at least private_key and client_email fields required by firebase-admin.
-      const looksLikeServiceAccount =
-        parsed && (parsed.type === 'service_account' || (parsed.private_key && parsed.client_email));
+      const looksLikeServiceAccount = parsed && (parsed.type === 'service_account' || (parsed.private_key && parsed.client_email));
       if (!looksLikeServiceAccount) {
-        console.error(
-          '[FirebaseProvider] google-services.json does not appear to be a Firebase service account:',
-          serviceAccountPath
-        );
+        console.error('[FirebaseProvider] google-services.json does not appear to be a Firebase service account:', serviceAccountPath);
         throw new Error('Invalid google-services.json: ' + serviceAccountPath);
       }
       if (!admin.apps.length) {
@@ -42,11 +38,7 @@ export const FirebaseProvider: Provider = {
         console.log('[FirebaseProvider] Initialized Firebase Admin SDK using google-services.json');
       }
     } catch (err) {
-      console.error(
-        '[FirebaseProvider] Failed to read/initialize Firebase Admin from google-services.json:',
-        serviceAccountPath,
-        err
-      );
+      console.error('[FirebaseProvider] Failed to read/initialize Firebase Admin from google-services.json:', serviceAccountPath, err);
       throw err;
     }
     return admin;

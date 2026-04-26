@@ -23,7 +23,7 @@ export function reduceToObject<T>(array: T[], key: string): { [K: string]: T } {
 export function groupBy<T>(array: T[], key: string): { [key: string]: T[] } {
   return array.reduce(
     (acc, curr) => {
-      if (!acc.hasOwnProperty(curr[key])) {
+      if (!Object.prototype.hasOwnProperty.call(acc, curr[key])) {
         acc[curr[key]] = [];
       }
 

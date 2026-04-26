@@ -13,8 +13,7 @@ export class LocationController {
   @HttpCode(HttpStatus.CREATED)
   @Api({
     summary: 'Create a location data point',
-    description:
-      'Stores a new location record linked to a push subscription identified by the provided subscription token.',
+    description: 'Stores a new location record linked to a push subscription identified by the provided subscription token.',
     bodyType: CreateLocationDto,
     responses: [
       { status: 201, description: 'Location added successfully.' },
