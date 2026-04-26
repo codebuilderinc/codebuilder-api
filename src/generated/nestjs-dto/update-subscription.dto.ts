@@ -1,11 +1,7 @@
-
-import {Prisma} from '@prisma/client'
-
-
-
+import { Prisma } from '@prisma/client';
 
 export class UpdateSubscriptionDto {
   ipAddress?: string;
-endpoint?: string;
-keys?: Prisma.InputJsonValue;
+  endpoint?: string;
+  keys?: Prisma.InputJsonValue;
 }
