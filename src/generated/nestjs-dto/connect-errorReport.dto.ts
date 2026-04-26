@@ -1,3 +1,5 @@
-export class ConnectErrorReportDto {
-  id: string;
-}
+
+  export class ConnectErrorReportDto {
+    id: string;
+  }
+  

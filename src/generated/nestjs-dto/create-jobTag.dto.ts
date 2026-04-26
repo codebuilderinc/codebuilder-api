@@ -1,1 +1,9 @@
-export class CreateJobTagDto {}
+
+
+
+
+
+
+export class CreateJobTagDto {
+  
+}

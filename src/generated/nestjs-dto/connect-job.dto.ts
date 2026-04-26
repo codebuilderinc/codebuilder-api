@@ -1,4 +1,6 @@
-export class ConnectJobDto {
-  id?: number;
-  url?: string;
-}
+
+  export class ConnectJobDto {
+    id?: number;
+url?: string;
+  }
+  

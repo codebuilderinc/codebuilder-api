@@ -1,10 +1,12 @@
-import { Job } from './job.entity';
-import { Tag } from './tag.entity';
+
+import {Job} from './job.entity'
+import {Tag} from './tag.entity'
+
 
 export class JobTag {
-  id: number;
-  jobId: number;
-  tagId: number;
-  job?: Job;
-  tag?: Tag;
+  id: number ;
+jobId: number ;
+tagId: number ;
+job?: Job ;
+tag?: Tag ;
 }

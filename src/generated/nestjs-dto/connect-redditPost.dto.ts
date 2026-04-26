@@ -1,4 +1,6 @@
-export class ConnectRedditPostDto {
-  id?: number;
-  url?: string;
-}
+
+  export class ConnectRedditPostDto {
+    id?: number;
+url?: string;
+  }
+  

@@ -1,3 +1,5 @@
-export class ConnectJobMetadataDto {
-  id: number;
-}
+
+  export class ConnectJobMetadataDto {
+    id: number;
+  }
+  

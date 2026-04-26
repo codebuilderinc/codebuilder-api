@@ -1,3 +1,5 @@
-export class ConnectJobTagDto {
-  id: number;
-}
+
+  export class ConnectJobTagDto {
+    id: number;
+  }
+  

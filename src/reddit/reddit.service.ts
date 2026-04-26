@@ -1,9 +1,9 @@
-import {Injectable} from '@nestjs/common';
-import {JobService} from '../jobs/job.service';
-import {NotificationsService} from '../notifications/notifications.service';
-import {NotificationPayload} from '../notifications/interfaces/notification-payload.interface';
-import {DatabaseService} from '../common/database/database.service';
-import {LoggerService} from '../common/logger/logger.service';
+import { Injectable } from '@nestjs/common';
+import { JobService } from '../jobs/job.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationPayload } from '../notifications/interfaces/notification-payload.interface';
+import { DatabaseService } from '../common/database/database.service';
+import { LoggerService } from '../common/logger/logger.service';
 import Snoowrap from 'snoowrap';
 
 /** True when `item` is a PrivateMessage (DM/modmail), false when it is a Comment reply. */
@@ -129,7 +129,7 @@ export class RedditService {
   async checkRedditMessages(): Promise<any[]> {
     try {
       const client = await this.getRedditClient();
-      const messages = await client.getInbox({filter: 'messages'});
+      const messages = await client.getInbox({ filter: 'messages' });
       return await this.storeMessages(messages);
     } catch (error: any) {
       this.logger.error('Error checking Reddit messages:', error.message);
@@ -152,7 +152,7 @@ export class RedditService {
         const type = isMsg ? 'private_message' : 'comment';
 
         const existing = await this.db.redditMessage.findUnique({
-          where: {redditId: item.name},
+          where: { redditId: item.name },
         });
         if (existing) {
           continue;
@@ -170,9 +170,7 @@ export class RedditService {
             parentId: item.parent_id,
             rawData: typeof item.toJSON === 'function' ? item.toJSON() : (item as any),
             isRead: isMsg ? (item as Snoowrap.PrivateMessage).new === false : false,
-            contextUrl: isMsg
-              ? (item as Snoowrap.PrivateMessage).context
-              : `https://www.reddit.com${(item as Snoowrap.Comment).permalink}`,
+            contextUrl: isMsg ? (item as Snoowrap.PrivateMessage).context : `https://www.reddit.com${(item as Snoowrap.Comment).permalink}`,
           },
         });
 
@@ -195,4 +193,3 @@ export class RedditService {
     return newMessages;
   }
 }
-
