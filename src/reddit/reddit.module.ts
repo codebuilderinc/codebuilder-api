@@ -1,10 +1,10 @@
-import {Module, forwardRef} from '@nestjs/common';
-import {CommonModule} from '../common/common.module';
-import {RedditService} from './reddit.service';
-import {MessagesService} from './messages/messages.service';
-import {MessagesController} from './messages/messages.controller';
-import {PostsController} from './posts/posts.controller';
-import {JobModule} from '../jobs/job.module';
+import { Module, forwardRef } from '@nestjs/common';
+import { CommonModule } from '../common/common.module';
+import { RedditService } from '@/reddit/reddit.service';
+import { MessagesService } from './messages/messages.service';
+import { MessagesController } from './messages/messages.controller';
+import { PostsController } from './posts/posts.controller';
+import { JobModule } from '../jobs/job.module';
 
 /**
  * Reddit Module
