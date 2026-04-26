@@ -89,9 +89,7 @@ export class NotificationsService {
         if (!isFcmKeys(subscription.keys)) {
           throw new Error(`Invalid keys for FCM subscription: ${JSON.stringify(subscription.keys)}`);
         }
-        this.logger.info(
-          `FCM keys are valid for subscription ${subscription.id}. Token: ${(subscription.keys as any).token}`
-        );
+        this.logger.info(`FCM keys are valid for subscription ${subscription.id}. Token: ${(subscription.keys as any).token}`);
 
         const message = {
           notification: {
@@ -118,13 +116,9 @@ export class NotificationsService {
         this.logger.info(`FCM message payload: ${JSON.stringify(message)}`);
 
         const response = await this.firebase.messaging().send(message);
-        this.logger.info(
-          `FCM notification sent successfully for subscription ${subscription.id}. Response: ${response}`
-        );
+        this.logger.info(`FCM notification sent successfully for subscription ${subscription.id}. Response: ${response}`);
       } else {
-        this.logger.warn(
-          `Unknown subscription type: ${(subscription as any).type} for subscription ${(subscription as any).id}`
-        );
+        this.logger.warn(`Unknown subscription type: ${(subscription as any).type} for subscription ${(subscription as any).id}`);
       }
     } catch (error: any) {
       this.logger.error(`Error sending notification to subscription ${subscription.id}:`, error);
@@ -143,10 +137,7 @@ export class NotificationsService {
       return;
     }
     if (subscription.type === 'fcm') {
-      if (
-        error?.code === 'messaging/invalid-registration-token' ||
-        error?.code === 'messaging/registration-token-not-registered'
-      ) {
+      if (error?.code === 'messaging/invalid-registration-token' || error?.code === 'messaging/registration-token-not-registered') {
         await this.db.subscription.delete({ where: { id: subscription.id } });
         this.logger.info(`Removed invalid FCM subscription id=${subscription.id}`);
       } else {
@@ -188,9 +179,7 @@ export class NotificationsService {
       const successful = results.filter((r) => r.status === 'fulfilled').length;
       const failed = results.filter((r) => r.status === 'rejected').length;
 
-      this.logger.info(
-        `Mass notification completed: ${successful} successful, ${failed} failed out of ${subscriptions.length} total`
-      );
+      this.logger.info(`Mass notification completed: ${successful} successful, ${failed} failed out of ${subscriptions.length} total`);
 
       if (failed > 0) {
         const failures = results

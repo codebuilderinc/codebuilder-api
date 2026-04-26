@@ -1,8 +1,6 @@
-
-  export class ConnectUserDto {
-    id?: number;
-email?: string;
-googleId?: string;
-wallet?: string;
-  }
-  
+export class ConnectUserDto {
+  id?: number;
+  email?: string;
+  googleId?: string;
+  wallet?: string;
+}

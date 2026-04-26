@@ -21,12 +21,7 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
   async validate(value: string, args: ValidationArguments) {
     const [entity, column] = args.constraints;
 
-    let result = await this.prisma.$queryRawUnsafe(
-      `SELECT * FROM $1 WHERE $2 = $3 WHERE LIMIT 1`,
-      entity,
-      column,
-      value
-    );
+    const result = await this.prisma.$queryRawUnsafe(`SELECT * FROM $1 WHERE $2 = $3 WHERE LIMIT 1`, entity, column, value);
 
     if (result) {
       return false;
@@ -40,7 +35,7 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsUnique(entity: Function, column: string, validationOptions?: ValidationOptions) {
+export function IsUnique(entity: { new (): any }, column: string, validationOptions?: ValidationOptions) {
   return (object: object, propertyName: string) => {
     registerDecorator({
       target: object.constructor,

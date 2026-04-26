@@ -1,4 +1,4 @@
-import {Field} from '@/common/decorators/field.decorator';
+import { Field } from '@/common/decorators/field.decorator';
 
 /**
  * Sort order enum for job queries
@@ -28,7 +28,7 @@ export class JobOrderByDto {
     enum: SortOrder,
     optional: true,
     inQuery: true,
-    isEnum: {entity: SortOrder},
+    isEnum: { entity: SortOrder },
   })
   createdAt?: SortOrder;
 
@@ -38,7 +38,7 @@ export class JobOrderByDto {
     enum: SortOrder,
     optional: true,
     inQuery: true,
-    isEnum: {entity: SortOrder},
+    isEnum: { entity: SortOrder },
   })
   updatedAt?: SortOrder;
 
@@ -48,7 +48,7 @@ export class JobOrderByDto {
     enum: SortOrder,
     optional: true,
     inQuery: true,
-    isEnum: {entity: SortOrder},
+    isEnum: { entity: SortOrder },
   })
   postedAt?: SortOrder;
 
@@ -58,7 +58,7 @@ export class JobOrderByDto {
     enum: SortOrder,
     optional: true,
     inQuery: true,
-    isEnum: {entity: SortOrder},
+    isEnum: { entity: SortOrder },
   })
   title?: SortOrder;
 
@@ -68,7 +68,7 @@ export class JobOrderByDto {
     enum: SortOrder,
     optional: true,
     inQuery: true,
-    isEnum: {entity: SortOrder},
+    isEnum: { entity: SortOrder },
   })
   company?: SortOrder;
 }

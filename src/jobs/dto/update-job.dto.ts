@@ -1,15 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsOptional,
-  IsString,
-  IsInt,
-  IsBoolean,
-  IsArray,
-  IsUrl,
-  Length,
-  ValidateNested,
-  IsDateString,
-} from 'class-validator';
+import { IsOptional, IsString, IsInt, IsBoolean, IsArray, IsUrl, Length, ValidateNested, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { JobMetadataDto } from './create-job.dto';
 

@@ -33,9 +33,7 @@ import { json, urlencoded } from 'body-parser';
 /**
  * Resolve log levels from the environment variables. Defaults to log, error, and warn.
  */
-const logLevels: LogLevel[] = (process.env.LOG_LEVEL ?? 'log,error,warn')
-  .split(',')
-  .map((level) => level.trim() as LogLevel);
+const logLevels: LogLevel[] = (process.env.LOG_LEVEL ?? 'log,error,warn').split(',').map((level) => level.trim() as LogLevel);
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

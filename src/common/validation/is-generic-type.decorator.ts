@@ -30,9 +30,7 @@ export const IsGenericType = (
       name: 'IS_GENERIC_TYPE',
       validator: {
         validate: (value: unknown) => {
-          return validators.some((item) =>
-            typeof item === 'function' ? item(value) : InnerTypesValidator[item]?.(value)
-          );
+          return validators.some((item) => (typeof item === 'function' ? item(value) : InnerTypesValidator[item]?.(value)));
         },
         defaultMessage: (validationArguments?: ValidationArguments) => {
           return `${validationArguments?.property}: Data type mismatch`;

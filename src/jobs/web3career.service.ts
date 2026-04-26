@@ -1,6 +1,6 @@
-import {Injectable} from '@nestjs/common';
-import {LoggerService} from '../common/logger/logger.service';
-import {JobService} from './job.service';
+import { Injectable } from '@nestjs/common';
+import { LoggerService } from '../common/logger/logger.service';
+import { JobService } from './job.service';
 
 @Injectable()
 export class Web3CareerService {
