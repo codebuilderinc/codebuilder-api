@@ -1,9 +1,1 @@
-
-
-
-
-
-
-export class UpdateJobTagDto {
-  
-}
+export class UpdateJobTagDto {}

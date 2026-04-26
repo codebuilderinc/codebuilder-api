@@ -1,5 +1,3 @@
-
-  export class ConnectTaggableDto {
-    id: number;
-  }
-  
+export class ConnectTaggableDto {
+  id: number;
+}

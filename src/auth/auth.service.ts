@@ -1,12 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma, User } from '@prisma/client';
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from './password.service';
 import { SignupInput } from './dto/signup.input';
@@ -202,8 +196,7 @@ export class AuthService {
   async googleAuth(idToken: string, buildType?: string): Promise<Token> {
     try {
       // Determine which client ID to use based on build type
-      const clientId =
-        buildType === 'development' ? process.env.GOOGLE_WEB_CLIENT_ID_DEV : process.env.GOOGLE_WEB_CLIENT_ID;
+      const clientId = buildType === 'development' ? process.env.GOOGLE_WEB_CLIENT_ID_DEV : process.env.GOOGLE_WEB_CLIENT_ID;
 
       if (!clientId) {
         console.error(`Missing Google OAuth client ID for build type: ${buildType}`);

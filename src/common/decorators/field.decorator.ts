@@ -15,8 +15,8 @@ import {
   MaxLength,
   ValidationOptions,
 } from 'class-validator';
-import {pick} from './../../common/helpers/array.helper';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import { pick } from './../../common/helpers/array.helper';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import ValidatorJS from 'validator';
 
 type FieldOptions = {
@@ -29,16 +29,16 @@ type FieldOptions = {
   nullable?: boolean; // kept for backwards compat; implies optional
   minLength?: number;
   maxLength?: number;
-  isEnum?: {entity: object; validationOptions?: ValidationOptions};
+  isEnum?: { entity: object; validationOptions?: ValidationOptions };
   isString?: ValidationOptions;
   isEthereumAddress?: ValidationOptions;
-  isDecimal?: {options?: ValidatorJS.IsDecimalOptions; validationOptions: ValidationOptions};
+  isDecimal?: { options?: ValidatorJS.IsDecimalOptions; validationOptions: ValidationOptions };
   isBoolean?: ValidationOptions;
   isInt?: ValidationOptions;
-  isBigInt?: {message: string};
-  isHash?: {algorithm: string; validationOptions: ValidationOptions};
+  isBigInt?: { message: string };
+  isHash?: { algorithm: string; validationOptions: ValidationOptions };
   isUrl?: ValidationOptions;
-  pattern?: {regex: RegExp; message?: string};
+  pattern?: { regex: RegExp; message?: string };
   isArray?: boolean;
   inQuery?: boolean; // mark field as query parameter candidate
   inPath?: boolean; // mark field as path parameter candidate
@@ -68,11 +68,11 @@ export function Field(options: FieldOptions) {
     if (!required) {
       IsOptional()(target, propertyKey);
     } else {
-      IsNotEmpty({message: options.name + ': Value is required.'})(target, propertyKey);
+      IsNotEmpty({ message: options.name + ': Value is required.' })(target, propertyKey);
     }
 
     if (options.isEnum) {
-      IsEnum(options.isEnum.entity, options.isEnum.validationOptions || {message: options.name + ': Invalid enum value.'})(
+      IsEnum(options.isEnum.entity, options.isEnum.validationOptions || { message: options.name + ': Invalid enum value.' })(
         target,
         propertyKey
       );
@@ -84,10 +84,10 @@ export function Field(options: FieldOptions) {
     if (options.isDecimal) IsDecimal(options.isDecimal.options, options.isDecimal.validationOptions)(target, propertyKey);
     if (options.isBoolean) IsBoolean(options.isBoolean)(target, propertyKey);
     if (options.isInt) IsInt(options.isInt)(target, propertyKey);
-    if (options.isBigInt) IsInt({message: options.isBigInt.message})(target, propertyKey);
+    if (options.isBigInt) IsInt({ message: options.isBigInt.message })(target, propertyKey);
     if (options.isHash) IsHash(options.isHash.algorithm, options.isHash.validationOptions)(target, propertyKey);
     if (options.isUrl) IsUrl(undefined, options.isUrl)(target, propertyKey);
-    if (options.pattern) Matches(options.pattern.regex, {message: options.pattern.message})(target, propertyKey);
+    if (options.pattern) Matches(options.pattern.regex, { message: options.pattern.message })(target, propertyKey);
     if (options.isArray) IsArray()(target, propertyKey);
 
     // Persist metadata on the class constructor so @Api decorator can build params/queries automatically

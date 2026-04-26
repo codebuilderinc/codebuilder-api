@@ -1,6 +1,4 @@
-
-  export class ConnectTagDto {
-    id?: number;
-name?: string;
-  }
-  
+export class ConnectTagDto {
+  id?: number;
+  name?: string;
+}

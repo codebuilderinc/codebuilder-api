@@ -55,7 +55,7 @@ export function getOrigin(req: Request) {
   const origin = req.headers.origin;
 
   if (!origin || typeof origin === 'string') {
-    return origin as string;
+    return origin;
   }
 
   return origin[0];

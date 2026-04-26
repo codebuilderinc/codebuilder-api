@@ -1,6 +1,4 @@
-
-  export class ConnectSubscriptionDto {
-    id?: number;
-endpoint?: string;
-  }
-  
+export class ConnectSubscriptionDto {
+  id?: number;
+  endpoint?: string;
+}
