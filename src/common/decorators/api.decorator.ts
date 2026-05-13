@@ -216,7 +216,7 @@ export function Api(options: ApiOptions): MethodDecorator {
       description: options.description,
       deprecated: options.deprecated,
       ...(options.apiOperationOptions || {}),
-    } as ApiOperationOptions;
+    };
 
     // ============================================================================
     // STEP 3: Determine Response Strategy

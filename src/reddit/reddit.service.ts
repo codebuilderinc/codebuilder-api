@@ -25,15 +25,14 @@ export class RedditService {
 
   private async getRedditClient(): Promise<Snoowrap> {
     if (!this.redditClient) {
-      const SnoowrapModule = await import('snoowrap');
-      const SnoowrapClass = SnoowrapModule.default ?? (SnoowrapModule as any);
-      this.redditClient = new SnoowrapClass({
+      const Snoowrap = (await import('snoowrap')).default;
+      this.redditClient = new Snoowrap({
         userAgent: 'CodeBuilder by /u/taofullstack',
         clientId: process.env.REDDIT_CLIENT_ID,
         clientSecret: process.env.REDDIT_CLIENT_SECRET,
         username: process.env.REDDIT_USERNAME,
         password: process.env.REDDIT_PASSWORD,
-      }) as Snoowrap;
+      });
     }
     return this.redditClient;
   }
@@ -107,8 +106,8 @@ export class RedditService {
           title: `${post.title} (${post.subreddit})`,
           body: `Posted by /u/${post.author}`,
           url: post.url,
-          icon: 'https://new.codebuilder.org/images/logo2.png',
-          badge: 'https://new.codebuilder.org/images/logo2.png',
+          icon: 'https://codebuilder.org/images/logo2.png',
+          badge: 'https://codebuilder.org/images/logo2.png',
         };
         const notificationPromises = subscriptions.map((sub) => this.notificationsService.sendNotification(sub, notificationPayload));
         await Promise.all(notificationPromises);
@@ -169,8 +168,8 @@ export class RedditService {
             createdAt: new Date(item.created_utc * 1000),
             parentId: item.parent_id,
             rawData: typeof item.toJSON === 'function' ? item.toJSON() : (item as any),
-            isRead: isMsg ? (item as Snoowrap.PrivateMessage).new === false : false,
-            contextUrl: isMsg ? (item as Snoowrap.PrivateMessage).context : `https://www.reddit.com${(item as Snoowrap.Comment).permalink}`,
+            isRead: isMsg ? item.new === false : false,
+            contextUrl: isMsg ? item.context : `https://www.reddit.com${item.permalink}`,
           },
         });
 

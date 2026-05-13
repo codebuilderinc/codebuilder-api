@@ -155,6 +155,9 @@ importers:
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
+      stripe:
+        specifier: ^22.1.0
+        version: 22.1.0(@types/node@25.0.9)
       validator:
         specifier: ^13.15.26
         version: 13.15.26
@@ -6716,6 +6719,15 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
+
+  stripe@22.1.0:
+    resolution: {integrity: sha512-w/xHyJGxXWnLPbNHG13sz/fae0MrFGC80Oz7YbICQymbfpqfEcsoG+6yG+9BWb81PWc4rrkeSO4wmTcmefmbLw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -15288,6 +15300,10 @@ snapshots:
   strip-json-comments@3.1.1: {}
 
   strip-json-comments@5.0.3: {}
+
+  stripe@22.1.0(@types/node@25.0.9):
+    optionalDependencies:
+      '@types/node': 25.0.9
 
   strnum@1.1.2:
     optional: true

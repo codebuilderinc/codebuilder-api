@@ -17,6 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { LocationModule } from './location/location.module';
 import { ErrorsModule } from './errors/errors.module';
 import { SentryModule } from '@sentry/nestjs/setup';
+import { PaymentsModule } from './payments/payments.module';
 
 //import { OpenTelemetryModule } from 'nestjs-otel';
 //import { ConfigModule } from '@nestjs/config';
@@ -84,6 +85,7 @@ Logger.log(`DEBUG ENVIRONMENT: ${process.env.NODE_ENV}`);
     NotificationsModule,
     LocationModule,
     ErrorsModule,
+    PaymentsModule,
   ],
   providers: [],
 })

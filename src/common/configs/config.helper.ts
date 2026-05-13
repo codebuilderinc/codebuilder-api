@@ -149,6 +149,10 @@ function validateConfig(envConfig: object): ApplicationConfig {
     EDGE_KV_URL: Joi.string().default('https://edge-kv-dexcelerate.workers.dev'),
     EDGE_KV_AUTHORIZATION_TOKEN: Joi.string().default(''),
     REDIS_SERVERS: Joi.object().required(), // Validate as an object
+    STRIPE_PUBLISHABLE_KEY: Joi.string().allow(''),
+    STRIPE_SECRET_KEY: Joi.string().allow(''),
+    STRIPE_WEBHOOK_SECRET: Joi.string().allow(''),
+    STRIPE_DEFAULT_CURRENCY: Joi.string().length(3).default('usd'),
   });
 
   const { error, value: configValue } = envVarsSchema.validate(validatedConfig, {

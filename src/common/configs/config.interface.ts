@@ -80,6 +80,11 @@ export interface ApplicationConfig {
 
   EDGE_KV_URL: string;
   EDGE_KV_AUTHORIZATION_TOKEN: string;
+
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_PUBLISHABLE_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  STRIPE_DEFAULT_CURRENCY?: string;
 }
 
 export interface UnflattenApplicationConfig {
